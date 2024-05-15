@@ -1,22 +1,19 @@
-import { useEffect, useState } from "react";
-import "./App.css";
+// src/components/App.js
+
+import useFetchData from "../hooks/useFetchData"; // Adjust the path as needed
+import "../styles/App.css";
 
 function App() {
-  const [data, setData] = useState([]);
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch("http://localhost:8081/users");
-        const data = await response.json();
-        setData(data);
-        console.log(data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
+  const { data, loading, error } = useFetchData("/users");
 
-    fetchData();
-  }, []);
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
+  if (error) {
+    return <p>Error: {error}</p>;
+  }
+
   return (
     <>
       <table>
@@ -25,7 +22,7 @@ function App() {
             <th>Username</th>
             <th>Password</th>
             <th>Role</th>
-            <th>id</th>
+            <th>ID</th>
           </tr>
         </thead>
         <tbody>
