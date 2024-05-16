@@ -52,5 +52,5 @@
 
 - **Frontend**: React.js for user interface
 - **Backend**: Node.js and Express.js for server-side operations
-- **Database**: MySQL for storing data
+- **Database**: PostgreSQL for storing data
 - **Authentication**: Secure authentication using Passport.js or JWT
