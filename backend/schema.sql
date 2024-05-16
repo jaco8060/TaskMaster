@@ -1,54 +1,72 @@
-CREATE DATABASE IF NOT EXISTS bugtracker;
-USE bugtracker;
+-- Database: bugtracker
 
+-- DROP DATABASE IF EXISTS bugtracker;
+
+CREATE DATABASE bugtracker
+    WITH
+    OWNER = postgres
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'English_Canada.1252'
+    LC_CTYPE = 'English_Canada.1252'
+    LOCALE_PROVIDER = 'libc'
+    TABLESPACE = pg_default
+    CONNECTION LIMIT = -1
+    IS_TEMPLATE = False;
+
+-- Users Table
 CREATE TABLE users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(50) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
-    role ENUM('admin', 'developer', 'tester') NOT NULL,
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(100) NOT NULL,
+    role VARCHAR(20) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Projects Table
 CREATE TABLE projects (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) UNIQUE NOT NULL,
     description TEXT,
-    created_by INT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (created_by) REFERENCES users(id)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Bugs Table with Full-Text Search and JSONB Metadata
 CREATE TABLE bugs (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    project_id INT,
-    reported_by INT,
-    assigned_to INT,
-    title VARCHAR(255) NOT NULL,
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(100) NOT NULL,
     description TEXT,
-    severity ENUM('low', 'medium', 'high', 'critical') NOT NULL,
-    status ENUM('open', 'in progress', 'resolved', 'closed') DEFAULT 'open',
+    status VARCHAR(20) NOT NULL,
+    priority VARCHAR(20) NOT NULL,
+    project_id INT REFERENCES projects(id),
+    reported_by INT REFERENCES users(id),
+    assigned_to INT REFERENCES users(id),
+    metadata JSONB,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (project_id) REFERENCES projects(id),
-    FOREIGN KEY (reported_by) REFERENCES users(id),
-    FOREIGN KEY (assigned_to) REFERENCES users(id)
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Comments Table
 CREATE TABLE comments (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    bug_id INT,
-    user_id INT,
+    id SERIAL PRIMARY KEY,
     comment TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (bug_id) REFERENCES bugs(id),
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    bug_id INT REFERENCES bugs(id),
+    user_id INT REFERENCES users(id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE notifications (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT,
-    message TEXT NOT NULL,
-    is_read BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id)
+-- Bug History Table
+CREATE TABLE bug_history (
+    id SERIAL PRIMARY KEY,
+    bug_id INT REFERENCES bugs(id),
+    status VARCHAR(20),
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_by INT REFERENCES users(id)
 );
+
+
+SELECT * FROM projects
+SELECT * FROM users
+SELECT * FROM bug_history
+SELECT * FROM bugs
+
