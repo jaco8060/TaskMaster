@@ -6,7 +6,7 @@ const useFetchData = (endpoint) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const url = `${import.meta.env.VITE_URL}${endpoint}`;
-
+  console.log(url);
   useEffect(() => {
     const fetchData = async () => {
       try {

@@ -1,7 +1,9 @@
 // src/components/App.js
 
+import "bootstrap/dist/css/bootstrap.min.css";
+import Table from "react-bootstrap/Table";
 import useFetchData from "../hooks/useFetchData"; // Adjust the path as needed
-import "../styles/App.css";
+import "../styles/App.scss";
 
 function App() {
   const { data, loading, error } = useFetchData("/users");
@@ -16,26 +18,26 @@ function App() {
 
   return (
     <>
-      <table>
+      <Table striped bordered hover>
         <thead>
           <tr>
-            <th>Username</th>
-            <th>Password</th>
-            <th>Role</th>
             <th>ID</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Role</th>
           </tr>
         </thead>
         <tbody>
           {data.map((d, index) => (
             <tr key={index}>
-              <td>{d.username}</td>
-              <td>{d.password}</td>
-              <td>{d.role}</td>
               <td>{d.id}</td>
+              <td>{d.username}</td>
+              <td>{d.email}</td>
+              <td>{d.role}</td>
             </tr>
           ))}
         </tbody>
-      </table>
+      </Table>
     </>
   );
 }
