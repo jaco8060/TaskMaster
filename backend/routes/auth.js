@@ -9,7 +9,8 @@ const authRouter = express.Router();
 // Middleware for session and passport
 authRouter.use(
   session({
-    secret: "your_secret_key", // Used to sign the session ID cookie
+    name: "my_session_cookie",
+    secret: "secret_key123", // Used to sign the session ID cookie
     resave: false, // Prevents saving session if it wasn't modified
     saveUninitialized: false, // Prevents saving uninitialized session
     cookie: {
@@ -42,9 +43,19 @@ authRouter.post("/login", passport.authenticate("local"), (req, res) => {
 });
 
 // Logout Route
-authRouter.get("/logout", (req, res) => {
-  req.logout();
-  res.json({ message: "Logged out" });
+authRouter.get("/logout", function (req, res, next) {
+  req.logout((err) => {
+    if (err) {
+      return next(err);
+    }
+    req.session.destroy((err) => {
+      if (err) {
+        return res.status(500).json({ error: "Failed to destroy session" });
+      }
+      res.clearCookie("my_session_cookie"); // Ensure this matches the name of your session cookie
+      res.json({ message: "Logged out" });
+    });
+  });
 });
 
 // Get User Route
