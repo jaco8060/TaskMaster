@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
-import { pool } from "./database.js"; //
+import { pool } from "./database.js";
 
 // Serialize user into the session
 passport.serializeUser((user, done) => {
