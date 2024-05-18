@@ -10,6 +10,7 @@ const useFetchData = (endpoint) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        //fetch url based on saved env variable url with end point as a route
         const response = await fetch(url);
         if (!response.ok) {
           throw new Error("Network response was not ok");
