@@ -12,6 +12,9 @@ authRouter.use(
     secret: "your_secret_key", // Used to sign the session ID cookie
     resave: false, // Prevents saving session if it wasn't modified
     saveUninitialized: false, // Prevents saving uninitialized session
+    cookie: {
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours in milliseconds
+    },
   })
 );
 authRouter.use(passport.initialize());
