@@ -1,22 +1,17 @@
-// src/hooks/useFetchData.js
 import { useEffect, useState } from "react";
+import axios from "axios";
 
 const useFetchData = (endpoint) => {
-  const [data, setData] = useState(null); // Change to null for a more general approach
+  const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const url = `${import.meta.env.VITE_URL}${endpoint}`;
-  console.log(url);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        //fetch url based on saved env variable url with end point as a route
-        const response = await fetch(url);
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const data = await response.json();
-        setData(data);
+        const response = await axios.get(url);
+        setData(response.data);
       } catch (err) {
         setError(err.message);
       } finally {

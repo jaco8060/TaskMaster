@@ -1,25 +1,9 @@
 import bcrypt from "bcrypt";
 import express from "express";
-import session from "express-session";
 import { pool } from "../database.js";
 import passport from "../passport-config.js";
 
 const authRouter = express.Router();
-
-// Middleware for session and passport
-authRouter.use(
-  session({
-    name: "my_session_cookie",
-    secret: "secret_key123", // Used to sign the session ID cookie
-    resave: false, // Prevents saving session if it wasn't modified
-    saveUninitialized: false, // Prevents saving uninitialized session
-    cookie: {
-      maxAge: 24 * 60 * 60 * 1000, // 24 hours in milliseconds
-    },
-  })
-);
-authRouter.use(passport.initialize());
-authRouter.use(passport.session());
 
 // Registration Route
 authRouter.post("/register", async (req, res) => {
@@ -43,7 +27,7 @@ authRouter.post("/login", passport.authenticate("local"), (req, res) => {
 });
 
 // Logout Route
-authRouter.get("/logout", function (req, res, next) {
+authRouter.get("/logout", (req, res, next) => {
   req.logout((err) => {
     if (err) {
       return next(err);
