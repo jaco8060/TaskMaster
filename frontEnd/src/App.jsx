@@ -8,13 +8,13 @@ import React from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import PrivateRoute from "./PrivateRoute";
 import Dashboard from "./components/Dashboard";
-import Login from "./components/Login";
+import LoginPage from "./components/LoginPage";
 import User from "./components/User";
 
 const App = () => {
   return (
     <Routes>
-      <Route path="/login" element={<Login />} />
+      <Route path="/login" element={<LoginPage />} />
       <Route path="/" element={<PrivateRoute />}>
         <Route path="/" element={<Navigate to="/dashboard" />} />
         <Route path="/dashboard" element={<Dashboard />} />
