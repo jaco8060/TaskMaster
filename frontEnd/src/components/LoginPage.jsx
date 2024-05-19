@@ -172,7 +172,7 @@ const Register = ({ setWindow }) => {
 
   return (
     <FormComponent title="Register" fields={fields} onSubmit={handleSubmit}>
-      <Button variant="primary" onClick={setWindow}>
+      <Button variant="secondary" onClick={setWindow}>
         Back to login
       </Button>
       <Button variant="success" type="submit">
