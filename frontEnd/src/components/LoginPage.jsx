@@ -4,6 +4,13 @@ import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthProvider";
 
+// Enum for window states
+const WindowState = {
+  LOGIN: "LOGIN",
+  REGISTER: "REGISTER",
+  DEMO: "DEMO",
+};
+
 const useForm = (initialState) => {
   const [formData, setFormData] = useState(initialState);
 
@@ -21,7 +28,7 @@ const FormComponent = ({ title, fields, onSubmit, children }) => {
       <Row className="vh-100 d-flex justify-content-center align-items-center">
         <Col xs={12} md={8} lg={6}>
           <div className="d-flex flex-column p-4 justify-content-center align-items-center border rounded shadow-sm">
-            <h1>{title}</h1>
+            <h1 className="mb-4">{title}</h1>
             <Form onSubmit={onSubmit} className="w-75">
               <Row>
                 <Col>
@@ -103,13 +110,41 @@ const Login = ({ setWindow }) => {
   ];
 
   return (
-    <FormComponent title="Login" fields={fields} onSubmit={handleSubmit}>
-      <Button variant="primary" type="submit">
-        Login
-      </Button>
-      <Button variant="secondary" onClick={setWindow}>
-        Register
-      </Button>
+    <FormComponent
+      title="Bug Tracker Login"
+      fields={fields}
+      onSubmit={handleSubmit}
+    >
+      <div className="d-flex flex-column gap-4">
+        <Button className="mt-2" variant="primary" type="submit">
+          Login
+        </Button>
+        <div className="d-flex flex-column justify-content-center gap-1 align-items-center">
+          <p className="my-0">
+            Forgot your{" "}
+            <span>
+              <a href="#">password</a>
+            </span>
+            ?
+          </p>
+          <p className="my-0">
+            New account?{" "}
+            <span>
+              <a href="#" onClick={() => setWindow(WindowState.REGISTER)}>
+                Register
+              </a>
+            </span>
+          </p>
+          <p className="my-0">
+            Sign in as a{" "}
+            <span>
+              <a href="#" onClick={() => setWindow(WindowState.DEMO)}>
+                demo user
+              </a>
+            </span>
+          </p>
+        </div>
+      </div>
     </FormComponent>
   );
 };
@@ -134,7 +169,7 @@ const Register = ({ setWindow }) => {
           withCredentials: true,
         }
       );
-      setWindow(); // go back to login
+      setWindow(WindowState.LOGIN); // go back to login
     } catch (error) {
       console.error("Registration error:", error);
       alert("Registration failed");
@@ -167,12 +202,13 @@ const Register = ({ setWindow }) => {
       name: "email",
       value: formData.email,
       onChange: handleChange,
+      required: true,
     },
   ];
 
   return (
     <FormComponent title="Register" fields={fields} onSubmit={handleSubmit}>
-      <Button variant="secondary" onClick={setWindow}>
+      <Button variant="secondary" onClick={() => setWindow(WindowState.LOGIN)}>
         Back to login
       </Button>
       <Button variant="success" type="submit">
@@ -182,16 +218,77 @@ const Register = ({ setWindow }) => {
   );
 };
 
+const DemoUser = ({ setWindow }) => {
+  const navigate = useNavigate();
+  const { setUser } = useContext(AuthContext);
+
+  const demoUsers = [
+    { role: "admin", username: "admin", password: "admin123" },
+    { role: "project_manager", username: "project_manager", password: "pm123" },
+    { role: "developer", username: "demo_dev", password: "demo123" },
+    { role: "submitter", username: "demo_sub", password: "sub123" },
+  ];
+
+  const handleDemoLogin = async (user) => {
+    try {
+      console.log(user.username, user.password);
+      const response = await axios.post(
+        `${import.meta.env.VITE_URL}/auth/login`,
+        { username: user.username, password: user.password },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+      setUser(response.data);
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Login error:", error);
+      alert("Demo login failed");
+    }
+  };
+
+  return (
+    <Container>
+      <Row className="vh-100 d-flex justify-content-center align-items-center">
+        <Col xs={12} md={8} lg={6}>
+          <div className="d-flex flex-column p-4 justify-content-center align-items-center border rounded shadow-sm">
+            <h1 className="mb-4">Demo User Login</h1>
+            {demoUsers.map((user) => (
+              <Button
+                key={user.role}
+                variant="primary"
+                className="mb-2"
+                onClick={() => handleDemoLogin(user)}
+              >
+                Login as {user.role.replace("_", " ")}
+              </Button>
+            ))}
+            <Button
+              variant="secondary"
+              onClick={() => setWindow(WindowState.LOGIN)}
+            >
+              Back to login
+            </Button>
+          </div>
+        </Col>
+      </Row>
+    </Container>
+  );
+};
+
 const LoginPage = () => {
-  const [activeWindow, setWindow] = useState("login");
+  const [activeWindow, setWindow] = useState(WindowState.LOGIN);
 
   return (
     <>
-      {activeWindow === "login" ? (
-        <Login setWindow={() => setWindow("register")} />
-      ) : (
-        <Register setWindow={() => setWindow("login")} />
+      {activeWindow === WindowState.LOGIN && <Login setWindow={setWindow} />}
+      {activeWindow === WindowState.REGISTER && (
+        <Register setWindow={setWindow} />
       )}
+      {activeWindow === WindowState.DEMO && <DemoUser setWindow={setWindow} />}
     </>
   );
 };
