@@ -43,9 +43,11 @@ const ForgotPassword = ({ setWindow }) => {
                   required
                 />
               </Form.Group>
-              <Button variant="primary" type="submit">
-                Send Reset Email
-              </Button>
+              <div className="d-flex justify-content-center">
+                <Button variant="primary" type="submit">
+                  Send Reset Email
+                </Button>
+              </div>
             </Form>
             {message && <p className="mt-3">{message}</p>}
             <Button
