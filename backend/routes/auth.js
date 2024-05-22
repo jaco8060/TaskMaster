@@ -1,5 +1,9 @@
 import bcrypt from "bcrypt";
 import express from "express";
+import {
+  forgotPassword,
+  resetPassword,
+} from "../controllers/forgotAuthController.js";
 import { pool } from "../database.js";
 import passport from "../passport-config.js";
 
@@ -50,5 +54,8 @@ authRouter.get("/user", (req, res) => {
     res.status(401).json({ error: "Unauthorized" });
   }
 });
+
+authRouter.post("/forgot-password", forgotPassword);
+authRouter.post("/reset-password", resetPassword);
 
 export default authRouter;

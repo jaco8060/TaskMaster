@@ -3,12 +3,16 @@ import { useContext, useState } from "react";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthProvider";
+import ForgotPassword from "./ForgotPassword";
+import ResetPassword from "./ResetPassword";
 
 // Enum for window states
-const WindowState = {
+export const WindowState = {
   LOGIN: "LOGIN",
   REGISTER: "REGISTER",
   DEMO: "DEMO",
+  FORGOT_PASSWORD: "FORGOT_PASSWORD",
+  RESET_PASSWORD: "RESET_PASSWORD",
 };
 
 const useForm = (initialState) => {
@@ -123,7 +127,12 @@ const Login = ({ setWindow }) => {
           <p className="my-0">
             Forgot your{" "}
             <span>
-              <a href="#">password</a>
+              <a
+                href="#"
+                onClick={() => setWindow(WindowState.FORGOT_PASSWORD)}
+              >
+                password
+              </a>
             </span>
             ?
           </p>
@@ -280,6 +289,7 @@ const DemoUser = ({ setWindow }) => {
 
 const LoginPage = () => {
   const [activeWindow, setWindow] = useState(WindowState.LOGIN);
+  const [resetToken, setResetToken] = useState(null); // State to hold the reset token
 
   return (
     <>
@@ -288,6 +298,12 @@ const LoginPage = () => {
         <Register setWindow={setWindow} />
       )}
       {activeWindow === WindowState.DEMO && <DemoUser setWindow={setWindow} />}
+      {activeWindow === WindowState.FORGOT_PASSWORD && (
+        <ForgotPassword setWindow={setWindow} />
+      )}
+      {activeWindow === WindowState.RESET_PASSWORD && (
+        <ResetPassword setWindow={setWindow} resetToken={resetToken} />
+      )}
     </>
   );
 };

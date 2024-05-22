@@ -1,15 +1,17 @@
 import cors from "cors";
+import dotenv from "dotenv";
 import express from "express";
 import session from "express-session";
 import passport from "./passport-config.js"; // Ensure this points to your passport configuration
 import authRouter from "./routes/auth.js";
 import userRouter from "./routes/users.js";
+dotenv.config();
 
 const app = express();
 
 app.use(
   cors({
-    origin: "http://localhost:5173", // Adjust this to your frontend URL
+    origin: process.env.FRONTEND_URL, // Adjust this to your frontend URL
     credentials: true, // Allow credentials (cookies, authorization headers, etc.)
   })
 );

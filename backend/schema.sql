@@ -20,7 +20,9 @@ CREATE TABLE users (
     email VARCHAR(100) DEFAULT 'noemail',
     password VARCHAR(100) NOT NULL,
     role VARCHAR(20) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	reset_password_token VARCHAR(255),
+	reset_password_expires BIGINT
 );
 
 -- Projects Table
