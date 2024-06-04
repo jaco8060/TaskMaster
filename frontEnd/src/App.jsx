@@ -2,6 +2,7 @@
 
 import "bootstrap/dist/css/bootstrap.min.css";
 
+import ThemeProvider from "react-bootstrap/ThemeProvider";
 import "./styles/App.scss";
 
 import React from "react";
