@@ -75,26 +75,23 @@ const TopNavBar = () => {
             <Nav className="justify-content-end flex-grow-1 pe-3 offcanvas-nav">
               <Button
                 variant="primary"
-                className="me-2 mb-2 d-none d-lg-inline text-nowrap"
+                className="me-2 d-none d-lg-inline text-nowrap"
               >
                 New Ticket
               </Button>
-              <Nav.Link
-                href="#notifications"
-                className="mb-2 d-none d-lg-inline"
-              >
+              <Nav.Link href="#notifications" className=" d-none d-lg-inline">
                 <div className="d-flex align-items-center">
                   <h6 className="mb-0 me-2">Notifications</h6>
                   <FaBell size={25} />
                 </div>
               </Nav.Link>
-              <Nav.Link href="#settings" className="mb-2 d-none d-lg-inline">
+              <Nav.Link href="#settings" className=" d-none d-lg-inline">
                 <div className="d-flex align-items-center">
                   <h6 className="mb-0 me-2">Settings</h6>
                   <FaCog size={25} />
                 </div>
               </Nav.Link>
-              <Nav.Link className="mb-2 d-none d-lg-inline">
+              <Nav.Link className="d-none d-lg-inline">
                 <div className="d-flex align-items-center">
                   <h className="mb-0 me-2">Logout</h>
                   <FaSignOutAlt size={25} />
