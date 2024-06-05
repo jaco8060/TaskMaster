@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { Navigate, Outlet } from "react-router-dom";
-import { AuthContext } from "./contexts/AuthProvider";
+import { AuthContext } from "../../contexts/AuthProvider";
 
 // Check if the user is authenticated from global state AuthContext
 const PrivateRoute = () => {
