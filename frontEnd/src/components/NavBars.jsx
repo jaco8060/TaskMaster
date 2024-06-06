@@ -10,11 +10,7 @@ import "../styles/NavBars.scss"; // Import the SCSS file
 
 const TopNavBar = () => {
   return (
-    <Navbar
-      expand="lg"
-      className="bg-body-tertiary border-bottom border-tiertiary "
-      sticky="top"
-    >
+    <Navbar expand="lg" className="bg-body-tertiary border-bottom" sticky="top">
       <Container fluid>
         <div className="d-flex align-items-center gap-3">
           <Navbar.Toggle aria-controls={`offcanvasNavbar-expand-${"lg"}`} />
@@ -108,11 +104,13 @@ const SideNavBar = () => {
   return (
     <>
       <aside
-        className="d-flex flex-column flex-shrink-0 p-3 text-white bg-body-dark"
-        style={{ width: "336px", height: "100vh" }}
+        // id refers to NavBars.scss styling
+        id="SideNavBar"
       >
-        <Nav defaultActiveKey="/home" className="flex-column">
-          <Nav.Link href="/dashboard">Active</Nav.Link>
+        <Nav defaultActiveKey="/home" className="flex-column ">
+          <Nav.Link className="" href="/dashboard">
+            Active
+          </Nav.Link>
           <Nav.Link eventKey="link-1">Link</Nav.Link>
           <Nav.Link eventKey="link-2">Link</Nav.Link>
         </Nav>

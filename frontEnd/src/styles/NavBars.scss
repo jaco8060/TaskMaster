@@ -1,0 +1,17 @@
+@import "../node_modules/bootstrap/scss/functions";
+@import "../node_modules/bootstrap/scss/variables";
+@import "../node_modules/bootstrap/scss/mixins";
+#SideNavBar {
+  background-color: $dark;
+  border-right: 1px solid $gray-800;
+  color: white;
+  display: none;
+  flex-direction: column;
+  height: 100vh;
+  padding: 1rem;
+  width: 300px;
+
+  @include media-breakpoint-up(lg) {
+    display: flex;
+  }
+}
