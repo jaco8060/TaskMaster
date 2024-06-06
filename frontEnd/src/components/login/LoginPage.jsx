@@ -2,7 +2,7 @@ import axios from "axios";
 import { useContext, useState } from "react";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../contexts/AuthProvider";
+import { AuthContext } from "../../contexts/AuthProvider";
 import ForgotPassword from "./ForgotPassword";
 import ResetPassword from "./ResetPassword";
 

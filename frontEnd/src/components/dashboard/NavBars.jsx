@@ -1,13 +1,14 @@
 import Button from "react-bootstrap/Button";
+import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import Nav from "react-bootstrap/Nav";
-import NavDropdown from "react-bootstrap/NavDropdown";
 import Navbar from "react-bootstrap/Navbar";
 import Offcanvas from "react-bootstrap/Offcanvas";
+import Row from "react-bootstrap/Row";
+import Tab from "react-bootstrap/Tab";
 import { FaBell, FaCog, FaSignOutAlt, FaTicketAlt } from "react-icons/fa";
-import "../styles/NavBars.scss"; // Import the SCSS file
-
+import "../../styles/NavBars.scss"; // Import the SCSS file
 const TopNavBar = () => {
   return (
     <Navbar expand="lg" className="bg-body-tertiary border-bottom" sticky="top">
@@ -104,16 +105,23 @@ const SideNavBar = () => {
   return (
     <>
       <aside
-        // id refers to NavBars.scss styling
+        // id refers to styles/NavBars.scss styling
         id="SideNavBar"
       >
-        <Nav defaultActiveKey="/home" className="flex-column ">
-          <Nav.Link className="" href="/dashboard">
-            Active
-          </Nav.Link>
-          <Nav.Link eventKey="link-1">Link</Nav.Link>
-          <Nav.Link eventKey="link-2">Link</Nav.Link>
-        </Nav>
+        <Tab.Container defaultActiveKey="first">
+          <Row>
+            <Col>
+              <Nav variant="pills" className="flex-column">
+                <Nav.Item>
+                  <Nav.Link eventKey="first">Tab 1</Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                  <Nav.Link eventKey="second">Tab 2</Nav.Link>
+                </Nav.Item>
+              </Nav>
+            </Col>
+          </Row>
+        </Tab.Container>
       </aside>
     </>
   );

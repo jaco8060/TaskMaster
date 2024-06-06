@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import Nav from "react-bootstrap/Nav";
-import { AuthContext } from "../contexts/AuthProvider";
+import { AuthContext } from "../../contexts/AuthProvider.jsx";
 import { MainNav, SideNavBar, TopNavBar } from "./NavBars.jsx";
 export default function Dashboard() {
   const { user } = useContext(AuthContext);
