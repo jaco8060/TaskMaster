@@ -9,7 +9,9 @@ import Row from "react-bootstrap/Row";
 import Tab from "react-bootstrap/Tab";
 import { FaBell, FaCog, FaSignOutAlt, FaTicketAlt } from "react-icons/fa";
 import "../../styles/NavBars.scss"; // Import the SCSS file
-const TopNavBar = () => {
+import UserTabs from "./UserTabs";
+
+const TopNavBar = ({ children }) => {
   return (
     <Navbar expand="lg" className="bg-body-tertiary border-bottom" sticky="top">
       <Container fluid>
@@ -45,14 +47,19 @@ const TopNavBar = () => {
               />
               <Button variant="outline-success">Search</Button>
             </Form>
-            <div className="d-flex d-lg-none justify-content-center">
+            <div className="d-flex flex-column d-lg-none justify-content-center">
               <Button
                 variant="primary"
-                className="d-lg-none d-lg-inline text-nowrap"
+                className="d-lg-none d-lg-inline text-nowrap mx-auto mb-2"
+                style={{ width: "150px" }}
               >
                 New Ticket
               </Button>
+              <hr />
+              <div id="TopNavBarMobile">{children}</div>
             </div>
+            {/* show tabs of current children */}
+
             <hr />
             <div className="d-flex d-lg-none justify-content-center">
               <div className="d-inline-flex bg-body-tertiary rounded py-2 px-3 d-lg-none justify-content-center gap-4">
@@ -101,27 +108,14 @@ const TopNavBar = () => {
     </Navbar>
   );
 };
-const SideNavBar = () => {
+const SideNavBar = ({ children }) => {
   return (
     <>
       <aside
         // id refers to styles/NavBars.scss styling
         id="SideNavBar"
       >
-        <Tab.Container defaultActiveKey="first">
-          <Row>
-            <Col>
-              <Nav variant="pills" className="flex-column">
-                <Nav.Item>
-                  <Nav.Link eventKey="first">Tab 1</Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                  <Nav.Link eventKey="second">Tab 2</Nav.Link>
-                </Nav.Item>
-              </Nav>
-            </Col>
-          </Row>
-        </Tab.Container>
+        {children}
       </aside>
     </>
   );
@@ -130,10 +124,18 @@ const SideNavBar = () => {
 const MainNav = ({ children }) => {
   return (
     <>
-      <Container fluid className="p-0">
-        <TopNavBar />
-        <div className="d-flex">
-          <SideNavBar />
+      <Container
+        fluid
+        className="p-0 d-flex flex-column"
+        style={{ height: "100vh" }}
+      >
+        <TopNavBar>
+          <UserTabs />
+        </TopNavBar>
+        <div className="d-flex flex-grow-1">
+          <SideNavBar>
+            <UserTabs />
+          </SideNavBar>
           <main className="flex-grow-1 p-3">{children}</main>
         </div>
       </Container>

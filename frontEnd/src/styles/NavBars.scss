@@ -1,28 +1,35 @@
 @import "../node_modules/bootstrap/scss/functions";
 @import "../node_modules/bootstrap/scss/variables";
 @import "../node_modules/bootstrap/scss/mixins";
-#SideNavBar {
+@mixin userTabs($display: none) {
   background-color: $dark;
-  border-right: 1px solid $gray-800;
-  color: white;
-  display: none;
+  color: $white;
+  display: $display;
   flex-direction: column;
-  height: 100vh;
-  padding: 1rem;
-  width: 300px;
 
   .nav-link {
-    color: $white; // Custom text color
+    color: $white;
+    padding: 0.5rem 1rem;
     &:hover {
-      background-color: $gray-800; // Custom hover color
+      background-color: $gray-800;
     }
   }
-
   .nav-link.active {
-    background-color: $gray-800; // Custom active background color
+    background-color: $gray-800;
   }
+}
+#SideNavBar {
+  @include userTabs();
 
   @include media-breakpoint-up(lg) {
+    border-right: 1px solid $gray-800;
     display: flex;
+    padding: 0.5rem;
+    width: 300px;
+    height: 100vh;
+    // For larger screens
   }
+}
+#TopNavBarMobile {
+  @include userTabs(flex);
 }
