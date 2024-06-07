@@ -38,7 +38,7 @@ CREATE TABLE projects (
 );
 
 -- Bugs Table with Full-Text Search and JSONB Metadata
-CREATE TABLE bugs (
+CREATE TABLE tickets (
     id SERIAL PRIMARY KEY,
     title VARCHAR(100) NOT NULL,
     description TEXT,
@@ -47,9 +47,8 @@ CREATE TABLE bugs (
     project_id INT REFERENCES projects(id) ON DELETE CASCADE,
     reported_by INT REFERENCES users(id),
     assigned_to INT REFERENCES users(id) ON DELETE SET NULL,
-    metadata JSONB,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT NULL
 );
 
 -- Comments Table
@@ -82,7 +81,6 @@ SELECT * FROM users
 SELECT * FROM bug_history
 SELECT * FROM bugs
 SELECT * FROM comments
-SELECT * FROM user_roles
-SELECT * FROM roles
+
 
 
