@@ -1,5 +1,13 @@
 import React, { useContext } from "react";
 import { Col, Nav, Row, Tab } from "react-bootstrap";
+import {
+  FaHome,
+  FaTasks,
+  FaTicketAlt,
+  FaUser,
+  FaUserShield,
+  FaUsers,
+} from "react-icons/fa"; // Import the icons
 import { AuthContext } from "../../contexts/AuthProvider.jsx";
 import "../../styles/NavBars.scss"; // Import the SCSS file
 
@@ -8,34 +16,37 @@ const UserTabs = () => {
 
   const tabs = {
     admin: [
-      { eventKey: "first", title: "Dashboard Home" },
-      { eventKey: "second", title: "Manage Role Assignment" },
-      { eventKey: "third", title: "Manage Project Users" },
-      { eventKey: "fourth", title: "My Projects" },
-      { eventKey: "fifth", title: "My Tickets" },
-      { eventKey: "sixth", title: "User Profile" },
+      { eventKey: "first", title: "Dashboard Home", icon: FaHome },
+      {
+        eventKey: "second",
+        title: "Manage Role Assignment",
+        icon: FaUserShield,
+      },
+      { eventKey: "third", title: "Manage Project Users", icon: FaUsers },
+      { eventKey: "fourth", title: "My Projects", icon: FaTasks },
+      { eventKey: "fifth", title: "My Tickets", icon: FaTicketAlt },
+      { eventKey: "sixth", title: "User Profile", icon: FaUser },
     ],
     pm: [
-      { eventKey: "first", title: "Dashboard Home" },
-      { eventKey: "second", title: "Manage Project Users" },
-      { eventKey: "third", title: "My Projects" },
-      { eventKey: "fourth", title: "User Profile" },
+      { eventKey: "first", title: "Dashboard Home", icon: FaHome },
+      { eventKey: "second", title: "Manage Project Users", icon: FaUsers },
+      { eventKey: "third", title: "My Projects", icon: FaTasks },
+      { eventKey: "fourth", title: "User Profile", icon: FaUser },
     ],
     submitter: [
-      { eventKey: "first", title: "Dashboard Home" },
-      { eventKey: "second", title: "My Projects" },
-      { eventKey: "third", title: "My Tickets" },
-      { eventKey: "fourth", title: "User Profile" },
+      { eventKey: "first", title: "Dashboard Home", icon: FaHome },
+      { eventKey: "second", title: "My Projects", icon: FaTasks },
+      { eventKey: "third", title: "My Tickets", icon: FaTicketAlt },
+      { eventKey: "fourth", title: "User Profile", icon: FaUser },
     ],
     developer: [
-      { eventKey: "first", title: "Dashboard Home" },
-      { eventKey: "second", title: "My Projects" },
-      { eventKey: "third", title: "My Tickets" },
-      { eventKey: "fourth", title: "User Profile" },
+      { eventKey: "first", title: "Dashboard Home", icon: FaHome },
+      { eventKey: "second", title: "My Projects", icon: FaTasks },
+      { eventKey: "third", title: "My Tickets", icon: FaTicketAlt },
+      { eventKey: "fourth", title: "User Profile", icon: FaUser },
     ],
   };
 
-  //use active user role
   const userTabs = tabs[user.role] || [];
 
   return (
@@ -45,7 +56,10 @@ const UserTabs = () => {
           <Nav variant="pills" className="flex-column">
             {userTabs.map((tab) => (
               <Nav.Item key={tab.eventKey}>
-                <Nav.Link eventKey={tab.eventKey}>{tab.title}</Nav.Link>
+                <Nav.Link eventKey={tab.eventKey}>
+                  <tab.icon size={23} className="me-3" />
+                  {tab.title}
+                </Nav.Link>
               </Nav.Item>
             ))}
           </Nav>
