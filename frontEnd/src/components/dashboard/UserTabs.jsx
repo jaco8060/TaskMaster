@@ -11,7 +11,7 @@ import {
 import { AuthContext } from "../../contexts/AuthProvider.jsx";
 import "../../styles/NavBars.scss"; // Import the SCSS file
 
-const UserTabs = () => {
+const UserTabs = ({ activeTab, handleSelect }) => {
   const { user } = useContext(AuthContext);
 
   const tabs = {
@@ -50,7 +50,7 @@ const UserTabs = () => {
   const userTabs = tabs[user.role] || [];
 
   return (
-    <Tab.Container defaultActiveKey="first">
+    <Tab.Container activeKey={activeTab} onSelect={handleSelect}>
       <Row>
         <Col>
           <Nav variant="pills" className="flex-column">

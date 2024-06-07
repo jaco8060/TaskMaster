@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
@@ -122,6 +123,12 @@ const SideNavBar = ({ children }) => {
 };
 
 const MainNav = ({ children }) => {
+  const [activeTab, setActiveTab] = useState("first");
+
+  const handleSelect = (eventKey) => {
+    setActiveTab(eventKey);
+  };
+
   return (
     <>
       <Container
@@ -130,11 +137,11 @@ const MainNav = ({ children }) => {
         style={{ height: "100vh" }}
       >
         <TopNavBar>
-          <UserTabs />
+          <UserTabs activeTab={activeTab} handleSelect={handleSelect} />
         </TopNavBar>
         <div className="d-flex flex-grow-1">
           <SideNavBar>
-            <UserTabs />
+            <UserTabs activeTab={activeTab} handleSelect={handleSelect} />
           </SideNavBar>
           <main className="flex-grow-1 p-3">{children}</main>
         </div>
