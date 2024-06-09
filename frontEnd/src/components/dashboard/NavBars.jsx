@@ -1,34 +1,59 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+
+import axios from "axios";
 import Button from "react-bootstrap/Button";
-import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import Offcanvas from "react-bootstrap/Offcanvas";
-import Row from "react-bootstrap/Row";
-import Tab from "react-bootstrap/Tab";
-import { FaBell, FaCog, FaSignOutAlt, FaTicketAlt } from "react-icons/fa";
+import { FaBell, FaCog, FaSignOutAlt } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../contexts/AuthProvider.jsx";
 import "../../styles/NavBars.scss"; // Import the SCSS file
 import UserTabs from "./UserTabs";
 
 const TopNavBar = ({ children }) => {
+  const navigate = useNavigate();
+  const { setUser } = useContext(AuthContext);
+
+  const handleLogout = async () => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_URL}/auth/logout`,
+        {
+          withCredentials: true,
+        }
+      );
+      // console.log("Logout response:", response.data);
+
+      // Clear user context
+      setUser(null);
+
+      // Navigate to login
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout error:", error);
+      alert("Logout failed");
+    }
+  };
+
   return (
     <Navbar expand="lg" className="bg-body-tertiary border-bottom" sticky="top">
       <Container fluid>
         <div className="d-flex align-items-center gap-3">
-          <Navbar.Toggle aria-controls={`offcanvasNavbar-expand-${"lg"}`} />
+          <Navbar.Toggle aria-controls={`offcanvasNavbar-expand-lg`} />
           <Navbar.Brand href="#">Bug Tracker</Navbar.Brand>
         </div>
 
         <Navbar.Offcanvas
-          id={`offcanvasNavbar-expand-${"lg"}`}
-          aria-labelledby={`offcanvasNavbarLabel-expand-${"lg"}`}
+          id={`offcanvasNavbar-expand-lg`}
+          aria-labelledby={`offcanvasNavbarLabel-expand-lg`}
           placement="start"
         >
           <Offcanvas.Header closeButton>
             <Offcanvas.Title
-              id={`offcanvasNavbarLabel-expand-${"lg"}`}
+              id={`offcanvasNavbarLabel-expand-lg`}
               className="d-flex align-items-center"
             >
               Bug Tracker
@@ -59,8 +84,6 @@ const TopNavBar = ({ children }) => {
               <hr />
               <div id="TopNavBarMobile">{children}</div>
             </div>
-            {/* show tabs of current children */}
-
             <hr />
             <div className="d-flex d-lg-none justify-content-center">
               <div className="d-inline-flex bg-body-tertiary rounded py-2 px-3 d-lg-none justify-content-center gap-4">
@@ -70,13 +93,15 @@ const TopNavBar = ({ children }) => {
                 <Nav.Link href="#settings" className="mb-0">
                   <FaCog size={30} />
                 </Nav.Link>
-                <Nav.Link href="#logout" className="mb-0">
+                <Nav.Link
+                  href="#logout"
+                  className="mb-0"
+                  onClick={handleLogout}
+                >
                   <FaSignOutAlt size={30} />
                 </Nav.Link>
               </div>
             </div>
-
-            {/* non mobile styles */}
             <Nav className="justify-content-end flex-grow-1 pe-3 offcanvas-nav">
               <Button
                 variant="primary"
@@ -84,21 +109,21 @@ const TopNavBar = ({ children }) => {
               >
                 New Ticket
               </Button>
-              <Nav.Link href="#notifications" className=" d-none d-lg-inline">
+              <Nav.Link href="#notifications" className="d-none d-lg-inline">
                 <div className="d-flex align-items-center">
                   <h6 className="mb-0 me-2">Notifications</h6>
                   <FaBell size={25} />
                 </div>
               </Nav.Link>
-              <Nav.Link href="#settings" className=" d-none d-lg-inline">
+              <Nav.Link href="#settings" className="d-none d-lg-inline">
                 <div className="d-flex align-items-center">
                   <h6 className="mb-0 me-2">Settings</h6>
                   <FaCog size={25} />
                 </div>
               </Nav.Link>
-              <Nav.Link className="d-none d-lg-inline">
+              <Nav.Link className="d-none d-lg-inline" onClick={handleLogout}>
                 <div className="d-flex align-items-center">
-                  <h className="mb-0 me-2">Logout</h>
+                  <h6 className="mb-0 me-2">Logout</h6>
                   <FaSignOutAlt size={25} />
                 </div>
               </Nav.Link>
@@ -109,6 +134,7 @@ const TopNavBar = ({ children }) => {
     </Navbar>
   );
 };
+
 const SideNavBar = ({ children }) => {
   return (
     <>
@@ -121,7 +147,6 @@ const SideNavBar = ({ children }) => {
     </>
   );
 };
-
 const MainNav = ({ children }) => {
   const [activeTab, setActiveTab] = useState("first");
 
