@@ -61,6 +61,9 @@ const DataTable = ({ endpoint, columns, searchFields }) => {
     setCurrentPage(pageNumber);
   };
 
+  const startEntry = indexOfFirstItem + 1;
+  const endEntry = Math.min(indexOfLastItem, filteredData.length);
+
   return (
     <div>
       <Row className="mb-3">
@@ -126,17 +129,23 @@ const DataTable = ({ endpoint, columns, searchFields }) => {
               ))}
             </tbody>
           </Table>
-          <Pagination>
-            {[...Array(totalPages).keys()].map((page) => (
-              <Pagination.Item
-                key={page + 1}
-                active={page + 1 === currentPage}
-                onClick={() => handlePageChange(page + 1)}
-              >
-                {page + 1}
-              </Pagination.Item>
-            ))}
-          </Pagination>
+          <div className="d-flex justify-content-between align-items-center">
+            <div>
+              Showing {startEntry} to {endEntry} of {filteredData.length}{" "}
+              entries
+            </div>
+            <Pagination>
+              {[...Array(totalPages).keys()].map((page) => (
+                <Pagination.Item
+                  key={page + 1}
+                  active={page + 1 === currentPage}
+                  onClick={() => handlePageChange(page + 1)}
+                >
+                  {page + 1}
+                </Pagination.Item>
+              ))}
+            </Pagination>
+          </div>
         </>
       )}
     </div>
