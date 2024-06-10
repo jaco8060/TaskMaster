@@ -70,7 +70,7 @@ const DataTable = ({ endpoint, columns, searchFields }) => {
         <Col xs={12} md={6} className="d-flex justify-content-start">
           <Form.Group
             controlId="itemsPerPageSelect"
-            className="d-flex align-items-center mb-0"
+            className="d-flex align-items-center mb-md-0 mb-3"
           >
             <Form.Label className="mb-0 mr-2">Show</Form.Label>
             <Form.Control
