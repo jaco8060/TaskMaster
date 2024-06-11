@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { Col, Nav, Row, Tab } from "react-bootstrap";
 import {
   FaHome,
@@ -8,55 +8,156 @@ import {
   FaUserShield,
   FaUsers,
 } from "react-icons/fa"; // Import the icons
+import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../contexts/AuthProvider.jsx";
 import "../../styles/NavBars.scss"; // Import the SCSS file
 
 const UserTabs = ({ activeTab, handleSelect }) => {
   const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Retrieve the active tab from local storage on component mount
+    const savedActiveTab = localStorage.getItem("activeTab");
+    if (savedActiveTab) {
+      handleSelect(savedActiveTab);
+    }
+  }, []);
+
+  const handleNavSelect = (eventKey) => {
+    handleSelect(eventKey); // Set the active tab
+    localStorage.setItem("activeTab", eventKey); // Save the active tab to local storage
+  };
 
   const tabs = {
     admin: [
-      { eventKey: "first", title: "Dashboard Home", icon: FaHome },
+      {
+        eventKey: "first",
+        title: "Dashboard Home",
+        icon: FaHome,
+        onClick: () => navigate("/dashboard"),
+      },
       {
         eventKey: "second",
         title: "Manage Role Assignment",
         icon: FaUserShield,
+        onClick: () => navigate("/manage-roles"),
       },
-      { eventKey: "third", title: "Manage Project Users", icon: FaUsers },
-      { eventKey: "fourth", title: "My Projects", icon: FaTasks },
-      { eventKey: "fifth", title: "My Tickets", icon: FaTicketAlt },
-      { eventKey: "sixth", title: "User Profile", icon: FaUser },
+      {
+        eventKey: "third",
+        title: "Manage Project Users",
+        icon: FaUsers,
+        onClick: () => navigate("/manageprojectusers"),
+      },
+      {
+        eventKey: "fourth",
+        title: "My Projects",
+        icon: FaTasks,
+        onClick: () => navigate("/myprojects"),
+      },
+      {
+        eventKey: "fifth",
+        title: "My Tickets",
+        icon: FaTicketAlt,
+        onClick: () => navigate("/mytickets"),
+      },
+      {
+        eventKey: "sixth",
+        title: "User Profile",
+        icon: FaUser,
+        onClick: () => navigate("/userprofile"),
+      },
     ],
     pm: [
-      { eventKey: "first", title: "Dashboard Home", icon: FaHome },
-      { eventKey: "second", title: "Manage Project Users", icon: FaUsers },
-      { eventKey: "third", title: "My Projects", icon: FaTasks },
-      { eventKey: "fourth", title: "User Profile", icon: FaUser },
+      {
+        eventKey: "first",
+        title: "Dashboard Home",
+        icon: FaHome,
+        onClick: () => navigate("/dashboard"),
+      },
+      {
+        eventKey: "second",
+        title: "Manage Project Users",
+        icon: FaUsers,
+        onClick: () => navigate("/manageprojectusers"),
+      },
+      {
+        eventKey: "third",
+        title: "My Projects",
+        icon: FaTasks,
+        onClick: () => navigate("/myprojects"),
+      },
+      {
+        eventKey: "fourth",
+        title: "User Profile",
+        icon: FaUser,
+        onClick: () => navigate("/userprofile"),
+      },
     ],
     submitter: [
-      { eventKey: "first", title: "Dashboard Home", icon: FaHome },
-      { eventKey: "second", title: "My Projects", icon: FaTasks },
-      { eventKey: "third", title: "My Tickets", icon: FaTicketAlt },
-      { eventKey: "fourth", title: "User Profile", icon: FaUser },
+      {
+        eventKey: "first",
+        title: "Dashboard Home",
+        icon: FaHome,
+        onClick: () => navigate("/dashboard"),
+      },
+      {
+        eventKey: "second",
+        title: "My Projects",
+        icon: FaTasks,
+        onClick: () => navigate("/myprojects"),
+      },
+      {
+        eventKey: "third",
+        title: "My Tickets",
+        icon: FaTicketAlt,
+        onClick: () => navigate("/mytickets"),
+      },
+      {
+        eventKey: "fourth",
+        title: "User Profile",
+        icon: FaUser,
+        onClick: () => navigate("/userprofile"),
+      },
     ],
     developer: [
-      { eventKey: "first", title: "Dashboard Home", icon: FaHome },
-      { eventKey: "second", title: "My Projects", icon: FaTasks },
-      { eventKey: "third", title: "My Tickets", icon: FaTicketAlt },
-      { eventKey: "fourth", title: "User Profile", icon: FaUser },
+      {
+        eventKey: "first",
+        title: "Dashboard Home",
+        icon: FaHome,
+        onClick: () => navigate("/dashboard"),
+      },
+      {
+        eventKey: "second",
+        title: "My Projects",
+        icon: FaTasks,
+        onClick: () => navigate("/myprojects"),
+      },
+      {
+        eventKey: "third",
+        title: "My Tickets",
+        icon: FaTicketAlt,
+        onClick: () => navigate("/mytickets"),
+      },
+      {
+        eventKey: "fourth",
+        title: "User Profile",
+        icon: FaUser,
+        onClick: () => navigate("/userprofile"),
+      },
     ],
   };
 
   const userTabs = tabs[user.role] || [];
 
   return (
-    <Tab.Container activeKey={activeTab} onSelect={handleSelect}>
+    <Tab.Container activeKey={activeTab} onSelect={handleNavSelect}>
       <Row>
         <Col>
           <Nav variant="pills" className="flex-column">
             {userTabs.map((tab) => (
               <Nav.Item key={tab.eventKey}>
-                <Nav.Link eventKey={tab.eventKey}>
+                <Nav.Link eventKey={tab.eventKey} onClick={tab.onClick}>
                   <tab.icon size={23} className="me-3" />
                   {tab.title}
                 </Nav.Link>

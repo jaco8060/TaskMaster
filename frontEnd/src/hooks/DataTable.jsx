@@ -94,7 +94,7 @@ const DataTable = ({ endpoint, columns, searchFields }) => {
         >
           <InputGroup>
             <Form.Control
-              placeholder={`Search by ${searchFields.join(", ")}`}
+              placeholder="Search"
               value={searchTerm}
               onChange={handleSearchChange}
             />

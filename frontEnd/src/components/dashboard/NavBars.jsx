@@ -25,10 +25,12 @@ const TopNavBar = ({ children }) => {
           withCredentials: true,
         }
       );
-      // console.log("Logout response:", response.data);
 
       // Clear user context
       setUser(null);
+
+      // Clear active tab from local storage
+      localStorage.removeItem("activeTab");
 
       // Navigate to login
       navigate("/login");

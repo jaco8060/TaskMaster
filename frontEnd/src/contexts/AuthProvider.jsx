@@ -22,6 +22,8 @@ export const AuthProvider = ({ children }) => {
         setUser(response.data);
       } catch (error) {
         console.log(error);
+        // Clear active tab from local storage
+        localStorage.removeItem("activeTab");
         setUser(null);
       } finally {
         setLoading(false); // Set loading to false after the check
