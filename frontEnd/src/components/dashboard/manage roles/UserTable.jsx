@@ -3,7 +3,6 @@ import DataTable from "../../../hooks/DataTable";
 
 const UserTable = ({ refresh }) => {
   const columns = [
-    { header: "ID", accessor: "id" },
     { header: "Username", accessor: "username" },
     { header: "Email", accessor: "email" },
     { header: "Role", accessor: "role" },
