@@ -154,7 +154,7 @@ const UserTabs = ({ activeTab, handleSelect }) => {
     <Tab.Container activeKey={activeTab} onSelect={handleNavSelect}>
       <Row>
         <Col>
-          <Nav variant="pills" className="flex-column">
+          <Nav variant="pills" className="flex-column text-nowrap">
             {userTabs.map((tab) => (
               <Nav.Item key={tab.eventKey}>
                 <Nav.Link eventKey={tab.eventKey} onClick={tab.onClick}>

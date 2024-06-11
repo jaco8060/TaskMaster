@@ -99,7 +99,7 @@ const UserList = ({ onRoleAssigned }) => {
               value={role}
               onChange={handleRoleChange}
               className="ml-2"
-              style={{ width: "130px" }}
+              style={{ width: "150px" }}
             >
               <option>~Select Role~</option>
               <option value="submitter">Submitter</option>
