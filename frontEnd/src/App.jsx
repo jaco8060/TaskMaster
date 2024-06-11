@@ -5,14 +5,15 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import React from "react";
 import ThemeProvider from "react-bootstrap/ThemeProvider";
 import { Navigate, Route, Routes } from "react-router-dom";
+import User from "./components/User";
 import Dashboard from "./components/dashboard/Dashboard";
+import ManageRoles from "./components/dashboard/manage roles/ManageRoles";
 import LoginPage from "./components/login/LoginPage";
 import ResetPassword from "./components/login/ResetPassword";
+import AdminRoute from "./components/routes/AdminRoute";
 import PrivateRoute from "./components/routes/PrivateRoute";
 import PublicRoute from "./components/routes/PublicRoute";
 import "./styles/App.scss";
-
-import User from "./components/User";
 
 const App = () => {
   return (
@@ -27,6 +28,9 @@ const App = () => {
         <Route path="/" element={<Navigate to="/dashboard" />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/dashboard/user/:id" element={<User />} />
+      </Route>
+      <Route element={<AdminRoute />}>
+        <Route path="/manage-roles" element={<ManageRoles />} />
       </Route>
     </Routes>
   );

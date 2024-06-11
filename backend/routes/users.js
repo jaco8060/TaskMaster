@@ -14,6 +14,22 @@ userRouter.get("/", async (req, res) => {
   }
 });
 
+// route to assign user roles
+userRouter.post("/assign-role", async (req, res) => {
+  const { userIds, role } = req.body;
+
+  try {
+    await pool.query("UPDATE users SET role = $1 WHERE id = ANY($2::int[])", [
+      role,
+      userIds,
+    ]);
+    res.status(200).json({ message: "Roles assigned successfully" });
+  } catch (error) {
+    console.error("Error assigning roles:", error);
+    res.status(500).json({ error: "Failed to assign roles" });
+  }
+});
+
 export async function getUsers() {
   try {
     const { rows } = await pool.query("SELECT * FROM users");
