@@ -5,6 +5,9 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import React from "react";
 import ThemeProvider from "react-bootstrap/ThemeProvider";
 import { Navigate, Route, Routes } from "react-router-dom";
+
+import "./color-theme.scss";
+
 import User from "./components/User";
 import Dashboard from "./components/dashboard/Dashboard";
 import ManageRoles from "./components/dashboard/manage roles/ManageRoles";
@@ -14,7 +17,6 @@ import AdminRoute from "./components/routes/AdminRoute";
 import PrivateRoute from "./components/routes/PrivateRoute";
 import PublicRoute from "./components/routes/PublicRoute";
 import "./styles/App.scss";
-
 const App = () => {
   return (
     <Routes>
