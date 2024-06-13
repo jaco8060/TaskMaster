@@ -33,11 +33,13 @@ CREATE TABLE projects (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) UNIQUE NOT NULL,
     description TEXT,
+    user_id INT REFERENCES users(id) ON DELETE CASCADE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     is_active BOOLEAN DEFAULT TRUE
 );
 
--- Bugs Table with Full-Text Search and JSONB Metadata
+
+-- Bugs Table
 CREATE TABLE tickets (
     id SERIAL PRIMARY KEY,
     title VARCHAR(100) NOT NULL,
@@ -72,8 +74,6 @@ CREATE TABLE bug_history (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_by INT REFERENCES users(id)
 );
-
-
 
 
 SELECT * FROM projects
