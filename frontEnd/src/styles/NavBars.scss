@@ -2,27 +2,28 @@
 @import "../node_modules/bootstrap/scss/variables";
 @import "../node_modules/bootstrap/scss/mixins";
 @mixin userTabs($display: none) {
-  background-color: $dark;
-  color: $white;
+  background-color: var(--bs-dark);
+  color: var(--bs-light);
   display: $display;
   flex-direction: column;
 
   .nav-link {
-    color: $white;
+    color: var(--bs-light);
     padding: 1rem 1rem;
     &:hover {
-      background-color: $gray-800;
+      background-color: var(--bs-gray-800);
     }
   }
   .nav-link.active {
-    background-color: $gray-800;
+    background-color: var(--bs-gray-800);
   }
 }
+
 #SideNavBar {
   @include userTabs();
 
   @include media-breakpoint-up(lg) {
-    border-right: 1px solid $gray-800;
+    border-right: 1px solid var(--bs-gray-800);
     display: flex;
     padding: 0.5rem;
     width: 270px;
@@ -30,6 +31,7 @@
     // For larger screens
   }
 }
+
 #TopNavBarMobile {
   @include userTabs(flex);
 }

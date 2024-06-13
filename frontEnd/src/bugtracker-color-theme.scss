@@ -1,0 +1,89 @@
+// Custom color palette for app
+
+[data-bs-theme="custom"] {
+  // Global colors
+  --bs-body-color: var(--bs-white);
+  --bs-body-color-rgb: #{to-rgb($white)};
+  --bs-body-bg: var(--bs-blue);
+  --bs-body-bg-rgb: #{to-rgb($blue)};
+  --bs-tertiary-bg: #{$blue-600};
+
+  --bs-primary-text-emphasis: #{tint-color($primary, 40%)};
+  --bs-secondary-text-emphasis: #{tint-color($secondary, 40%)};
+  --bs-success-text-emphasis: #{tint-color($success, 40%)};
+  --bs-info-text-emphasis: #{tint-color($info, 40%)};
+  --bs-warning-text-emphasis: #{tint-color($warning, 40%)};
+  --bs-danger-text-emphasis: #{tint-color($danger, 40%)};
+  --bs-light-text-emphasis: $gray-100;
+  --bs-dark-text-emphasis: $gray-300;
+
+  --bs-primary-bg-subtle: #{shade-color($primary, 80%)};
+  --bs-secondary-bg-subtle: #{shade-color($secondary, 80%)};
+  --bs-success-bg-subtle: #{shade-color($success, 80%)};
+  --bs-info-bg-subtle: #{shade-color($info, 80%)};
+  --bs-warning-bg-subtle: #{shade-color($warning, 80%)};
+  --bs-danger-bg-subtle: #{shade-color($danger, 80%)};
+  --bs-light-bg-subtle: $gray-800;
+  --bs-dark-bg-subtle: #{mix($gray-800, $black)};
+
+  --bs-primary-border-subtle: #{shade-color($primary, 40%)};
+  --bs-secondary-border-subtle: #{shade-color($secondary, 40%)};
+  --bs-success-border-subtle: #{shade-color($success, 40%)};
+  --bs-info-border-subtle: #{shade-color($info, 40%)};
+  --bs-warning-border-subtle: #{shade-color($warning, 40%)};
+  --bs-danger-border-subtle: #{shade-color($danger, 40%)};
+  --bs-light-border-subtle: $gray-700;
+  --bs-dark-border-subtle: $gray-800;
+
+  --bs-body-secondary-color: rgba($body-color-dark, 0.75);
+  --bs-body-secondary-bg: $gray-800;
+  --bs-body-tertiary-color: rgba($body-color-dark, 0.5);
+  --bs-body-tertiary-bg: #{mix($gray-800, $gray-900, 50%)};
+  --bs-body-emphasis-color: $white;
+  --bs-border-color: $gray-700;
+  --bs-border-color-translucent: rgba($white, 0.15);
+  --bs-headings-color: inherit;
+  --bs-link-color: #{tint-color($primary, 40%)};
+  --bs-link-hover-color: #{shift-color(
+      $link-color-dark,
+      -$link-shade-percentage
+    )};
+  --bs-code-color: #{tint-color($code-color, 40%)};
+  --bs-mark-color: $body-color-dark;
+  --bs-mark-bg: $yellow-800;
+
+  // Forms
+  --bs-form-select-indicator-color: $body-color-dark;
+  --bs-form-select-indicator: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='#{$form-select-indicator-color-dark}' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/></svg>");
+
+  --bs-form-switch-color: rgba($white, 0.25);
+  --bs-form-switch-bg-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'><circle r='3' fill='#{$form-switch-color-dark}'/></svg>");
+
+  --bs-form-valid-color: $green-300;
+  --bs-form-valid-border-color: $green-300;
+  --bs-form-invalid-color: $red-300;
+  --bs-form-invalid-border-color: $red-300;
+
+  // Accordion
+  --bs-accordion-icon-color: $primary-text-emphasis-dark;
+  --bs-accordion-icon-active-color: $primary-text-emphasis-dark;
+  --bs-accordion-button-icon: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='#{$accordion-icon-color-dark}'><path fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/></svg>");
+  --bs-accordion-button-active-icon: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='#{$accordion-icon-active-color-dark}'><path fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/></svg>");
+
+  // Custom buttons
+  .dropdown-menu {
+    --bs-dropdown-bg: #{mix($blue-500, $blue-600, 0.5 * 1%)};
+    --bs-dropdown-link-active-bg: #{$blue-700};
+  }
+
+  .btn-secondary {
+    --bs-btn-bg: #{mix($gray-600, $blue-400, 0.5 * 1%)};
+    --bs-btn-border-color: #{rgba($white, 0.25)};
+    --bs-btn-hover-bg: #{darken(mix($gray-600, $blue-400, 0.5 * 1%), 5%)};
+    --bs-btn-hover-border-color: #{rgba($white, 0.25)};
+    --bs-btn-active-bg: #{darken(mix($gray-600, $blue-400, 0.5 * 1%), 10%)};
+    --bs-btn-active-border-color: #{rgba($white, 0.5)};
+    --bs-btn-focus-border-color: #{rgba($white, 0.5)};
+    --bs-btn-focus-box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.2);
+  }
+}
