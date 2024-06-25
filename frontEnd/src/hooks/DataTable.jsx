@@ -99,7 +99,8 @@ const DataTable = ({ endpoint, columns, searchFields }) => {
               onChange={handleSearchChange}
             />
             <Button
-              variant="outline-secondary"
+              variant="secondary"
+              className="text-primary-subtle"
               onClick={() => setSearchTerm("")}
             >
               Clear

@@ -9,6 +9,7 @@ import Navbar from "react-bootstrap/Navbar";
 import Offcanvas from "react-bootstrap/Offcanvas";
 import { FaBell, FaCog, FaSignOutAlt } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import BugTrackerIcon from "../../assets/bug-tracker-icon.svg";
 import { AuthContext } from "../../contexts/AuthProvider.jsx";
 import "../../styles/NavBars.scss"; // Import the SCSS file
 import UserTabs from "./UserTabs";
@@ -41,11 +42,24 @@ const TopNavBar = ({ children }) => {
   };
 
   return (
-    <Navbar expand="lg" className="bg-body-tertiary border-bottom" sticky="top">
+    <Navbar
+      expand="lg"
+      className="bg-secondary border-bottom border-primary-subtle"
+      sticky="top"
+    >
       <Container fluid>
         <div className="d-flex align-items-center gap-3">
           <Navbar.Toggle aria-controls={`offcanvasNavbar-expand-lg`} />
-          <Navbar.Brand href="#">Bug Tracker</Navbar.Brand>
+          <Navbar.Brand href="#">
+            <img
+              src={BugTrackerIcon}
+              alt="Bug Tracker Icon"
+              width="30"
+              height="30"
+              className="d-inline-block align-top me-2"
+            />
+            Bug Tracker
+          </Navbar.Brand>
         </div>
 
         <Navbar.Offcanvas
@@ -58,6 +72,13 @@ const TopNavBar = ({ children }) => {
               id={`offcanvasNavbarLabel-expand-lg`}
               className="d-flex align-items-center"
             >
+              <img
+                src={BugTrackerIcon}
+                alt="Bug Tracker Icon"
+                width="30"
+                height="30"
+                className="d-inline-block align-top me-2"
+              />
               Bug Tracker
             </Offcanvas.Title>
           </Offcanvas.Header>

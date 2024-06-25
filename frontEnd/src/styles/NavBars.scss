@@ -1,21 +1,28 @@
 @import "../node_modules/bootstrap/scss/functions";
 @import "../node_modules/bootstrap/scss/variables";
 @import "../node_modules/bootstrap/scss/mixins";
-@mixin userTabs($display: none) {
-  background-color: var(--bs-dark);
-  color: var(--bs-light);
+
+@mixin userTabs(
+  $display: none,
+  $bg-color: var(--bs-dark),
+  $text-color: var(--bs-light)
+) {
+  background-color: $bg-color;
+  color: $text-color;
   display: $display;
   flex-direction: column;
 
   .nav-link {
-    color: var(--bs-light);
+    color: $text-color;
     padding: 1rem 1rem;
     &:hover {
-      background-color: var(--bs-gray-800);
+      background-color: var(--bs-secondary);
+      color: var(--bs-dark);
     }
   }
   .nav-link.active {
-    background-color: var(--bs-gray-800);
+    background-color: var(--bs-secondary);
+    color: var(--bs-dark);
   }
 }
 
@@ -30,8 +37,28 @@
     height: 100vh;
     // For larger screens
   }
+
+  // For smaller screens
+  @include media-breakpoint-down(lg) {
+    background-color: var(--bs-primary);
+    color: var(--bs-dark);
+
+    .nav-link {
+      color: var(--bs-dark);
+    }
+  }
 }
 
 #TopNavBarMobile {
   @include userTabs(flex);
+
+  // For smaller screens
+  @include media-breakpoint-down(lg) {
+    background-color: var(--bs-light);
+    color: var(--bs-dark);
+
+    .nav-link {
+      color: var(--bs-dark);
+    }
+  }
 }
