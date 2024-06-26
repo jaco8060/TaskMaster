@@ -21,7 +21,7 @@ const DataTable = ({ endpoint, columns, searchFields }) => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(endpoint);
+        const response = await axios.get(endpoint, { withCredentials: true });
         setData(response.data);
       } catch (error) {
         console.error("Error fetching data:", error);

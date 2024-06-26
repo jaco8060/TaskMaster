@@ -1,32 +1,37 @@
 import express from "express";
 import { pool } from "../database.js";
+import { ensureAuthenticated } from "../middleware/authMiddleware.js";
 
 const userRouter = express.Router();
 
 // Define the route to get users
-userRouter.get("/", async (req, res) => {
+userRouter.get("/", ensureAuthenticated, async (req, res) => {
+  const assignedBy = req.query.assigned_by;
   try {
-    const users = await getUsers();
+    const users = assignedBy
+      ? await getUsersAssignedBy(assignedBy)
+      : await getUsers();
     res.json(users);
   } catch (error) {
     console.error("Error fetching users:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
 // route to assign user roles
-userRouter.post("/assign-role", async (req, res) => {
+userRouter.post("/assign-role", ensureAuthenticated, async (req, res) => {
   const { userIds, role } = req.body;
+  console.log(req.user);
+  const assignedBy = req.user.id; // logged-in user's ID in req.user
 
   try {
-    await pool.query("UPDATE users SET role = $1 WHERE id = ANY($2::int[])", [
-      role,
-      userIds,
-    ]);
-    res.status(200).json({ message: "Roles assigned successfully" });
+    await pool.query(
+      "UPDATE users SET role = $1, assigned_by = $2 WHERE id = ANY($3::int[])",
+      [role, assignedBy, userIds]
+    );
+    res.status(200).send({ message: "Role assigned successfully!" });
   } catch (error) {
-    console.error("Error assigning roles:", error);
-    res.status(500).json({ error: "Failed to assign roles" });
+    console.error("Error assigning role:", error);
+    res.status(500).send({ error: "Failed to assign role." });
   }
 });
 
@@ -39,8 +44,19 @@ export async function getUsers() {
     throw error;
   }
 }
-// const users = await getUsers();
-// console.log(users);
+
+export async function getUsersAssignedBy(assignedBy) {
+  try {
+    const { rows } = await pool.query(
+      "SELECT * FROM users WHERE assigned_by = $1",
+      [assignedBy]
+    );
+    return rows;
+  } catch (error) {
+    console.error("Error fetching users assigned by:", error);
+    throw error;
+  }
+}
 
 export async function createUser(username, email = "noemail", password, role) {
   try {

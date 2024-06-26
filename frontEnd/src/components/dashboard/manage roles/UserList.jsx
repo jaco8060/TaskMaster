@@ -13,7 +13,7 @@ const UserList = ({ onRoleAssigned }) => {
     const fetchUsers = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(endpoint);
+        const response = await axios.get(endpoint, { withCredentials: true });
         setUsers(response.data);
       } catch (error) {
         console.error("Error fetching users:", error);
@@ -48,6 +48,7 @@ const UserList = ({ onRoleAssigned }) => {
           headers: {
             "Content-Type": "application/json",
           },
+          withCredentials: true,
         }
       );
       onRoleAssigned(); // Trigger refresh in parent component

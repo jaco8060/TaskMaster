@@ -31,7 +31,7 @@ const FormComponent = ({ title, fields, onSubmit, children }) => {
     <Container>
       <Row className="vh-100 d-flex justify-content-center align-items-center">
         <Col xs={12} md={8} lg={6}>
-          <div className="d-flex flex-column p-4 justify-content-center align-items-center border rounded shadow-sm">
+          <div className="d-flex flex-column p-4 justify-content-center align-items-center border rounded shadow-sm border-primary-subtle bg-light">
             <h1 className="mb-4">{title}</h1>
             <Form onSubmit={onSubmit} className="w-75">
               <Row>

@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { AuthContext } from "../../../contexts/AuthProvider.jsx";
 import DataTable from "../../../hooks/DataTable";
 
 const UserTable = ({ refresh }) => {
+  const { user } = useContext(AuthContext); // Get the current logged-in user
   const columns = [
     { header: "Username", accessor: "username" },
     { header: "Email", accessor: "email" },
@@ -20,7 +22,7 @@ const UserTable = ({ refresh }) => {
       <h3>Your Personnel</h3>
       <DataTable
         key={key} // Changing the key will force DataTable to remount and fetch new data
-        endpoint={`${import.meta.env.VITE_URL}/users`}
+        endpoint={`${import.meta.env.VITE_URL}/users?assigned_by=${user.id}`}
         columns={columns}
         searchFields={searchFields}
       />
