@@ -4,7 +4,7 @@ import {
   forgotPassword,
   resetPassword,
 } from "../controllers/forgotAuthController.js";
-import { pool } from "../database.js";
+import { createUser } from "../models/authModel.js";
 import passport from "../passport-config.js";
 
 const authRouter = express.Router();
@@ -14,11 +14,8 @@ authRouter.post("/register", async (req, res) => {
   const { username, email, password, role } = req.body;
   const hashedPassword = await bcrypt.hash(password, 10);
   try {
-    const result = await pool.query(
-      "INSERT INTO users (username, email, password, role) VALUES ($1, $2, $3, $4) RETURNING *",
-      [username, email, hashedPassword, role]
-    );
-    res.json(result.rows[0]);
+    const user = await createUser(username, email, hashedPassword, role);
+    res.json(user);
   } catch (error) {
     console.error("Error creating user:", error);
     res.status(500).json({ error: "Server error" });
