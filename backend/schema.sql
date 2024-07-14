@@ -25,7 +25,8 @@ CREATE TABLE users (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     is_active BOOLEAN DEFAULT TRUE,
     reset_password_token VARCHAR(255),
-    reset_password_expires BIGINT
+    reset_password_expires BIGINT,
+    assigned_by INT REFERENCES users(id)
 );
 
 -- Projects Table
