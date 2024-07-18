@@ -171,7 +171,10 @@ const SideNavBar = ({ children }) => {
   );
 };
 const MainNav = ({ children }) => {
-  const [activeTab, setActiveTab] = useState("first");
+  const [activeTab, setActiveTab] = useState(
+    localStorage.getItem("activeTab") === null ? "first" : ""
+  );
+  //if first time logging in then set active tab to first
 
   const handleSelect = (eventKey) => {
     setActiveTab(eventKey);
