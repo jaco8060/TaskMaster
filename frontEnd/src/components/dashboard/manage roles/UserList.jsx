@@ -26,6 +26,11 @@ const UserList = ({ onRoleAssigned }) => {
   }, [endpoint]);
 
   const handleSelectUser = (userId) => {
+    const user = users.find((user) => user.id === userId);
+    if (user && (user.role === "admin" || user.role === "pm")) {
+      alert("You cannot change the role of admin or project manager.");
+      return;
+    }
     setSelectedUsers((prevSelected) =>
       prevSelected.includes(userId)
         ? prevSelected.filter((id) => id !== userId)
@@ -148,7 +153,15 @@ const UserList = ({ onRoleAssigned }) => {
             variant="primary"
             className="ml-2"
             onClick={handleAssignRole}
-            disabled={selectedUsers.length === 0 || role === "~Select Role~"}
+            disabled={
+              selectedUsers.length === 0 ||
+              role === "~Select Role~" ||
+              selectedUsers.some(
+                (userId) =>
+                  users.find((user) => user.id === userId)?.role === "admin" ||
+                  users.find((user) => user.id === userId)?.role === "pm"
+              )
+            }
           >
             Assign
           </Button>
