@@ -1,12 +1,13 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Button, Col, Form, ListGroup, Row } from "react-bootstrap";
+import { Button, Col, Form, InputGroup, ListGroup, Row } from "react-bootstrap";
 
 const UserList = ({ onRoleAssigned }) => {
   const [users, setUsers] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [role, setRole] = useState("~Select Role~");
   const [loading, setLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const endpoint = `${import.meta.env.VITE_URL}/users`;
 
   useEffect(() => {
@@ -58,16 +59,51 @@ const UserList = ({ onRoleAssigned }) => {
     }
   };
 
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value);
+  };
+
+  const filteredUsers = users.filter(
+    (user) =>
+      (user.username &&
+        user.username.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (user.email &&
+        user.email.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
+
   return (
     <div>
       <div>
-        <h6>Select 1 or more users:</h6>
+        <h5>Select 1 or more users:</h5>
+        <Row className="mb-3">
+          <Col
+            xs={12}
+            md={12}
+            className="d-flex align-items-center justify-content-end"
+          >
+            <InputGroup>
+              <Form.Control
+                type="text"
+                placeholder="Search users"
+                value={searchTerm}
+                onChange={handleSearchChange}
+              />
+              <Button
+                variant="secondary"
+                className="text-primary-subtle"
+                onClick={() => setSearchTerm("")}
+              >
+                Clear
+              </Button>
+            </InputGroup>
+          </Col>
+        </Row>
         {loading ? (
           <div>Loading...</div>
         ) : (
           <div style={{ maxHeight: "200px", overflowY: "auto" }}>
             <ListGroup>
-              {users.map((user) => (
+              {filteredUsers.map((user) => (
                 <ListGroup.Item
                   key={user.id}
                   active={selectedUsers.includes(user.id)}
