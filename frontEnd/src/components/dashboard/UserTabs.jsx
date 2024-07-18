@@ -47,7 +47,7 @@ const UserTabs = ({ activeTab, handleSelect }) => {
         eventKey: "third",
         title: "Manage Project Users",
         icon: FaUsers,
-        onClick: () => navigate("/manageprojectusers"),
+        onClick: () => navigate("/manage-project-users"),
       },
       {
         eventKey: "fourth",
@@ -79,7 +79,7 @@ const UserTabs = ({ activeTab, handleSelect }) => {
         eventKey: "second",
         title: "Manage Project Users",
         icon: FaUsers,
-        onClick: () => navigate("/manageprojectusers"),
+        onClick: () => navigate("/manage-project-users"),
       },
       {
         eventKey: "third",
