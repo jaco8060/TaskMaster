@@ -8,25 +8,34 @@ import {
   FaUserShield,
   FaUsers,
 } from "react-icons/fa"; // Import the icons
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../contexts/AuthProvider.jsx";
 import "../../styles/NavBars.scss"; // Import the SCSS file
 
 const UserTabs = ({ activeTab, handleSelect }) => {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
-    // Retrieve the active tab from local storage on component mount
-    const savedActiveTab = localStorage.getItem("activeTab");
-    if (savedActiveTab) {
-      handleSelect(savedActiveTab);
+    // Set the active tab based on the URL path
+    const pathToTab = {
+      "/dashboard": "first",
+      "/manage-roles": "second",
+      "/manage-project-users": "third",
+      "/projects": "fourth",
+      "/mytickets": "fifth",
+      "/userprofile": "sixth",
+    };
+
+    const currentTab = pathToTab[location.pathname];
+    if (currentTab) {
+      handleSelect(currentTab);
     }
-  }, []);
+  }, [location.pathname]);
 
   const handleNavSelect = (eventKey) => {
     handleSelect(eventKey); // Set the active tab
-    localStorage.setItem("activeTab", eventKey); // Save the active tab to local storage
   };
 
   const tabs = {
@@ -53,7 +62,7 @@ const UserTabs = ({ activeTab, handleSelect }) => {
         eventKey: "fourth",
         title: "My Projects",
         icon: FaTasks,
-        onClick: () => navigate("/myprojects"),
+        onClick: () => navigate("/projects"),
       },
       {
         eventKey: "fifth",
@@ -85,7 +94,7 @@ const UserTabs = ({ activeTab, handleSelect }) => {
         eventKey: "third",
         title: "My Projects",
         icon: FaTasks,
-        onClick: () => navigate("/myprojects"),
+        onClick: () => navigate("/projects"),
       },
       {
         eventKey: "fourth",
@@ -105,7 +114,7 @@ const UserTabs = ({ activeTab, handleSelect }) => {
         eventKey: "second",
         title: "My Projects",
         icon: FaTasks,
-        onClick: () => navigate("/myprojects"),
+        onClick: () => navigate("/projects"),
       },
       {
         eventKey: "third",
@@ -131,7 +140,7 @@ const UserTabs = ({ activeTab, handleSelect }) => {
         eventKey: "second",
         title: "My Projects",
         icon: FaTasks,
-        onClick: () => navigate("/myprojects"),
+        onClick: () => navigate("/projects"),
       },
       {
         eventKey: "third",

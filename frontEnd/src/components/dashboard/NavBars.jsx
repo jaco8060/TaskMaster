@@ -1,6 +1,5 @@
-import React, { useContext, useEffect, useState } from "react";
-
 import axios from "axios";
+import React, { useContext, useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
@@ -8,7 +7,7 @@ import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import Offcanvas from "react-bootstrap/Offcanvas";
 import { FaBell, FaCog, FaSignOutAlt } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import BugTrackerIcon from "../../assets/bug-tracker-icon.svg";
 import { AuthContext } from "../../contexts/AuthProvider.jsx";
 import "../../styles/NavBars.scss"; // Import the SCSS file
@@ -29,9 +28,6 @@ const TopNavBar = ({ children }) => {
 
       // Clear user context
       setUser(null);
-
-      // Clear active tab from local storage
-      localStorage.removeItem("activeTab");
 
       // Navigate to login
       navigate("/login");
@@ -170,11 +166,27 @@ const SideNavBar = ({ children }) => {
     </>
   );
 };
+
 const MainNav = ({ children }) => {
-  const [activeTab, setActiveTab] = useState(
-    localStorage.getItem("activeTab") === null ? "first" : ""
-  );
-  //if first time logging in then set active tab to first
+  const location = useLocation();
+  const [activeTab, setActiveTab] = useState("");
+
+  useEffect(() => {
+    // Set the active tab based on the URL path
+    const pathToTab = {
+      "/dashboard": "first",
+      "/manage-roles": "second",
+      "/manage-project-users": "third",
+      "/projects": "fourth",
+      "/mytickets": "fifth",
+      "/userprofile": "sixth",
+    };
+
+    const currentTab = pathToTab[location.pathname];
+    if (currentTab) {
+      setActiveTab(currentTab);
+    }
+  }, [location.pathname]);
 
   const handleSelect = (eventKey) => {
     setActiveTab(eventKey);
