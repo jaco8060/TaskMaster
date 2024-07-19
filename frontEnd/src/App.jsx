@@ -14,7 +14,7 @@ import ManageProjectUsers from "./components/dashboard/manage project users/Mana
 import ManageRoles from "./components/dashboard/manage roles/ManageRoles";
 import LoginPage from "./components/login/LoginPage";
 import ResetPassword from "./components/login/ResetPassword";
-import Projects from "./components/projects/Projects";
+import MyProjects from "./components/myprojects/MyProjects";
 import AdminRoute from "./components/routes/AdminRoute";
 import PMRoute from "./components/routes/PMRoute";
 import PrivateRoute from "./components/routes/PrivateRoute";
@@ -32,7 +32,7 @@ const App = () => {
       <Route element={<PrivateRoute />}>
         <Route path="/" element={<Navigate to="/dashboard" />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/projects" element={<Projects />} />
+        <Route path="/myprojects" element={<MyProjects />} />
         <Route path="/dashboard/user/:id" element={<User />} />
       </Route>
       <Route element={<AdminRoute />}>

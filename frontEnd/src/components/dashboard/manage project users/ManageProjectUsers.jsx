@@ -33,7 +33,7 @@ const ManageProjectUsers = () => {
         <Button
           className="mx-auto"
           size="lg"
-          onClick={() => navigate("/projects")}
+          onClick={() => navigate("/myprojects")}
         >
           Goto My Projects
         </Button>

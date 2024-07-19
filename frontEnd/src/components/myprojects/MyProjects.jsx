@@ -1,12 +1,12 @@
 import { MainNav } from "../dashboard/NavBars";
-const Projects = () => {
+const MyProjects = () => {
   return (
     <>
       <MainNav>
-        <h1>Projects</h1>
+        <h1>My projects</h1>
       </MainNav>
     </>
   );
 };
 
-export default Projects;
+export default MyProjects;

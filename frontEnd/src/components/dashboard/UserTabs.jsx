@@ -23,7 +23,7 @@ const UserTabs = ({ activeTab, handleSelect }) => {
       "/dashboard": "first",
       "/manage-roles": "second",
       "/manage-project-users": "third",
-      "/projects": "fourth",
+      "/myprojects": "fourth",
       "/mytickets": "fifth",
       "/userprofile": "sixth",
     };
@@ -62,7 +62,7 @@ const UserTabs = ({ activeTab, handleSelect }) => {
         eventKey: "fourth",
         title: "My Projects",
         icon: FaTasks,
-        onClick: () => navigate("/projects"),
+        onClick: () => navigate("/myprojects"),
       },
       {
         eventKey: "fifth",
@@ -94,7 +94,7 @@ const UserTabs = ({ activeTab, handleSelect }) => {
         eventKey: "third",
         title: "My Projects",
         icon: FaTasks,
-        onClick: () => navigate("/projects"),
+        onClick: () => navigate("/myprojects"),
       },
       {
         eventKey: "fourth",
@@ -114,7 +114,7 @@ const UserTabs = ({ activeTab, handleSelect }) => {
         eventKey: "second",
         title: "My Projects",
         icon: FaTasks,
-        onClick: () => navigate("/projects"),
+        onClick: () => navigate("/myprojects"),
       },
       {
         eventKey: "third",
@@ -140,7 +140,7 @@ const UserTabs = ({ activeTab, handleSelect }) => {
         eventKey: "second",
         title: "My Projects",
         icon: FaTasks,
-        onClick: () => navigate("/projects"),
+        onClick: () => navigate("/myprojects"),
       },
       {
         eventKey: "third",
