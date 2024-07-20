@@ -4,6 +4,7 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../../contexts/AuthProvider.jsx";
 import DataTable from "../../../hooks/DataTable";
 import { MainNav } from "../NavBars.jsx";
+
 const ManageProjectUsers = () => {
   const navigate = useNavigate();
   const { user } = useContext(AuthContext); // Get the current logged-in user

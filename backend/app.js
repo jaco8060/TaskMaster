@@ -4,6 +4,8 @@ import express from "express";
 import session from "express-session";
 import passport from "./passport-config.js"; // Ensure this points to your passport configuration
 import authRouter from "./routes/auth.js";
+import projectRouter from "./routes/projects.js";
+
 import userRouter from "./routes/users.js";
 dotenv.config();
 
@@ -42,6 +44,7 @@ app.use(passport.session());
 // Add routes
 app.use("/auth", authRouter);
 app.use("/users", userRouter);
+app.use("/projects", projectRouter);
 
 app.listen(5000, () => {
   console.log("Server is running on port 5000");

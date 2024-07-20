@@ -1,18 +1,12 @@
 import express from "express";
-import { ensureAuthenticated } from "../middleware/authMiddleware.js";
-import { getProjectsByUserId } from "../models/projectModel.js";
+import {
+  handleCreateProject,
+  handleGetProjectsByUserId,
+} from "../controllers/projectController.js";
 
 const projectRouter = express.Router();
 
-projectRouter.get("/", ensureAuthenticated, async (req, res) => {
-  const userId = req.query.user_id;
-  try {
-    const projects = await getProjectsByUserId(userId);
-    res.json(projects);
-  } catch (error) {
-    console.error("Error fetching projects:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
+projectRouter.post("/", handleCreateProject);
+projectRouter.get("/", handleGetProjectsByUserId);
 
 export default projectRouter;
