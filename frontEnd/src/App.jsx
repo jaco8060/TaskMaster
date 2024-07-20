@@ -8,7 +8,6 @@ import { Navigate, Route, Routes } from "react-router-dom";
 
 import "./color-theme.scss";
 
-import User from "./components/User";
 import Dashboard from "./components/dashboard/Dashboard";
 import ManageProjectUsers from "./components/dashboard/manage project users/ManageProjectUsers";
 import ManageRoles from "./components/dashboard/manage roles/ManageRoles";
@@ -33,7 +32,6 @@ const App = () => {
         <Route path="/" element={<Navigate to="/dashboard" />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/myprojects" element={<MyProjects />} />
-        <Route path="/dashboard/user/:id" element={<User />} />
       </Route>
       <Route element={<AdminRoute />}>
         <Route path="/manage-roles" element={<ManageRoles />} />

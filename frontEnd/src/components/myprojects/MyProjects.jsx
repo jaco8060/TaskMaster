@@ -20,6 +20,7 @@ const MyProjects = () => {
   const [showModal, setShowModal] = useState(false);
   const [projectName, setProjectName] = useState("");
   const [description, setDescription] = useState("");
+  const [refresh, setRefresh] = useState(false); // State to handle refresh
 
   const handleShowModal = () => setShowModal(true);
   const handleCloseModal = () => setShowModal(false);
@@ -41,7 +42,7 @@ const MyProjects = () => {
         }
       );
       handleCloseModal();
-      // Reload the data table or trigger a refresh
+      setRefresh((prev) => !prev); // Trigger refresh
     } catch (error) {
       console.error("Error creating project:", error);
       alert("Failed to create project.");
@@ -56,6 +57,7 @@ const MyProjects = () => {
           Create Project
         </Button>
         <DataTable
+          key={refresh} // Add the refresh key
           endpoint={endpoint}
           columns={columns}
           searchFields={searchFields}

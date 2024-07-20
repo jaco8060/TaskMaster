@@ -9,8 +9,9 @@ import {
   Row,
   Table,
 } from "react-bootstrap";
+import "../styles/DataTable.scss"; // Import the CSS file
 
-const DataTable = ({ endpoint, columns, searchFields }) => {
+const DataTable = ({ endpoint, columns, searchFields, refresh }) => {
   const [data, setData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -30,7 +31,7 @@ const DataTable = ({ endpoint, columns, searchFields }) => {
     };
 
     fetchData();
-  }, [endpoint]);
+  }, [endpoint, refresh]); // Add refresh as a dependency
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
@@ -78,13 +79,12 @@ const DataTable = ({ endpoint, columns, searchFields }) => {
               value={itemsPerPage}
               onChange={handleItemsPerPageChange}
               className="ml-2"
-              style={{ width: "80px", marginLeft: "10px" }} // Added marginLeft for spacing
+              style={{ width: "80px", marginLeft: "10px" }}
               min="1"
             />
             <span className="ml-2" style={{ marginLeft: "10px" }}>
               entries
-            </span>{" "}
-            {/* Added marginLeft for spacing */}
+            </span>
           </Form.Group>
         </Col>
         <Col
@@ -112,7 +112,7 @@ const DataTable = ({ endpoint, columns, searchFields }) => {
         <div>Loading...</div>
       ) : (
         <>
-          <Table striped bordered hover>
+          <Table className="custom-table">
             <thead>
               <tr>
                 {columns.map((column, index) => (
@@ -124,7 +124,9 @@ const DataTable = ({ endpoint, columns, searchFields }) => {
               {currentItems.map((item, index) => (
                 <tr key={index}>
                   {columns.map((column, colIndex) => (
-                    <td key={colIndex}>{item[column.accessor]}</td>
+                    <td key={colIndex} className="wrapped-cell">
+                      {item[column.accessor]}
+                    </td>
                   ))}
                 </tr>
               ))}

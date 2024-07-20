@@ -83,7 +83,7 @@ const UserList = ({ onRoleAssigned }) => {
         <Row className="mb-3">
           <Col
             xs={12}
-            md={12}
+            md={6}
             className="d-flex align-items-center justify-content-end"
           >
             <InputGroup>
@@ -127,7 +127,7 @@ const UserList = ({ onRoleAssigned }) => {
       </div>
 
       <Row className="mb-3">
-        <Col xs={12} md={6} className="d-flex align-items-center gap-2 mt-3">
+        <Col xs={6} md={12} className="d-flex align-items-center gap-2 mt-3">
           <Form.Group
             controlId="roleSelect"
             className="d-flex align-items-center mb-0 gap-2"

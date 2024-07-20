@@ -20,10 +20,10 @@ const ManageRoles = () => {
           <h1 className="mb-3">Manage Role Assignment</h1>
         </Row>
         <Row>
-          <Col>
+          <Col xs={12} sm={12} md={12}>
             <UserList onRoleAssigned={handleRefresh} />
           </Col>
-          <Col>
+          <Col xs={12} sm={12} md={12}>
             <UserTable refresh={refresh} />
           </Col>
         </Row>

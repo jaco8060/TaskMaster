@@ -1,0 +1,53 @@
+@import "../color-theme.scss"; // Make sure to import your variables file if it's not already imported
+
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.custom-table th,
+.custom-table td {
+  padding: 10px;
+  word-wrap: break-word;
+  white-space: normal;
+  border: none; /* Remove borders */
+}
+
+.custom-table th {
+  background-color: #f8f9fa;
+  color: #343a40;
+  font-weight: bold;
+  border-bottom: 2px solid #343a40; /* Bold line separating header and data */
+}
+
+.custom-table td {
+  background-color: #ffffff;
+  border-bottom: 1px solid #dee2e6; /* Line separating each row */
+}
+
+.custom-table tr:nth-of-type(odd) {
+  background-color: #f2f2f2;
+}
+
+.custom-table tr:hover {
+  background-color: #e9ecef;
+}
+
+.pagination {
+  margin: 20px 0;
+
+  .page-item.active .page-link {
+    background-color: var(--bs-primary); /* Use Bootstrap primary color */
+    color: var(--bs-secondary); /* Use Bootstrap secondary color */
+    border-color: var(--bs-primary);
+  }
+
+  .page-link {
+    color: var(--bs-primary);
+  }
+
+  .page-link:hover {
+    color: var(--bs-secondary);
+    background-color: var(--bs-info);
+  }
+}
