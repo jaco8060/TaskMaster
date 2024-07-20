@@ -1,4 +1,11 @@
 import axios from "axios";
+import {
+  differenceInDays,
+  format,
+  formatDistanceToNow,
+  isToday,
+  isYesterday,
+} from "date-fns";
 import React, { useEffect, useState } from "react";
 import {
   Button,
@@ -31,7 +38,7 @@ const DataTable = ({ endpoint, columns, searchFields, refresh }) => {
     };
 
     fetchData();
-  }, [endpoint, refresh]); // Add refresh as a dependency
+  }, [endpoint, refresh]);
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
@@ -64,6 +71,24 @@ const DataTable = ({ endpoint, columns, searchFields, refresh }) => {
 
   const startEntry = indexOfFirstItem + 1;
   const endEntry = Math.min(indexOfLastItem, filteredData.length);
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const now = new Date();
+
+    if (isToday(date)) {
+      return `Today ${format(date, "h:mm aa")}`;
+    } else if (isYesterday(date)) {
+      return `Yesterday ${format(date, "h:mm aa")}`;
+    } else if (differenceInDays(now, date) <= 7) {
+      return `${formatDistanceToNow(date, { addSuffix: true })} ${format(
+        date,
+        "h:mm aa"
+      )}`;
+    } else {
+      return format(date, "M-d-yyyy h:mm aa");
+    }
+  };
 
   return (
     <div>
@@ -125,7 +150,9 @@ const DataTable = ({ endpoint, columns, searchFields, refresh }) => {
                 <tr key={index}>
                   {columns.map((column, colIndex) => (
                     <td key={colIndex} className="wrapped-cell">
-                      {item[column.accessor]}
+                      {column.accessor === "created_at"
+                        ? formatDate(item[column.accessor])
+                        : item[column.accessor]}
                     </td>
                   ))}
                 </tr>
