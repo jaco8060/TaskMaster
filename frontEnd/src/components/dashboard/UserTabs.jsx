@@ -22,10 +22,9 @@ const UserTabs = ({ activeTab, handleSelect }) => {
     const pathToTab = {
       "/dashboard": "first",
       "/manage-roles": "second",
-      "/manage-project-users": "third",
-      "/myprojects": "fourth",
-      "/mytickets": "fifth",
-      "/userprofile": "sixth",
+      "/myprojects": "third",
+      "/mytickets": "fourth",
+      "/userprofile": "fifth",
     };
 
     const currentTab = pathToTab[location.pathname];
@@ -54,24 +53,18 @@ const UserTabs = ({ activeTab, handleSelect }) => {
       },
       {
         eventKey: "third",
-        title: "Manage Project Users",
-        icon: FaUsers,
-        onClick: () => navigate("/manage-project-users"),
-      },
-      {
-        eventKey: "fourth",
         title: "My Projects",
         icon: FaTasks,
         onClick: () => navigate("/myprojects"),
       },
       {
-        eventKey: "fifth",
+        eventKey: "fourth",
         title: "My Tickets",
         icon: FaTicketAlt,
         onClick: () => navigate("/mytickets"),
       },
       {
-        eventKey: "sixth",
+        eventKey: "fifth",
         title: "User Profile",
         icon: FaUser,
         onClick: () => navigate("/userprofile"),
@@ -86,18 +79,12 @@ const UserTabs = ({ activeTab, handleSelect }) => {
       },
       {
         eventKey: "second",
-        title: "Manage Project Users",
-        icon: FaUsers,
-        onClick: () => navigate("/manage-project-users"),
-      },
-      {
-        eventKey: "third",
         title: "My Projects",
         icon: FaTasks,
         onClick: () => navigate("/myprojects"),
       },
       {
-        eventKey: "fourth",
+        eventKey: "third",
         title: "User Profile",
         icon: FaUser,
         onClick: () => navigate("/userprofile"),

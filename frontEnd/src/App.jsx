@@ -9,11 +9,10 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import "./color-theme.scss";
 
 import Dashboard from "./components/dashboard/Dashboard";
-import ManageProjectUsers from "./components/dashboard/manage project users/ManageProjectUsers";
 import ManageRoles from "./components/dashboard/manage roles/ManageRoles";
+import MyProjects from "./components/dashboard/myprojects/MyProjects";
 import LoginPage from "./components/login/LoginPage";
 import ResetPassword from "./components/login/ResetPassword";
-import MyProjects from "./components/myprojects/MyProjects";
 import AdminRoute from "./components/routes/AdminRoute";
 import PMRoute from "./components/routes/PMRoute";
 import PrivateRoute from "./components/routes/PrivateRoute";
@@ -35,9 +34,6 @@ const App = () => {
       </Route>
       <Route element={<AdminRoute />}>
         <Route path="/manage-roles" element={<ManageRoles />} />
-      </Route>
-      <Route element={<PMRoute />}>
-        <Route path="/manage-project-users" element={<ManageProjectUsers />} />
       </Route>
     </Routes>
   );

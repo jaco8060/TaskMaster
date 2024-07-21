@@ -1,17 +1,26 @@
 import axios from "axios";
+import {
+  differenceInDays,
+  format,
+  isToday,
+  isYesterday,
+  parseISO,
+} from "date-fns";
 import React, { useContext, useState } from "react";
 import { Button, Form, Modal } from "react-bootstrap";
-import { AuthContext } from "../../contexts/AuthProvider.jsx";
-import DataTable from "../../hooks/DataTable";
-import { MainNav } from "../dashboard/NavBars.jsx";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../../contexts/AuthProvider.jsx";
+import DataTable from "../../../hooks/DataTable.jsx";
+import { MainNav } from "../NavBars.jsx";
 
 const MyProjects = () => {
+  const navigate = useNavigate();
   const { user } = useContext(AuthContext); // Get the current logged-in user
   const columns = [
     { header: "Project Name", accessor: "name" },
     { header: "Description", accessor: "description" },
     { header: "Created At", accessor: "created_at" },
-    { header: "Is Active", accessor: "is_active" },
+    { header: "", accessor: "details" }, // Empty header for the details column
   ];
 
   const searchFields = ["name", "description"];
@@ -49,11 +58,25 @@ const MyProjects = () => {
     }
   };
 
+  const formatDate = (dateString) => {
+    const date = parseISO(dateString);
+    const now = new Date();
+    if (isToday(date)) {
+      return `Today ${format(date, "h:mm aa")}`;
+    } else if (isYesterday(date)) {
+      return `Yesterday ${format(date, "h:mm aa")}`;
+    } else if (differenceInDays(now, date) <= 7) {
+      return `${differenceInDays(now, date)}d ago ${format(date, "h:mm aa")}`;
+    } else {
+      return format(date, "M-d-yyyy h:mm aa");
+    }
+  };
+
   return (
     <MainNav>
       <div>
         <h1 className="mb-3">My Projects</h1>
-        <Button variant="primary" onClick={handleShowModal}>
+        <Button className="mb-3" variant="primary" onClick={handleShowModal}>
           Create Project
         </Button>
         <DataTable
@@ -61,6 +84,22 @@ const MyProjects = () => {
           endpoint={endpoint}
           columns={columns}
           searchFields={searchFields}
+          renderCell={(item, accessor) => {
+            if (accessor === "details") {
+              return (
+                <Button
+                  variant="link"
+                  onClick={() => navigate(`/project-details-${item.id}`)}
+                >
+                  Details
+                </Button>
+              );
+            }
+            if (accessor === "created_at") {
+              return formatDate(item[accessor]);
+            }
+            return item[accessor];
+          }}
         />
       </div>
 
