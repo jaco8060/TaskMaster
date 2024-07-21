@@ -10,6 +10,7 @@ import React, { useEffect, useState } from "react";
 import {
   Button,
   Col,
+  Container,
   Form,
   InputGroup,
   Pagination,
@@ -38,7 +39,7 @@ const DataTable = ({ endpoint, columns, searchFields, refresh }) => {
     };
 
     fetchData();
-  }, [endpoint, refresh]);
+  }, [endpoint, refresh]); // Add refresh as a dependency
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
@@ -81,17 +82,14 @@ const DataTable = ({ endpoint, columns, searchFields, refresh }) => {
     } else if (isYesterday(date)) {
       return `Yesterday ${format(date, "h:mm aa")}`;
     } else if (differenceInDays(now, date) <= 7) {
-      return `${formatDistanceToNow(date, { addSuffix: true })} ${format(
-        date,
-        "h:mm aa"
-      )}`;
+      return `${differenceInDays(now, date)}d ago ${format(date, "h:mm aa")}`;
     } else {
       return format(date, "M-d-yyyy h:mm aa");
     }
   };
 
   return (
-    <div>
+    <Container fluid>
       <Row className="mb-3">
         <Col xs={12} md={6} className="d-flex justify-content-start">
           <Form.Group
@@ -137,7 +135,7 @@ const DataTable = ({ endpoint, columns, searchFields, refresh }) => {
         <div>Loading...</div>
       ) : (
         <>
-          <Table className="custom-table">
+          <Table responsive className="custom-table">
             <thead>
               <tr>
                 {columns.map((column, index) => (
@@ -149,7 +147,7 @@ const DataTable = ({ endpoint, columns, searchFields, refresh }) => {
               {currentItems.map((item, index) => (
                 <tr key={index}>
                   {columns.map((column, colIndex) => (
-                    <td key={colIndex} className="wrapped-cell">
+                    <td key={colIndex}>
                       {column.accessor === "created_at"
                         ? formatDate(item[column.accessor])
                         : item[column.accessor]}
@@ -178,7 +176,7 @@ const DataTable = ({ endpoint, columns, searchFields, refresh }) => {
           </div>
         </>
       )}
-    </div>
+    </Container>
   );
 };
 

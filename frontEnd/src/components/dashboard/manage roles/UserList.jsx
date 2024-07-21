@@ -1,6 +1,15 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Button, Col, Form, InputGroup, ListGroup, Row } from "react-bootstrap";
+import {
+  Button,
+  Col,
+  Container,
+  Form,
+  InputGroup,
+  Row,
+  Table,
+} from "react-bootstrap";
+import "../../../styles/UserList.scss"; // Import custom CSS for styling
 
 const UserList = ({ onRoleAssigned }) => {
   const [users, setUsers] = useState([]);
@@ -77,15 +86,11 @@ const UserList = ({ onRoleAssigned }) => {
   );
 
   return (
-    <div>
+    <Container fluid>
       <div>
         <h5>Select 1 or more users:</h5>
         <Row className="mb-3">
-          <Col
-            xs={12}
-            md={6}
-            className="d-flex align-items-center justify-content-end"
-          >
+          <Col xs={12} md={6} className="d-flex align-items-center">
             <InputGroup>
               <Form.Control
                 type="text"
@@ -95,7 +100,7 @@ const UserList = ({ onRoleAssigned }) => {
               />
               <Button
                 variant="secondary"
-                className="text-primary-subtle"
+                className="text-primary-subtle flex-shrink-0"
                 onClick={() => setSearchTerm("")}
               >
                 Clear
@@ -106,68 +111,77 @@ const UserList = ({ onRoleAssigned }) => {
         {loading ? (
           <div>Loading...</div>
         ) : (
-          <div style={{ maxHeight: "200px", overflowY: "auto" }}>
-            <ListGroup>
+          <Table responsive hover className="user-list-table">
+            <thead>
+              <tr>
+                <th>Username</th>
+                <th>Email</th>
+              </tr>
+            </thead>
+            <tbody>
               {filteredUsers.map((user) => (
-                <ListGroup.Item
+                <tr
                   key={user.id}
-                  active={selectedUsers.includes(user.id)}
                   onClick={() => handleSelectUser(user.id)}
-                  style={{ cursor: "pointer" }}
+                  className={`user-list-table-row ${
+                    selectedUsers.includes(user.id) ? "selected" : ""
+                  }`}
                 >
-                  <div className="d-flex justify-content-between">
-                    <span>{user.username}</span>
-                    <span>{user.email}</span>
-                  </div>
-                </ListGroup.Item>
+                  <td>{user.username}</td>
+                  <td>{user.email}</td>
+                </tr>
               ))}
-            </ListGroup>
-          </div>
+            </tbody>
+          </Table>
         )}
       </div>
 
       <Row className="mb-3">
-        <Col xs={6} md={12} className="d-flex align-items-center gap-2 mt-3">
+        <Col
+          xs={12}
+          md={12}
+          className="d-flex align-items-start flex-column gap-2 mt-3"
+        >
           <Form.Group
             controlId="roleSelect"
-            className="d-flex align-items-center mb-0 gap-2"
+            className="d-flex align-items-center mb-0 gap-2 flex-column flex-md-row"
           >
-            <Form.Label className="mr-2 mb-0 text-nowrap">
+            <Form.Label className="mb-0 text-nowrap">
               Select the role to assign:
             </Form.Label>
-
-            <Form.Control
-              as="select"
-              value={role}
-              onChange={handleRoleChange}
-              className="ml-2"
-              style={{ width: "150px" }}
-            >
-              <option>~Select Role~</option>
-              <option value="submitter">Submitter</option>
-              <option value="developer">Developer</option>
-              <option value="project_manager">Project Manager</option>
-            </Form.Control>
+            <div className="d-flex flex-column flex-md-row w-100 gap-2">
+              <Form.Control
+                as="select"
+                value={role}
+                onChange={handleRoleChange}
+                style={{ maxWidth: "150px" }}
+              >
+                <option>~Select Role~</option>
+                <option value="submitter">Submitter</option>
+                <option value="developer">Developer</option>
+                <option value="project_manager">Project Manager</option>
+              </Form.Control>
+              <Button
+                variant="primary"
+                onClick={handleAssignRole}
+                disabled={
+                  selectedUsers.length === 0 ||
+                  role === "~Select Role~" ||
+                  selectedUsers.some(
+                    (userId) =>
+                      users.find((user) => user.id === userId)?.role ===
+                        "admin" ||
+                      users.find((user) => user.id === userId)?.role === "pm"
+                  )
+                }
+              >
+                Assign
+              </Button>
+            </div>
           </Form.Group>
-          <Button
-            variant="primary"
-            className="ml-2"
-            onClick={handleAssignRole}
-            disabled={
-              selectedUsers.length === 0 ||
-              role === "~Select Role~" ||
-              selectedUsers.some(
-                (userId) =>
-                  users.find((user) => user.id === userId)?.role === "admin" ||
-                  users.find((user) => user.id === userId)?.role === "pm"
-              )
-            }
-          >
-            Assign
-          </Button>
         </Col>
       </Row>
-    </div>
+    </Container>
   );
 };
 

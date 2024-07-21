@@ -15,19 +15,24 @@ const ManageRoles = () => {
 
   return (
     <MainNav>
-      <Container fluid>
+      <div className="p-0 d-flex flex-column">
         <Row>
-          <h1 className="mb-3">Manage Role Assignment</h1>
+          <Col>
+            <h1 className="mb-3">Manage Role Assignment</h1>
+          </Col>
         </Row>
         <Row>
-          <Col xs={12} sm={12} md={12}>
+          <Col xs={10} sm={12} className="p-0">
             <UserList onRoleAssigned={handleRefresh} />
           </Col>
-          <Col xs={12} sm={12} md={12}>
+        </Row>
+        <Row>
+          <Col xs={10} sm={12}>
             <UserTable refresh={refresh} />
           </Col>
         </Row>
-      </Container>
+      </div>
+      {/* <Container fluid className="p-0 d-flex flex-column"></Container> */}
     </MainNav>
   );
 };
