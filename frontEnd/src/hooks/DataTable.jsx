@@ -2,15 +2,14 @@ import axios from "axios";
 import {
   differenceInDays,
   format,
-  formatDistanceToNow,
   isToday,
   isYesterday,
+  parseISO,
 } from "date-fns";
 import React, { useEffect, useState } from "react";
 import {
   Button,
   Col,
-  Container,
   Form,
   InputGroup,
   Pagination,
@@ -19,7 +18,13 @@ import {
 } from "react-bootstrap";
 import "../styles/DataTable.scss"; // Import the CSS file
 
-const DataTable = ({ endpoint, columns, searchFields, refresh }) => {
+const DataTable = ({
+  endpoint,
+  columns,
+  searchFields,
+  refresh,
+  renderCell,
+}) => {
   const [data, setData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -73,23 +78,8 @@ const DataTable = ({ endpoint, columns, searchFields, refresh }) => {
   const startEntry = indexOfFirstItem + 1;
   const endEntry = Math.min(indexOfLastItem, filteredData.length);
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    const now = new Date();
-
-    if (isToday(date)) {
-      return `Today ${format(date, "h:mm aa")}`;
-    } else if (isYesterday(date)) {
-      return `Yesterday ${format(date, "h:mm aa")}`;
-    } else if (differenceInDays(now, date) <= 7) {
-      return `${differenceInDays(now, date)}d ago ${format(date, "h:mm aa")}`;
-    } else {
-      return format(date, "M-d-yyyy h:mm aa");
-    }
-  };
-
   return (
-    <Container fluid>
+    <div>
       <Row className="mb-3">
         <Col xs={12} md={6} className="d-flex justify-content-start">
           <Form.Group
@@ -147,9 +137,9 @@ const DataTable = ({ endpoint, columns, searchFields, refresh }) => {
               {currentItems.map((item, index) => (
                 <tr key={index}>
                   {columns.map((column, colIndex) => (
-                    <td key={colIndex}>
-                      {column.accessor === "created_at"
-                        ? formatDate(item[column.accessor])
+                    <td key={colIndex} className="wrapped-cell">
+                      {renderCell
+                        ? renderCell(item, column.accessor)
                         : item[column.accessor]}
                     </td>
                   ))}
@@ -176,7 +166,7 @@ const DataTable = ({ endpoint, columns, searchFields, refresh }) => {
           </div>
         </>
       )}
-    </Container>
+    </div>
   );
 };
 
