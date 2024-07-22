@@ -39,6 +39,14 @@ CREATE TABLE projects (
     is_active BOOLEAN DEFAULT TRUE
 );
 
+-- Add Assigned Personnel Table
+CREATE TABLE assigned_personnel (
+    id SERIAL PRIMARY KEY,
+    project_id INT REFERENCES projects(id) ON DELETE CASCADE,
+    user_id INT REFERENCES users(id) ON DELETE CASCADE,
+    role VARCHAR(50),
+    assigned_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
 
 -- Bugs Table
 CREATE TABLE tickets (
@@ -76,14 +84,7 @@ CREATE TABLE bug_history (
     updated_by INT REFERENCES users(id)
 );
 
-CREATE TABLE new_projects (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    description TEXT,
-    user_id INT REFERENCES users(id) ON DELETE CASCADE,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    is_active BOOLEAN DEFAULT TRUE
-);
+
 
 
 SELECT * FROM projects
@@ -91,6 +92,8 @@ SELECT * FROM users
 SELECT * FROM bug_history
 SELECT * FROM bugs
 SELECT * FROM comments
+
+ALTER TABLE projects
 
 
 
