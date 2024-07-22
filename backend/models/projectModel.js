@@ -12,6 +12,17 @@ export const createProject = async (name, description, user_id) => {
   }
 };
 
+export const getProjectById = async (projectId) => {
+  try {
+    const result = await pool.query("SELECT * FROM projects WHERE id = $1", [
+      projectId,
+    ]);
+    return result.rows[0];
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const getProjectsByUserId = async (user_id) => {
   try {
     const result = await pool.query(
@@ -24,14 +35,27 @@ export const getProjectsByUserId = async (user_id) => {
   }
 };
 
-export const getProjectById = async (id) => {
+export const getAssignedPersonnel = async (projectId) => {
   try {
-    const result = await pool.query("SELECT * FROM projects WHERE id = $1", [
-      id,
-    ]);
-    if (result.rows.length === 0) {
-      throw new Error("Project not found");
-    }
+    const result = await pool.query(
+      `SELECT users.id, users.username, users.email, assigned_personnel.role, assigned_personnel.assigned_at 
+       FROM users
+       JOIN assigned_personnel ON users.id = assigned_personnel.user_id
+       WHERE assigned_personnel.project_id = $1`,
+      [projectId]
+    );
+    return result.rows;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const assignPersonnel = async (projectId, userId, role) => {
+  try {
+    const result = await pool.query(
+      "INSERT INTO assigned_personnel (project_id, user_id, role) VALUES ($1, $2, $3) RETURNING *",
+      [projectId, userId, role]
+    );
     return result.rows[0];
   } catch (error) {
     throw error;

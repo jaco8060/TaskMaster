@@ -48,6 +48,7 @@ CREATE TABLE assigned_personnel (
     assigned_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
+
 -- Bugs Table
 CREATE TABLE tickets (
     id SERIAL PRIMARY KEY,

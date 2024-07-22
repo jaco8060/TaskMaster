@@ -1,5 +1,7 @@
 import {
+  assignPersonnel,
   createProject,
+  getAssignedPersonnel,
   getProjectById,
   getProjectsByUserId,
 } from "../models/projectModel.js";
@@ -15,6 +17,17 @@ export const handleCreateProject = async (req, res) => {
   }
 };
 
+export const handleGetProjectById = async (req, res) => {
+  const projectId = req.params.id;
+  try {
+    const project = await getProjectById(projectId);
+    res.status(200).json(project);
+  } catch (error) {
+    console.error("Error fetching project:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
 export const handleGetProjectsByUserId = async (req, res) => {
   const user_id = req.query.user_id;
   try {
@@ -26,13 +39,25 @@ export const handleGetProjectsByUserId = async (req, res) => {
   }
 };
 
-export const handleGetProjectById = async (req, res) => {
-  const { id } = req.params;
+export const handleGetAssignedPersonnel = async (req, res) => {
+  const projectId = req.params.id;
   try {
-    const project = await getProjectById(id);
-    res.status(200).json(project);
+    const personnel = await getAssignedPersonnel(projectId);
+    res.status(200).json(personnel);
   } catch (error) {
-    console.error("Error fetching project details:", error);
+    console.error("Error fetching assigned personnel:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+export const handleAssignPersonnel = async (req, res) => {
+  const projectId = req.params.id;
+  const { userId, role } = req.body;
+  try {
+    const assignment = await assignPersonnel(projectId, userId, role);
+    res.status(201).json(assignment);
+  } catch (error) {
+    console.error("Error assigning personnel:", error);
     res.status(500).json({ error: "Server error" });
   }
 };
