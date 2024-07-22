@@ -1,11 +1,4 @@
 import axios from "axios";
-import {
-  differenceInDays,
-  format,
-  isToday,
-  isYesterday,
-  parseISO,
-} from "date-fns";
 import React, { useEffect, useState } from "react";
 import {
   Button,
@@ -30,6 +23,7 @@ const DataTable = ({
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(false);
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -59,7 +53,30 @@ const DataTable = ({
     }
   };
 
-  const filteredData = data.filter((item) =>
+  const handleSort = (key) => {
+    let direction = "asc";
+    if (sortConfig.key === key && sortConfig.direction === "asc") {
+      direction = "desc";
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const sortedData = React.useMemo(() => {
+    if (sortConfig.key) {
+      return [...data].sort((a, b) => {
+        if (a[sortConfig.key] < b[sortConfig.key]) {
+          return sortConfig.direction === "asc" ? -1 : 1;
+        }
+        if (a[sortConfig.key] > b[sortConfig.key]) {
+          return sortConfig.direction === "asc" ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+    return data;
+  }, [data, sortConfig]);
+
+  const filteredData = sortedData.filter((item) =>
     searchFields.some((field) =>
       item[field]?.toString().toLowerCase().includes(searchTerm.toLowerCase())
     )
@@ -129,7 +146,26 @@ const DataTable = ({
             <thead>
               <tr>
                 {columns.map((column, index) => (
-                  <th key={index}>{column.header}</th>
+                  <th key={index} className="header-cell">
+                    <div className="d-flex justify-content-between align-items-center">
+                      <span>{column.header}</span>
+                      <Button
+                        variant="link"
+                        onClick={() => handleSort(column.accessor)}
+                        className="sort-button"
+                      >
+                        {sortConfig.key === column.accessor ? (
+                          sortConfig.direction === "asc" ? (
+                            <span style={{ fontSize: "0.75rem" }}>▲</span>
+                          ) : (
+                            <span style={{ fontSize: "0.75rem" }}>▼</span>
+                          )
+                        ) : (
+                          <span style={{ fontSize: "0.75rem" }}>↕</span>
+                        )}
+                      </Button>
+                    </div>
+                  </th>
                 ))}
               </tr>
             </thead>

@@ -11,6 +11,7 @@ import { Button, Form, Modal } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../../contexts/AuthProvider.jsx";
 import DataTable from "../../../hooks/DataTable.jsx";
+import "../../../styles/dashboard/MyProjects.scss"; // Import the custom CSS file
 import { MainNav } from "../NavBars.jsx";
 
 const MyProjects = () => {
@@ -87,12 +88,14 @@ const MyProjects = () => {
           renderCell={(item, accessor) => {
             if (accessor === "details") {
               return (
-                <Button
-                  variant="link"
-                  onClick={() => navigate(`/project-details/${item.id}`)}
-                >
-                  Details
-                </Button>
+                <div className="details-cell">
+                  <Button
+                    variant="link"
+                    onClick={() => navigate(`/project-details/${item.id}`)}
+                  >
+                    Details
+                  </Button>
+                </div>
               );
             }
             if (accessor === "created_at") {

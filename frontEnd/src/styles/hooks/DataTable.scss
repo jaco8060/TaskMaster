@@ -53,3 +53,13 @@
     background-color: var(--bs-info);
   }
 }
+
+.header-cell {
+  white-space: nowrap;
+}
+
+.sort-button {
+  padding: 0;
+  margin: 0;
+  font-size: 0.75rem;
+}
