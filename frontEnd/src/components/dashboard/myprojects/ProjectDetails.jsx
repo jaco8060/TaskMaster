@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Button, Col, Container, Row, Spinner } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
+import DataTable from "../../../hooks/DataTable.jsx";
 import { MainNav } from "../NavBars.jsx";
 
 const ProjectDetails = () => {
@@ -9,6 +10,7 @@ const ProjectDetails = () => {
   const navigate = useNavigate();
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [personnel, setPersonnel] = useState([]);
 
   useEffect(() => {
     const fetchProjectDetails = async () => {
@@ -26,7 +28,21 @@ const ProjectDetails = () => {
       }
     };
 
+    const fetchAssignedPersonnel = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_URL}/projects/${id}/personnel`,
+          { withCredentials: true }
+        );
+        setPersonnel(response.data);
+      } catch (error) {
+        console.error("Error fetching assigned personnel:", error);
+        alert("Failed to fetch assigned personnel.");
+      }
+    };
+
     fetchProjectDetails();
+    fetchAssignedPersonnel();
   }, [id]);
 
   if (loading) {
@@ -53,6 +69,13 @@ const ProjectDetails = () => {
     );
   }
 
+  const personnelColumns = [
+    { header: "Username", accessor: "username" },
+    { header: "Email", accessor: "email" },
+    { header: "Role", accessor: "role" },
+    { header: "Assigned At", accessor: "assigned_at" },
+  ];
+
   return (
     <MainNav>
       <Container>
@@ -75,6 +98,16 @@ const ProjectDetails = () => {
             <Button variant="primary" onClick={() => navigate(-1)}>
               Go Back
             </Button>
+          </Col>
+        </Row>
+        <Row className="mt-4">
+          <Col>
+            <h2>Assigned Personnel</h2>
+            <DataTable
+              endpoint={`${import.meta.env.VITE_URL}/projects/${id}/personnel`}
+              columns={personnelColumns}
+              searchFields={["username", "email", "role"]}
+            />
           </Col>
         </Row>
       </Container>
