@@ -10,7 +10,7 @@ import {
 } from "react-icons/fa"; // Import the icons
 import { useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../contexts/AuthProvider.jsx";
-import "../../styles/NavBars.scss"; // Import the SCSS file
+import "../../styles/dashboard/NavBars.scss"; // Import the SCSS file
 
 const UserTabs = ({ activeTab, handleSelect }) => {
   const { user } = useContext(AuthContext);

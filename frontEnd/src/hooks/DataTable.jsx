@@ -16,7 +16,7 @@ import {
   Row,
   Table,
 } from "react-bootstrap";
-import "../styles/DataTable.scss"; // Import the CSS file
+import "../styles/hooks/DataTable.scss"; // Import the CSS file
 
 const DataTable = ({
   endpoint,

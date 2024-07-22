@@ -9,7 +9,7 @@ import {
   Row,
   Table,
 } from "react-bootstrap";
-import "../../../styles/UserList.scss"; // Import custom CSS for styling
+import "../../../styles/dashboard/UserList.scss"; // Import custom CSS for styling
 
 const UserList = ({ onRoleAssigned }) => {
   const [users, setUsers] = useState([]);

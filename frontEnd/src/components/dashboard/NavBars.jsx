@@ -10,7 +10,7 @@ import { FaBell, FaCog, FaSignOutAlt } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
 import BugTrackerIcon from "../../assets/bug-tracker-icon.svg";
 import { AuthContext } from "../../contexts/AuthProvider.jsx";
-import "../../styles/NavBars.scss"; // Import the SCSS file
+import "../../styles/dashboard/NavBars.scss"; // Import the SCSS file
 import UserTabs from "./UserTabs";
 
 const TopNavBar = ({ children }) => {

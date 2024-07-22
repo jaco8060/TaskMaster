@@ -89,7 +89,7 @@ const MyProjects = () => {
               return (
                 <Button
                   variant="link"
-                  onClick={() => navigate(`/project-details-${item.id}`)}
+                  onClick={() => navigate(`/project-details/${item.id}`)}
                 >
                   Details
                 </Button>
