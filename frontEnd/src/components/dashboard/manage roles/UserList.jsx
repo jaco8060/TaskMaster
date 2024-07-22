@@ -7,6 +7,7 @@ import {
   Form,
   InputGroup,
   Row,
+  Spinner,
   Table,
 } from "react-bootstrap";
 import "../../../styles/dashboard/UserList.scss"; // Import custom CSS for styling
@@ -109,7 +110,12 @@ const UserList = ({ onRoleAssigned }) => {
           </Col>
         </Row>
         {loading ? (
-          <div>Loading...</div>
+          <div
+            className="d-flex justify-content-center align-items-center"
+            style={{ height: "200px" }}
+          >
+            <Spinner animation="border" />
+          </div>
         ) : (
           <Table responsive hover className="user-list-table">
             <thead>

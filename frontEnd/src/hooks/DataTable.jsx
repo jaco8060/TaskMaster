@@ -7,6 +7,7 @@ import {
   InputGroup,
   Pagination,
   Row,
+  Spinner,
   Table,
 } from "react-bootstrap";
 import "../styles/hooks/DataTable.scss"; // Import the CSS file
@@ -139,7 +140,9 @@ const DataTable = ({
         </Col>
       </Row>
       {loading ? (
-        <div>Loading...</div>
+        <div className="d-flex justify-content-center align-items-center">
+          <Spinner animation="border" />
+        </div>
       ) : (
         <>
           <Table responsive className="custom-table">
