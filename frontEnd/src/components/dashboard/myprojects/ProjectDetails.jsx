@@ -15,9 +15,7 @@ const ProjectDetails = () => {
       try {
         const response = await axios.get(
           `${import.meta.env.VITE_URL}/projects/${id}`,
-          {
-            withCredentials: true,
-          }
+          { withCredentials: true }
         );
         setProject(response.data);
       } catch (error) {

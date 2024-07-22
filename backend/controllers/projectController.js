@@ -1,4 +1,8 @@
-import { createProject, getProjectsByUserId } from "../models/projectModel.js";
+import {
+  createProject,
+  getProjectById,
+  getProjectsByUserId,
+} from "../models/projectModel.js";
 
 export const handleCreateProject = async (req, res) => {
   const { name, description, user_id } = req.body;
@@ -18,6 +22,17 @@ export const handleGetProjectsByUserId = async (req, res) => {
     res.status(200).json(projects);
   } catch (error) {
     console.error("Error fetching projects:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+export const handleGetProjectById = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const project = await getProjectById(id);
+    res.status(200).json(project);
+  } catch (error) {
+    console.error("Error fetching project details:", error);
     res.status(500).json({ error: "Server error" });
   }
 };
