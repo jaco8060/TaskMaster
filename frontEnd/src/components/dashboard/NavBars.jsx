@@ -19,12 +19,9 @@ const TopNavBar = ({ children }) => {
 
   const handleLogout = async () => {
     try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_URL}/auth/logout`,
-        {
-          withCredentials: true,
-        }
-      );
+      await axios.get(`${import.meta.env.VITE_URL}/auth/logout`, {
+        withCredentials: true,
+      });
 
       // Clear user context
       setUser(null);
@@ -168,25 +165,45 @@ const SideNavBar = ({ children }) => {
 };
 
 const MainNav = ({ children }) => {
+  const { user } = useContext(AuthContext);
   const location = useLocation();
   const [activeTab, setActiveTab] = useState("");
 
   useEffect(() => {
     // Set the active tab based on the URL path
-    const pathToTab = {
-      "/dashboard": "first",
-      "/manage-roles": "second",
-      "/manage-project-users": "third",
-      "/projects": "fourth",
-      "/mytickets": "fifth",
-      "/userprofile": "sixth",
+    const pathToTabMap = {
+      admin: {
+        "/dashboard": "first",
+        "/manage-roles": "second",
+        "/myprojects": "third",
+        "/mytickets": "fourth",
+        "/userprofile": "fifth",
+      },
+      pm: {
+        "/dashboard": "first",
+        "/myprojects": "second",
+        "/mytickets": "third",
+        "/userprofile": "fourth",
+      },
+      submitter: {
+        "/dashboard": "first",
+        "/myprojects": "second",
+        "/mytickets": "third",
+        "/userprofile": "fourth",
+      },
+      developer: {
+        "/dashboard": "first",
+        "/myprojects": "second",
+        "/mytickets": "third",
+        "/userprofile": "fourth",
+      },
     };
 
-    const currentTab = pathToTab[location.pathname];
+    const currentTab = pathToTabMap[user.role]?.[location.pathname];
     if (currentTab) {
       setActiveTab(currentTab);
     }
-  }, [location.pathname]);
+  }, [location.pathname, user.role]);
 
   const handleSelect = (eventKey) => {
     setActiveTab(eventKey);
