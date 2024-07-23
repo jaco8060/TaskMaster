@@ -61,3 +61,15 @@ export const assignPersonnel = async (projectId, userId, role) => {
     throw error;
   }
 };
+
+export const updateProject = async (id, name, description, is_active) => {
+  try {
+    const result = await pool.query(
+      "UPDATE projects SET name = $1, description = $2, is_active = $3 WHERE id = $4 RETURNING *",
+      [name, description, is_active, id]
+    );
+    return result.rows[0];
+  } catch (error) {
+    throw error;
+  }
+};

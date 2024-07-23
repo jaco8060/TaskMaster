@@ -4,6 +4,7 @@ import {
   getAssignedPersonnel,
   getProjectById,
   getProjectsByUserId,
+  updateProject, // Import the new model function
 } from "../models/projectModel.js";
 
 export const handleCreateProject = async (req, res) => {
@@ -58,6 +59,23 @@ export const handleAssignPersonnel = async (req, res) => {
     res.status(201).json(assignment);
   } catch (error) {
     console.error("Error assigning personnel:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+export const handleUpdateProject = async (req, res) => {
+  const projectId = req.params.id;
+  const { name, description, is_active } = req.body;
+  try {
+    const updatedProject = await updateProject(
+      projectId,
+      name,
+      description,
+      is_active
+    );
+    res.status(200).json(updatedProject);
+  } catch (error) {
+    console.error("Error updating project:", error);
     res.status(500).json({ error: "Server error" });
   }
 };

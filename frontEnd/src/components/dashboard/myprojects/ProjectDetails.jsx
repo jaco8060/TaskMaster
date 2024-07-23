@@ -1,6 +1,14 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Button, Col, Container, Row, Spinner } from "react-bootstrap";
+import {
+  Button,
+  Col,
+  Container,
+  Form,
+  Modal,
+  Row,
+  Spinner,
+} from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import DataTable from "../../../hooks/DataTable.jsx";
 import { MainNav } from "../NavBars.jsx";
@@ -11,6 +19,10 @@ const ProjectDetails = () => {
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
   const [personnel, setPersonnel] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [projectName, setProjectName] = useState("");
+  const [description, setDescription] = useState("");
+  const [isActive, setIsActive] = useState(true);
 
   useEffect(() => {
     const fetchProjectDetails = async () => {
@@ -20,6 +32,9 @@ const ProjectDetails = () => {
           { withCredentials: true }
         );
         setProject(response.data);
+        setProjectName(response.data.name);
+        setDescription(response.data.description);
+        setIsActive(response.data.is_active);
       } catch (error) {
         console.error("Error fetching project details:", error);
         alert("Failed to fetch project details.");
@@ -44,6 +59,39 @@ const ProjectDetails = () => {
     fetchProjectDetails();
     fetchAssignedPersonnel();
   }, [id]);
+
+  const handleShowModal = () => setShowModal(true);
+  const handleCloseModal = () => setShowModal(false);
+
+  const handleUpdateProject = async () => {
+    try {
+      await axios.put(
+        `${import.meta.env.VITE_URL}/projects/${id}`,
+        {
+          name: projectName,
+          description,
+          is_active: isActive,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+
+      setShowModal(false);
+      setProject((prevProject) => ({
+        ...prevProject,
+        name: projectName,
+        description,
+        is_active: isActive,
+      }));
+    } catch (error) {
+      console.error("Error updating project:", error);
+      alert("Failed to update project.");
+    }
+  };
 
   if (loading) {
     return (
@@ -81,23 +129,34 @@ const ProjectDetails = () => {
       <Container>
         <Row>
           <Col>
-            <h1>Project Details</h1>
-            <p>
-              <strong>Project Name:</strong> {project.name}
-            </p>
-            <p>
-              <strong>Description:</strong> {project.description}
-            </p>
-            <p>
-              <strong>Created At:</strong>{" "}
-              {new Date(project.created_at).toLocaleString()}
-            </p>
-            <p>
-              <strong>Is Active:</strong> {project.is_active ? "Yes" : "No"}
-            </p>
-            <Button variant="primary" onClick={() => navigate(-1)}>
-              Go Back
-            </Button>
+            <div className="d-flex flex-column align-items-left fs-5">
+              <h2 className="fs-2">Project Details</h2>
+              <p>
+                <strong>Project Name:</strong> {project.name}
+              </p>
+              <p>
+                <strong>Description:</strong> {project.description}
+              </p>
+              <p>
+                <strong>Created At:</strong>{" "}
+                {new Date(project.created_at).toLocaleString()}
+              </p>
+              <p>
+                <strong>Is Active:</strong> {project.is_active ? "Yes" : "No"}
+              </p>
+              <div>
+                <Button variant="primary" onClick={() => navigate(-1)}>
+                  Go Back
+                </Button>
+                <Button
+                  variant="secondary"
+                  onClick={handleShowModal}
+                  className="ms-2 "
+                >
+                  Edit Project
+                </Button>
+              </div>
+            </div>
           </Col>
         </Row>
         <Row className="mt-4">
@@ -111,6 +170,51 @@ const ProjectDetails = () => {
           </Col>
         </Row>
       </Container>
+
+      <Modal show={showModal} onHide={handleCloseModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Edit Project</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group controlId="projectName">
+              <Form.Label>Project Name</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter project name"
+                value={projectName}
+                onChange={(e) => setProjectName(e.target.value)}
+              />
+            </Form.Group>
+            <Form.Group controlId="description" className="mt-3">
+              <Form.Label>Description</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={3}
+                placeholder="Enter project description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+            </Form.Group>
+            <Form.Group controlId="isActive" className="mt-3">
+              <Form.Check
+                type="checkbox"
+                label="Is Active"
+                checked={isActive}
+                onChange={(e) => setIsActive(e.target.checked)}
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseModal}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={handleUpdateProject}>
+            Save Changes
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </MainNav>
   );
 };
