@@ -4,6 +4,7 @@ import {
   getAssignedPersonnel,
   getProjectById,
   getProjectsByUserId,
+  removePersonnel,
   updateProject,
 } from "../models/projectModel.js";
 
@@ -76,6 +77,20 @@ export const handleUpdateProject = async (req, res) => {
     res.status(200).json(updatedProject);
   } catch (error) {
     console.error("Error updating project:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+export const handleRemovePersonnel = async (req, res) => {
+  const { id: projectId, userId } = req.params;
+  try {
+    const removedPersonnel = await removePersonnel(projectId, userId);
+    if (!removedPersonnel) {
+      return res.status(404).json({ error: "Personnel not found" });
+    }
+    res.status(200).json(removedPersonnel);
+  } catch (error) {
+    console.error("Error removing personnel:", error);
     res.status(500).json({ error: "Server error" });
   }
 };

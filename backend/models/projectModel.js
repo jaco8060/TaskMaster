@@ -62,6 +62,18 @@ export const assignPersonnel = async (projectId, userId, role) => {
   }
 };
 
+export const removePersonnel = async (projectId, userId) => {
+  try {
+    const result = await pool.query(
+      "DELETE FROM assigned_personnel WHERE project_id = $1 AND user_id = $2 RETURNING *",
+      [projectId, userId]
+    );
+    return result.rows[0];
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const updateProject = async (id, name, description, is_active) => {
   try {
     const result = await pool.query(

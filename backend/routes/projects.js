@@ -5,6 +5,7 @@ import {
   handleGetAssignedPersonnel,
   handleGetProjectById,
   handleGetProjectsByUserId,
+  handleRemovePersonnel,
   handleUpdateProject,
 } from "../controllers/projectController.js";
 
@@ -16,5 +17,6 @@ projectRouter.get("/:id", handleGetProjectById);
 projectRouter.put("/:id", handleUpdateProject); // Add this route for updating project details
 projectRouter.get("/:id/personnel", handleGetAssignedPersonnel);
 projectRouter.post("/:id/personnel", handleAssignPersonnel);
+projectRouter.delete("/:id/personnel/:userId", handleRemovePersonnel);
 
 export default projectRouter;

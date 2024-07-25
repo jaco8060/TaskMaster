@@ -126,7 +126,7 @@ const ProjectDetails = () => {
 
   return (
     <MainNav>
-      <Container>
+      <div className="d-flex flex-column">
         <Row>
           <Col>
             <div className="d-flex flex-column align-items-left fs-5">
@@ -169,7 +169,7 @@ const ProjectDetails = () => {
             />
           </Col>
         </Row>
-      </Container>
+      </div>
 
       <Modal show={showModal} onHide={handleCloseModal}>
         <Modal.Header closeButton>
