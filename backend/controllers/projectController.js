@@ -4,7 +4,7 @@ import {
   getAssignedPersonnel,
   getProjectById,
   getProjectsByUserId,
-  updateProject, // Import the new model function
+  updateProject,
 } from "../models/projectModel.js";
 
 export const handleCreateProject = async (req, res) => {

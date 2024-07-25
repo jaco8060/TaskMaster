@@ -3,7 +3,7 @@ import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import { MainNav } from "../NavBars.jsx";
-import UserList from "./UserList";
+import AssignUserRole from "./AssignUserRole.jsx";
 import UserTable from "./UserTable";
 
 const ManageRoles = () => {
@@ -23,7 +23,7 @@ const ManageRoles = () => {
         </Row>
         <Row>
           <Col xs={10} sm={12} className="p-0">
-            <UserList onRoleAssigned={handleRefresh} />
+            <AssignUserRole onRoleAssigned={handleRefresh} />
           </Col>
         </Row>
         <Row>

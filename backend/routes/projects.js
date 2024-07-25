@@ -5,7 +5,7 @@ import {
   handleGetAssignedPersonnel,
   handleGetProjectById,
   handleGetProjectsByUserId,
-  handleUpdateProject, // Import the new handler
+  handleUpdateProject,
 } from "../controllers/projectController.js";
 
 const projectRouter = express.Router();

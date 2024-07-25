@@ -88,13 +88,29 @@ const MyProjects = () => {
           renderCell={(item, accessor) => {
             if (accessor === "details") {
               return (
-                <div className="details-cell">
-                  <Button
-                    variant="link"
-                    onClick={() => navigate(`/project-details/${item.id}`)}
-                  >
-                    Details
-                  </Button>
+                <div className="details-cell-container">
+                  <ul className="details-cell">
+                    <li>
+                      <Button
+                        variant="link"
+                        onClick={() => navigate(`/project-details/${item.id}`)}
+                      >
+                        Details
+                      </Button>
+                    </li>
+                    <li>
+                      {(user.role === "admin" || user.role === "pm") && (
+                        <Button
+                          variant="link"
+                          onClick={() =>
+                            navigate(`/assign-personnel/${item.id}`)
+                          }
+                        >
+                          Assign Personnel
+                        </Button>
+                      )}
+                    </li>
+                  </ul>
                 </div>
               );
             }

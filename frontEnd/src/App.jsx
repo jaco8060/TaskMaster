@@ -10,6 +10,7 @@ import "./color-theme.scss";
 
 import Dashboard from "./components/dashboard/Dashboard";
 import ManageRoles from "./components/dashboard/manage roles/ManageRoles";
+import AssignPersonnel from "./components/dashboard/myprojects/AssignPersonnel";
 import MyProjects from "./components/dashboard/myprojects/MyProjects";
 import ProjectDetails from "./components/dashboard/myprojects/ProjectDetails";
 import LoginPage from "./components/login/LoginPage";
@@ -32,6 +33,7 @@ const App = () => {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/myprojects" element={<MyProjects />} />
         <Route path="/project-details/:id" element={<ProjectDetails />} />
+        <Route path="/assign-personnel/:id" element={<AssignPersonnel />} />
       </Route>
       <Route element={<AdminRoute />}>
         <Route path="/manage-roles" element={<ManageRoles />} />
