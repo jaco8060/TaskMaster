@@ -33,11 +33,11 @@ const AssignPersonnel = () => {
     setLoading(false);
   }, [id]);
 
-  const handleAssignPersonnel = async (userIds, role) => {
+  const handleAssignPersonnel = async (userIds) => {
     try {
       await axios.post(
         `${import.meta.env.VITE_URL}/projects/${id}/personnel`,
-        { userId: userIds[0], role }, // Assuming only one user can be assigned at a time
+        { userId: userIds[0] }, // Assuming only one user can be assigned at a time
         {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,

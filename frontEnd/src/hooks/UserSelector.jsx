@@ -11,10 +11,10 @@ import {
 } from "react-bootstrap";
 import "../styles/hooks/UserSelector.scss"; // Import the CSS file
 
-const UserSelector = ({ endpoint, onAssign, selectedRole }) => {
+const UserSelector = ({ endpoint, onAssign, roleSelection = false }) => {
   const [users, setUsers] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
-  const [role, setRole] = useState(selectedRole || "");
+  const [role, setRole] = useState("");
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -46,7 +46,15 @@ const UserSelector = ({ endpoint, onAssign, selectedRole }) => {
   };
 
   const handleAssign = () => {
-    onAssign(selectedUsers, role);
+    if (selectedUsers.length > 0) {
+      if (roleSelection) {
+        onAssign(selectedUsers, role);
+      } else {
+        onAssign(selectedUsers);
+      }
+    } else {
+      alert("Please select at least one user.");
+    }
   };
 
   const handleSearchChange = (event) => {
@@ -120,41 +128,54 @@ const UserSelector = ({ endpoint, onAssign, selectedRole }) => {
           </tbody>
         </Table>
       )}
-      <Row className="mb-3">
-        <Col
-          xs={12}
-          md={12}
-          className="d-flex align-items-start flex-column gap-2 mt-3"
-        >
-          <Form.Group
-            controlId="roleSelect"
-            className="d-flex align-items-center mb-0 gap-2 flex-column flex-md-row"
+      {roleSelection && (
+        <Row className="mb-3">
+          <Col
+            xs={12}
+            md={12}
+            className="d-flex align-items-start flex-column gap-2 mt-3"
           >
-            <Form.Label className="mb-0 text-nowrap">
-              Select the role to assign:
-            </Form.Label>
-            <div className="d-flex flex-column flex-md-row w-100 gap-2">
-              <Form.Control
-                as="select"
-                value={role}
-                onChange={handleRoleChange}
-                style={{ maxWidth: "150px" }}
-              >
-                <option value="developer">Developer</option>
-                <option value="submitter">Submitter</option>
-                <option value="pm">Project Manager</option>
-              </Form.Control>
-              <Button
-                variant="primary"
-                onClick={handleAssign}
-                disabled={selectedUsers.length === 0 || role === ""}
-              >
-                Assign
-              </Button>
-            </div>
-          </Form.Group>
-        </Col>
-      </Row>
+            <Form.Group
+              controlId="roleSelect"
+              className="d-flex align-items-center mb-0 gap-2 flex-column flex-md-row"
+            >
+              <Form.Label className="mb-0 text-nowrap">
+                Select the role to assign:
+              </Form.Label>
+              <div className="d-flex flex-column flex-md-row w-100 gap-2">
+                <Form.Control
+                  as="select"
+                  value={role}
+                  onChange={handleRoleChange}
+                  style={{ maxWidth: "150px" }}
+                >
+                  <option value="">~Select Role~</option>
+                  <option value="developer">Developer</option>
+                  <option value="submitter">Submitter</option>
+                  <option value="pm">Project Manager</option>
+                </Form.Control>
+                <Button
+                  variant="primary"
+                  onClick={handleAssign}
+                  disabled={selectedUsers.length === 0 || role === ""}
+                >
+                  Assign
+                </Button>
+              </div>
+            </Form.Group>
+          </Col>
+        </Row>
+      )}
+      {!roleSelection && (
+        <Button
+          variant="primary"
+          onClick={handleAssign}
+          className="mt-3"
+          disabled={selectedUsers.length === 0}
+        >
+          Assign Selected Users
+        </Button>
+      )}
     </>
   );
 };

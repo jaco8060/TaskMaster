@@ -2,6 +2,7 @@ import axios from "axios";
 import React from "react";
 import { Container } from "react-bootstrap";
 import UserSelector from "../../../hooks/UserSelector";
+
 const AssignUserRole = ({ onRoleAssigned }) => {
   const handleAssignRole = async (userIds, role) => {
     try {
@@ -27,6 +28,7 @@ const AssignUserRole = ({ onRoleAssigned }) => {
       <UserSelector
         endpoint={`${import.meta.env.VITE_URL}/users`}
         onAssign={handleAssignRole}
+        roleSelection={true} // Enable role selection
       />
     </Container>
   );
