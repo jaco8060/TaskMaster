@@ -1,11 +1,5 @@
 import axios from "axios";
-import {
-  differenceInDays,
-  format,
-  isToday,
-  isYesterday,
-  parseISO,
-} from "date-fns";
+import { format } from "date-fns";
 import React, { useContext, useState } from "react";
 import { Button, Form, Modal } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
@@ -60,17 +54,7 @@ const MyProjects = () => {
   };
 
   const formatDate = (dateString) => {
-    const date = parseISO(dateString);
-    const now = new Date();
-    if (isToday(date)) {
-      return `Today ${format(date, "h:mm aa")}`;
-    } else if (isYesterday(date)) {
-      return `Yesterday ${format(date, "h:mm aa")}`;
-    } else if (differenceInDays(now, date) <= 7) {
-      return `${differenceInDays(now, date)}d ago ${format(date, "h:mm aa")}`;
-    } else {
-      return format(date, "M-d-yyyy h:mm aa");
-    }
+    return format(new Date(dateString), "MMMM d, yyyy h:mm a");
   };
 
   return (

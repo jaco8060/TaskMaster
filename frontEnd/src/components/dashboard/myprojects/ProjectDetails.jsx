@@ -1,4 +1,5 @@
 import axios from "axios";
+import { format } from "date-fns";
 import React, { useEffect, useState } from "react";
 import {
   Button,
@@ -93,6 +94,10 @@ const ProjectDetails = () => {
     }
   };
 
+  const formatDate = (dateString) => {
+    return format(new Date(dateString), "MMMM d, yyyy h:mm a");
+  };
+
   if (loading) {
     return (
       <MainNav>
@@ -120,8 +125,11 @@ const ProjectDetails = () => {
   const personnelColumns = [
     { header: "Username", accessor: "username" },
     { header: "Email", accessor: "email" },
-    { header: "Role", accessor: "role" },
-    { header: "Assigned At", accessor: "assigned_at" },
+    {
+      header: "Assigned At",
+      accessor: "assigned_at",
+      renderCell: (item) => formatDate(item.assigned_at),
+    },
   ];
 
   return (
@@ -138,8 +146,7 @@ const ProjectDetails = () => {
                 <strong>Description:</strong> {project.description}
               </p>
               <p>
-                <strong>Created At:</strong>{" "}
-                {new Date(project.created_at).toLocaleString()}
+                <strong>Created At:</strong> {formatDate(project.created_at)}
               </p>
               <p>
                 <strong>Is Active:</strong> {project.is_active ? "Yes" : "No"}
@@ -165,7 +172,13 @@ const ProjectDetails = () => {
             <DataTable
               endpoint={`${import.meta.env.VITE_URL}/projects/${id}/personnel`}
               columns={personnelColumns}
-              searchFields={["username", "email", "role"]}
+              searchFields={["username", "email"]}
+              renderCell={(item, accessor) => {
+                if (accessor === "assigned_at") {
+                  return formatDate(item[accessor]);
+                }
+                return item[accessor];
+              }}
             />
           </Col>
         </Row>
