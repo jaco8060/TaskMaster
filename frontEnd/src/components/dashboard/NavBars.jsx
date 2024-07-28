@@ -90,13 +90,6 @@ const TopNavBar = ({ children }) => {
               <Button variant="outline-success">Search</Button>
             </Form>
             <div className="d-flex flex-column d-lg-none justify-content-center">
-              <Button
-                variant="primary"
-                className="d-lg-none d-lg-inline text-nowrap mx-auto mb-2"
-                style={{ width: "150px" }}
-              >
-                New Ticket
-              </Button>
               <hr />
               <div id="TopNavBarMobile">{children}</div>
             </div>
@@ -119,12 +112,6 @@ const TopNavBar = ({ children }) => {
               </div>
             </div>
             <Nav className="justify-content-end flex-grow-1 pe-3 offcanvas-nav">
-              <Button
-                variant="primary"
-                className="me-2 d-none d-lg-inline text-nowrap"
-              >
-                New Ticket
-              </Button>
               <Nav.Link href="#notifications" className="d-none d-lg-inline">
                 <div className="d-flex align-items-center">
                   <h6 className="mb-0 me-2">Notifications</h6>

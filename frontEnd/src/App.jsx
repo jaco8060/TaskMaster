@@ -13,6 +13,7 @@ import ManageRoles from "./components/dashboard/manage roles/ManageRoles";
 import AssignPersonnel from "./components/dashboard/myprojects/AssignPersonnel";
 import MyProjects from "./components/dashboard/myprojects/MyProjects";
 import ProjectDetails from "./components/dashboard/myprojects/ProjectDetails";
+import MyTickets from "./components/dashboard/mytickets/MyTickets";
 import LoginPage from "./components/login/LoginPage";
 import ResetPassword from "./components/login/ResetPassword";
 import AdminRoute from "./components/routes/AdminRoute";
@@ -34,6 +35,7 @@ const App = () => {
         <Route path="/myprojects" element={<MyProjects />} />
         <Route path="/project-details/:id" element={<ProjectDetails />} />
         <Route path="/assign-personnel/:id" element={<AssignPersonnel />} />
+        <Route path="/mytickets" element={<MyTickets />} />
       </Route>
       <Route element={<AdminRoute />}>
         <Route path="/manage-roles" element={<ManageRoles />} />
