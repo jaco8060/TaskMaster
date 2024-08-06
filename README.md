@@ -4,11 +4,11 @@
 
 ### Purpose
 
-The purpose of this document is to provide a detailed description of the Bug Tracker application. This application is designed to manage and track bugs or issues within various projects. It aims to help software development teams organize, assign, and monitor the status of issues efficiently.
+The purpose of this document is to provide a detailed description of the TaskMaster application. This application is designed to manage and track bugs or issues within various projects. It aims to help software development teams organize, assign, and monitor the status of issues efficiently.
 
 ### Scope
 
-The Bug Tracker application will enable users to:
+The TaskMaster application will enable users to:
 
 - Create and manage projects
 - Create and manage tickets (bugs, defects, feature requests)
