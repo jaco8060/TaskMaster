@@ -1,4 +1,4 @@
-# Bug Tracker Application
+# TaskMaster application
 
 ## Introduction
 
