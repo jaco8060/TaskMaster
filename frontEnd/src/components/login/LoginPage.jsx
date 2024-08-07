@@ -114,11 +114,7 @@ const Login = ({ setWindow }) => {
   ];
 
   return (
-    <FormComponent
-      title="Bug Tracker Login"
-      fields={fields}
-      onSubmit={handleSubmit}
-    >
+    <FormComponent title="Login" fields={fields} onSubmit={handleSubmit}>
       <div className="d-flex flex-column gap-4">
         <Button className="mt-2" variant="primary" type="submit">
           Login

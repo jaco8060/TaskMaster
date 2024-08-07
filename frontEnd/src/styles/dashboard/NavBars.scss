@@ -30,7 +30,7 @@
   @include userTabs();
 
   @include media-breakpoint-up(lg) {
-    border-right: 1px solid var(--bs-gray-800);
+    border-right: 1px solid var(--bs-dark);
     display: flex;
     padding: 0.5rem;
     width: 270px;

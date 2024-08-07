@@ -8,7 +8,8 @@ import Navbar from "react-bootstrap/Navbar";
 import Offcanvas from "react-bootstrap/Offcanvas";
 import { FaBell, FaCog, FaSignOutAlt } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
-import BugTrackerIcon from "../../assets/bug-tracker-icon.svg";
+
+import TaskMasterIcon from "../../assets/task-master-icon.png";
 import { AuthContext } from "../../contexts/AuthProvider.jsx";
 import "../../styles/dashboard/NavBars.scss"; // Import the SCSS file
 import UserTabs from "./UserTabs";
@@ -45,13 +46,13 @@ const TopNavBar = ({ children }) => {
           <Navbar.Toggle aria-controls={`offcanvasNavbar-expand-lg`} />
           <Navbar.Brand href="#">
             <img
-              src={BugTrackerIcon}
-              alt="Bug Tracker Icon"
+              src={TaskMasterIcon}
+              alt="TaskMaster Icon"
               width="30"
               height="30"
               className="d-inline-block align-top me-2"
             />
-            Bug Tracker
+            TaskMaster
           </Navbar.Brand>
         </div>
 
@@ -66,13 +67,13 @@ const TopNavBar = ({ children }) => {
               className="d-flex align-items-center"
             >
               <img
-                src={BugTrackerIcon}
-                alt="Bug Tracker Icon"
+                src={TaskMasterIcon}
+                alt="TaskMaster Icon"
                 width="30"
                 height="30"
                 className="d-inline-block align-top me-2"
               />
-              Bug Tracker
+              TaskMaster
             </Offcanvas.Title>
           </Offcanvas.Header>
 
