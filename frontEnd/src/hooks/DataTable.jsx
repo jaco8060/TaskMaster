@@ -1,17 +1,18 @@
 import axios from "axios";
+import { format } from "date-fns";
 import React, { useEffect, useState } from "react";
 import {
   Button,
   Col,
+  Container,
   Form,
   InputGroup,
   Pagination,
   Row,
   Spinner,
-  Table,
 } from "react-bootstrap";
+import Table from "react-bootstrap/Table";
 import "../styles/hooks/DataTable.scss"; // Import the CSS file
-
 const DataTable = ({
   endpoint,
   columns,
@@ -39,7 +40,7 @@ const DataTable = ({
     };
 
     fetchData();
-  }, [endpoint, refresh]); // Add refresh as a dependency
+  }, [endpoint, refresh]);
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
@@ -119,7 +120,7 @@ const DataTable = ({
           </Form.Group>
         </Col>
         <Col
-          xs={12}
+          xs={8}
           md={6}
           className="d-flex align-items-center justify-content-end"
         >
@@ -145,9 +146,9 @@ const DataTable = ({
         </div>
       ) : (
         <>
-          <Table responsive className="custom-table">
+          <Table responsive className="table-hover">
             <thead>
-              <tr>
+              <tr className="table-dark table-active text-uppercase text-white text-nowrap">
                 {columns.map((column, index) => (
                   <th key={index} className="header-cell">
                     <div className="d-flex justify-content-between align-items-center">
@@ -155,7 +156,7 @@ const DataTable = ({
                       <Button
                         variant="link"
                         onClick={() => handleSort(column.accessor)}
-                        className="sort-button"
+                        className="sort-button text-white"
                       >
                         {sortConfig.key === column.accessor ? (
                           sortConfig.direction === "asc" ? (
@@ -176,7 +177,14 @@ const DataTable = ({
               {currentItems.map((item, index) => (
                 <tr key={index}>
                   {columns.map((column, colIndex) => (
-                    <td key={colIndex} className="wrapped-cell">
+                    <td
+                      key={colIndex}
+                      className={
+                        column.accessor === "description"
+                          ? "wrapped-cell description-column"
+                          : "wrapped-cell"
+                      }
+                    >
                       {renderCell
                         ? renderCell(item, column.accessor)
                         : item[column.accessor]}

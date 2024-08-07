@@ -13,6 +13,7 @@
   align-items: start;
   padding: 0;
   margin: 0;
+  text-wrap: nowrap;
 }
 
 .details-cell button {
@@ -24,4 +25,23 @@
 
 .details-cell button:hover {
   text-decoration: underline;
+}
+
+// Custom widths for the dataTable row
+.dataTable {
+  @media (max-width: 576px) {
+    width: 100%;
+  }
+
+  // @media (max-width: 768px) {
+  //   width: 80%;
+  // }
+
+  // @media (max-width: 992px) {
+  //   width: 70%;
+  // }
+
+  // @media (max-width: 1200px) {
+  //   width: 60%;
+  // }
 }

@@ -1,7 +1,8 @@
 import axios from "axios";
 import { format } from "date-fns";
 import React, { useContext, useState } from "react";
-import { Button, Form, Modal } from "react-bootstrap";
+import { Button, Col, Container, Form, Modal, Row } from "react-bootstrap";
+
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../../contexts/AuthProvider.jsx";
 import DataTable from "../../../hooks/DataTable.jsx";
@@ -19,7 +20,7 @@ const MyProjects = () => {
   ];
 
   const searchFields = ["name", "description"];
-  const endpoint = `${import.meta.env.VITE_URL}/projects?user_id=${user.id}`;
+  const endpoint = `${import.meta.env.VITE_URL}/projects/user/${user.id}`;
 
   const [showModal, setShowModal] = useState(false);
   const [projectName, setProjectName] = useState("");
@@ -59,52 +60,87 @@ const MyProjects = () => {
 
   return (
     <MainNav>
-      <div>
-        <h1 className="mb-3">My Projects</h1>
-        <Button className="mb-3" variant="primary" onClick={handleShowModal}>
-          Create Project
-        </Button>
-        <DataTable
-          key={refresh} // Add the refresh key
-          endpoint={endpoint}
-          columns={columns}
-          searchFields={searchFields}
-          renderCell={(item, accessor) => {
-            if (accessor === "details") {
-              return (
-                <div className="details-cell-container">
-                  <ul className="details-cell">
-                    <li>
-                      <Button
-                        variant="link"
-                        onClick={() => navigate(`/project-details/${item.id}`)}
-                      >
-                        Details
-                      </Button>
-                    </li>
-                    <li>
-                      {(user.role === "admin" || user.role === "pm") && (
-                        <Button
-                          variant="link"
-                          onClick={() =>
-                            navigate(`/assign-personnel/${item.id}`)
-                          }
-                        >
-                          Assign Personnel
-                        </Button>
-                      )}
-                    </li>
-                  </ul>
-                </div>
-              );
-            }
-            if (accessor === "created_at") {
-              return formatDate(item[accessor]);
-            }
-            return item[accessor];
-          }}
-        />
-      </div>
+      {/* <div className="p-0 d-flex flex-column">
+        <Row>
+          <Col>
+            <h1 className="mb-3">Manage Role Assignment</h1>
+          </Col>
+        </Row>
+        <Row>
+          <Col xs={10} sm={12} className="p-0">
+            <AssignUserRole onRoleAssigned={handleRefresh} />
+          </Col>
+        </Row>
+        <Row>
+          <Col xs={10} sm={12}>
+            <UserTable refresh={refresh} />
+          </Col>
+        </Row>
+      </div> */}
+      <Container className="p-0 m-0 d-flex flex-column ">
+        <Row>
+          <Col>
+            <h1 className="mb-3">My Projects</h1>
+          </Col>
+        </Row>
+        <Row>
+          <Col xs={6} sm={6} className="ml-1">
+            <Button
+              className="mb-3"
+              variant="primary"
+              onClick={handleShowModal}
+            >
+              Create Project
+            </Button>
+          </Col>
+        </Row>
+        <Row className="dataTable">
+          <Col xs={12} sm={12}>
+            <DataTable
+              key={refresh} // Add the refresh key
+              endpoint={endpoint}
+              columns={columns}
+              searchFields={searchFields}
+              renderCell={(item, accessor) => {
+                if (accessor === "details") {
+                  return (
+                    <div className="details-cell-container">
+                      <ul className="details-cell">
+                        <li>
+                          <Button
+                            variant="link"
+                            onClick={() =>
+                              navigate(`/project-details/${item.id}`)
+                            }
+                          >
+                            Details
+                          </Button>
+                        </li>
+                        <li>
+                          {(user.role === "admin" || user.role === "pm") && (
+                            <Button
+                              variant="link"
+                              onClick={() =>
+                                navigate(`/assign-personnel/${item.id}`)
+                              }
+                            >
+                              Assign Personnel
+                            </Button>
+                          )}
+                        </li>
+                      </ul>
+                    </div>
+                  );
+                }
+                if (accessor === "created_at") {
+                  return formatDate(item[accessor]);
+                }
+                return item[accessor];
+              }}
+            />
+          </Col>
+        </Row>
+      </Container>
 
       <Modal show={showModal} onHide={handleCloseModal}>
         <Modal.Header closeButton>

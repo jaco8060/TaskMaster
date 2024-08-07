@@ -31,6 +31,17 @@ export const handleGetProjectById = async (req, res) => {
 };
 
 export const handleGetProjectsByUserId = async (req, res) => {
+  const userId = req.params.userId;
+  try {
+    const projects = await getProjectsByUserId(userId);
+    res.status(200).json(projects);
+  } catch (error) {
+    console.error("Error fetching projects:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+export const handleGetProjectsByQueryParam = async (req, res) => {
   const user_id = req.query.user_id;
   try {
     const projects = await getProjectsByUserId(user_id);

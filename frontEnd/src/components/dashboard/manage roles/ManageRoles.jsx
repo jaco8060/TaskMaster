@@ -32,7 +32,6 @@ const ManageRoles = () => {
           </Col>
         </Row>
       </div>
-      {/* <Container fluid className="p-0 d-flex flex-column"></Container> */}
     </MainNav>
   );
 };
