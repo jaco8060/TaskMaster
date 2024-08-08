@@ -93,7 +93,7 @@ SELECT * FROM users
 SELECT * FROM bug_history
 SELECT * FROM bugs
 SELECT * FROM comments
-
+SELECT * FROM tickets
 ALTER TABLE projects
 
 
