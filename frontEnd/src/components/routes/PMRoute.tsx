@@ -1,9 +1,9 @@
 import { useContext } from "react";
 import { Navigate, Outlet } from "react-router-dom";
-import { AuthContext } from "../../contexts/AuthProvider";
+import { AuthContext, AuthContextType } from "../../contexts/AuthProvider"; // Ensure AuthContextType is imported
 
-const PMRoute = () => {
-  const { user, loading } = useContext(AuthContext);
+const PMRoute: React.FC = () => {
+  const { user, loading } = useContext(AuthContext) as AuthContextType; // Cast the context with proper type
 
   if (loading) {
     return <div>Loading...</div>;

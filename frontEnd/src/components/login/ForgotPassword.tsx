@@ -1,13 +1,14 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { FormEvent, useState } from "react";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
-import { WindowState } from "./LoginPage";
+import { useNavigate } from "react-router-dom"; // Use navigation instead of setWindow
 
-const ForgotPassword = ({ setWindow }) => {
-  const [username, setUsername] = useState("");
-  const [message, setMessage] = useState("");
+const ForgotPassword: React.FC = () => {
+  const [username, setUsername] = useState<string>(""); // State for username
+  const [message, setMessage] = useState<string>(""); // State for feedback message
+  const navigate = useNavigate(); // Use useNavigate for navigation
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       const response = await axios.post(
@@ -53,7 +54,7 @@ const ForgotPassword = ({ setWindow }) => {
             <Button
               variant="secondary"
               className="mt-3"
-              onClick={() => setWindow(WindowState.LOGIN)}
+              onClick={() => navigate("/login")} // Navigate back to login
             >
               Back to Login
             </Button>

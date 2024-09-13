@@ -3,20 +3,44 @@ import { format } from "date-fns";
 import React, { useContext, useEffect, useState } from "react";
 import { Button, Col, Container, Modal, Row, Spinner } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
-import { AuthContext } from "../../../contexts/AuthProvider.jsx";
-import DataTable from "../../../hooks/DataTable.jsx";
-import UserSelector from "../../../hooks/UserSelector.jsx";
-import { MainNav } from "../NavBars.jsx";
+import { AuthContext, AuthContextType } from "../../../contexts/AuthProvider";
+import DataTable from "../../../hooks/DataTable";
+import UserSelector from "../../../hooks/UserSelector";
+import { MainNav } from "../NavBars";
 
-const AssignPersonnel = () => {
-  const { id } = useParams(); // Get the project ID from the URL
+interface Project {
+  id: string;
+  name: string;
+  description: string;
+  created_at: string;
+  is_active: boolean;
+}
+
+interface Personnel {
+  id: string;
+  username: string;
+  email: string;
+  role: string;
+  assigned_at: string;
+}
+
+interface User {
+  id: string;
+  username: string;
+}
+
+const AssignPersonnel: React.FC = () => {
+  const { id } = useParams<{ id: string }>(); // Get the project ID from the URL
   const navigate = useNavigate();
-  const { user } = useContext(AuthContext);
-  const [project, setProject] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [refresh, setRefresh] = useState(false); // State to trigger DataTable refresh
-  const [showModal, setShowModal] = useState(false); // State to handle modal visibility
-  const [selectedUser, setSelectedUser] = useState(null); // State to track the user being deleted
+
+  // Correctly use AuthContext with typing
+  const { user, loading } = useContext(AuthContext) as AuthContextType;
+
+  const [project, setProject] = useState<Project | null>(null);
+  const [loadingProject, setLoadingProject] = useState<boolean>(true);
+  const [refresh, setRefresh] = useState<boolean>(false); // State to trigger DataTable refresh
+  const [showModal, setShowModal] = useState<boolean>(false); // State to handle modal visibility
+  const [selectedUser, setSelectedUser] = useState<User | null>(null); // State to track the user being deleted
 
   useEffect(() => {
     const fetchProjectDetails = async () => {
@@ -32,13 +56,13 @@ const AssignPersonnel = () => {
         console.error("Error fetching project details:", error);
         alert("Failed to fetch project details.");
       }
-      setLoading(false);
+      setLoadingProject(false);
     };
 
     fetchProjectDetails();
   }, [id]);
 
-  const handleAssignPersonnel = async (userIds) => {
+  const handleAssignPersonnel = async (userIds: number[]) => {
     try {
       const promises = userIds.map((userId) =>
         axios.post(
@@ -52,7 +76,6 @@ const AssignPersonnel = () => {
       );
 
       await Promise.all(promises);
-
       setRefresh(!refresh); // Trigger DataTable refresh
     } catch (error) {
       console.error("Error assigning personnel:", error);
@@ -83,11 +106,31 @@ const AssignPersonnel = () => {
     }
   };
 
-  const formatDate = (dateString) => {
+  const formatDate = (dateString: string) => {
     return format(new Date(dateString), "MMMM d, yyyy h:mm a");
   };
 
+  // Handle loading or redirect to login if user is not logged in
   if (loading) {
+    return (
+      <MainNav>
+        <Container
+          className="d-flex justify-content-center align-items-center"
+          style={{ height: "100vh" }}
+        >
+          <Spinner animation="border" />
+        </Container>
+      </MainNav>
+    );
+  }
+
+  if (!user) {
+    // If no user is present, redirect to login or display a message
+    navigate("/login");
+    return null;
+  }
+
+  if (loadingProject) {
     return (
       <MainNav>
         <Container
@@ -118,12 +161,12 @@ const AssignPersonnel = () => {
     {
       header: "Assigned At",
       accessor: "assigned_at",
-      renderCell: (item) => formatDate(item.assigned_at),
+      renderCell: (item: Personnel) => formatDate(item.assigned_at),
     },
     {
       header: "",
       accessor: "actions",
-      renderCell: (item) => (
+      renderCell: (item: Personnel) => (
         <Button
           variant="danger"
           onClick={() => {
@@ -176,7 +219,7 @@ const AssignPersonnel = () => {
               columns={personnelColumns}
               searchFields={["username", "email", "role"]}
               refresh={refresh} // Use the refresh state to trigger DataTable refresh
-              renderCell={(item, accessor) => {
+              renderCell={(item: Personnel, accessor: string) => {
                 if (accessor === "actions") {
                   return (
                     <div className="d-flex justify-content-end">
@@ -192,10 +235,13 @@ const AssignPersonnel = () => {
                     </div>
                   );
                 }
+
                 if (accessor === "assigned_at") {
-                  return formatDate(item[accessor]);
+                  return formatDate(item["assigned_at"]);
                 }
-                return item[accessor];
+
+                // Cast the accessor to keyof Personnel where applicable
+                return item[accessor as keyof Personnel];
               }}
             />
           </Col>

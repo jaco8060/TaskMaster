@@ -1,17 +1,30 @@
 import axios from "axios";
 import { format } from "date-fns";
-import React, { useContext, useEffect, useState } from "react";
-import { Button, Container, Form, Modal, Spinner } from "react-bootstrap";
-import { AuthContext } from "../../../contexts/AuthProvider.jsx";
-import DataTable from "../../../hooks/DataTable.jsx";
+import React, { ChangeEvent, useContext, useEffect, useState } from "react";
+import { Button, Container, Form, Modal } from "react-bootstrap";
+import { AuthContext, AuthContextType } from "../../../contexts/AuthProvider"; // Adjust path as needed
+import DataTable from "../../../hooks/DataTable";
 import "../../../styles/dashboard/MyTickets.scss"; // Import your custom CSS file
-import { MainNav } from "../NavBars.jsx";
+import { MainNav } from "../NavBars";
 
-const MyTickets = () => {
-  const { user } = useContext(AuthContext); // Get the current logged-in user
-  const [projects, setProjects] = useState([]);
-  const [showModal, setShowModal] = useState(false);
-  const [newTicket, setNewTicket] = useState({
+interface Project {
+  id: string;
+  name: string;
+}
+
+interface Ticket {
+  title: string;
+  description: string;
+  status: string;
+  priority: string;
+  project_id: string;
+}
+
+const MyTickets: React.FC = () => {
+  const { user } = useContext(AuthContext) as AuthContextType; // Properly type the context
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const [newTicket, setNewTicket] = useState<Ticket>({
     title: "",
     description: "",
     status: "Open",
@@ -22,7 +35,7 @@ const MyTickets = () => {
   const fetchProjects = async () => {
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_URL}/projects/user/${user.id}`,
+        `${import.meta.env.VITE_URL}/projects/user/${user?.id}`,
         {
           withCredentials: true,
         }
@@ -35,10 +48,12 @@ const MyTickets = () => {
   };
 
   useEffect(() => {
-    fetchProjects();
-  }, [user.id]);
+    if (user?.id) {
+      fetchProjects();
+    }
+  }, [user?.id]);
 
-  const formatDate = (dateString) => {
+  const formatDate = (dateString: string | null) => {
     if (!dateString) return "N/A"; // Handle undefined or null dates
     try {
       return format(new Date(dateString), "MMMM d, yyyy h:mm a");
@@ -57,8 +72,8 @@ const MyTickets = () => {
         `${import.meta.env.VITE_URL}/tickets`,
         {
           ...newTicket,
-          reported_by: user.id,
-          assigned_to: user.id, // Assuming the ticket is assigned to the user who creates it
+          reported_by: user?.id,
+          assigned_to: user?.id, // Assuming the ticket is assigned to the user who creates it
         },
         {
           headers: {
@@ -74,7 +89,9 @@ const MyTickets = () => {
     }
   };
 
-  const handleChange = (e) => {
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setNewTicket((prev) => ({
       ...prev,
@@ -99,7 +116,7 @@ const MyTickets = () => {
   ];
 
   const searchFields = ["title", "description", "status", "priority"];
-  const endpoint = `${import.meta.env.VITE_URL}/tickets/user/${user.id}`;
+  const endpoint = `${import.meta.env.VITE_URL}/tickets/user/${user?.id}`;
 
   return (
     <MainNav>

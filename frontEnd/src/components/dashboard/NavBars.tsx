@@ -8,15 +8,30 @@ import Navbar from "react-bootstrap/Navbar";
 import Offcanvas from "react-bootstrap/Offcanvas";
 import { FaBell, FaCog, FaSignOutAlt } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
-
 import TaskMasterIcon from "../../assets/task-master-icon.png";
-import { AuthContext } from "../../contexts/AuthProvider.jsx";
-import "../../styles/dashboard/NavBars.scss"; // Import the SCSS file
+import { AuthContext, AuthContextType } from "../../contexts/AuthProvider";
+import "../../styles/dashboard/NavBars.scss";
 import UserTabs from "./UserTabs";
+// Define the props for each component
+interface TopNavBarProps {
+  children: React.ReactNode;
+}
 
-const TopNavBar = ({ children }) => {
+interface SideNavBarProps {
+  children: React.ReactNode;
+}
+
+interface MainNavProps {
+  children: React.ReactNode;
+}
+
+interface User {
+  role: "admin" | "pm" | "submitter" | "developer"; // Define roles
+}
+
+const TopNavBar: React.FC<TopNavBarProps> = ({ children }) => {
   const navigate = useNavigate();
-  const { setUser } = useContext(AuthContext);
+  const { setUser } = useContext(AuthContext) as AuthContextType; // Use context directly
 
   const handleLogout = async () => {
     try {
@@ -139,27 +154,17 @@ const TopNavBar = ({ children }) => {
   );
 };
 
-const SideNavBar = ({ children }) => {
-  return (
-    <>
-      <aside
-        // id refers to styles/NavBars.scss styling
-        id="SideNavBar"
-      >
-        {children}
-      </aside>
-    </>
-  );
+const SideNavBar: React.FC<SideNavBarProps> = ({ children }) => {
+  return <aside id="SideNavBar">{children}</aside>;
 };
 
-const MainNav = ({ children }) => {
-  const { user } = useContext(AuthContext);
+const MainNav: React.FC<MainNavProps> = ({ children }) => {
+  const { user } = useContext(AuthContext) as AuthContextType; // Use AuthContext directly
   const location = useLocation();
-  const [activeTab, setActiveTab] = useState("");
+  const [activeTab, setActiveTab] = useState<string>("");
 
   useEffect(() => {
-    // Set the active tab based on the URL path
-    const pathToTabMap = {
+    const pathToTabMap: Record<User["role"], Record<string, string>> = {
       admin: {
         "/dashboard": "first",
         "/manage-roles": "second",
@@ -187,34 +192,35 @@ const MainNav = ({ children }) => {
       },
     };
 
-    const currentTab = pathToTabMap[user.role]?.[location.pathname];
+    const currentTab =
+      pathToTabMap[user?.role as keyof typeof pathToTabMap]?.[
+        location.pathname
+      ];
     if (currentTab) {
       setActiveTab(currentTab);
     }
-  }, [location.pathname, user.role]);
+  }, [location.pathname, user]);
 
-  const handleSelect = (eventKey) => {
-    setActiveTab(eventKey);
+  const handleSelect = (eventKey: string | null) => {
+    setActiveTab(eventKey ?? "");
   };
 
   return (
-    <>
-      <Container
-        fluid
-        className="p-0 d-flex flex-column"
-        style={{ height: "100vh" }}
-      >
-        <TopNavBar>
+    <Container
+      fluid
+      className="p-0 d-flex flex-column"
+      style={{ height: "100vh" }}
+    >
+      <TopNavBar>
+        <UserTabs activeTab={activeTab} handleSelect={handleSelect} />
+      </TopNavBar>
+      <div className="d-flex flex-grow-1">
+        <SideNavBar>
           <UserTabs activeTab={activeTab} handleSelect={handleSelect} />
-        </TopNavBar>
-        <div className="d-flex flex-grow-1">
-          <SideNavBar>
-            <UserTabs activeTab={activeTab} handleSelect={handleSelect} />
-          </SideNavBar>
-          <main className="flex-grow-1 p-3">{children}</main>
-        </div>
-      </Container>
-    </>
+        </SideNavBar>
+        <main className="flex-grow-1 p-3">{children}</main>
+      </div>
+    </Container>
   );
 };
 

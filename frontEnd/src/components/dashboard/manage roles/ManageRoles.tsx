@@ -2,12 +2,12 @@ import React, { useState } from "react";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
-import { MainNav } from "../NavBars.jsx";
-import AssignUserRole from "./AssignUserRole.jsx";
-import UserTable from "./UserTable";
+import { MainNav } from "../NavBars.tsx";
+import AssignUserRole from "./AssignUserRole";
+import UserTable from "./UserTable.tsx";
 
-const ManageRoles = () => {
-  const [refresh, setRefresh] = useState(false);
+const ManageRoles: React.FC = () => {
+  const [refresh, setRefresh] = useState<boolean>(false);
 
   const handleRefresh = () => {
     setRefresh((prev) => !prev);

@@ -1,10 +1,10 @@
 import { useContext } from "react";
 import { Navigate, Outlet } from "react-router-dom";
-import { AuthContext } from "../../contexts/AuthProvider";
+import { AuthContext, AuthContextType } from "../../contexts/AuthProvider"; // Import the context and type
 
 // Check if the user is authenticated from global state AuthContext
-const PrivateRoute = () => {
-  const { user, loading } = useContext(AuthContext);
+const PrivateRoute: React.FC = () => {
+  const { user, loading } = useContext(AuthContext) as AuthContextType; // Cast context to correct type
 
   if (loading) {
     // Optionally show a loading indicator while checking authentication

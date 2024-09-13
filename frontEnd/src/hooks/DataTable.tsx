@@ -13,19 +13,40 @@ import {
 } from "react-bootstrap";
 import Table from "react-bootstrap/Table";
 import "../styles/hooks/DataTable.scss"; // Import the CSS file
-const DataTable = ({
+
+// Define types for the component props and state
+interface Column {
+  header: string;
+  accessor: string;
+}
+
+interface DataTableProps {
+  endpoint: string;
+  columns: Column[];
+  searchFields: string[];
+  refresh?: boolean;
+  renderCell?: (item: any, accessor: string) => React.ReactNode;
+}
+
+const DataTable: React.FC<DataTableProps> = ({
   endpoint,
   columns,
   searchFields,
   refresh,
   renderCell,
 }) => {
-  const [data, setData] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
+  const [data, setData] = useState<any[]>([]);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [itemsPerPage, setItemsPerPage] = useState<number>(10);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [sortConfig, setSortConfig] = useState<{
+    key: string | null;
+    direction: string | null;
+  }>({
+    key: null,
+    direction: null,
+  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -42,12 +63,14 @@ const DataTable = ({
     fetchData();
   }, [endpoint, refresh]);
 
-  const handleSearchChange = (event) => {
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
     setCurrentPage(1);
   };
 
-  const handleItemsPerPageChange = (event) => {
+  const handleItemsPerPageChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const value = Number(event.target.value);
     if (!isNaN(value) && value > 0) {
       setItemsPerPage(value);
@@ -55,7 +78,7 @@ const DataTable = ({
     }
   };
 
-  const handleSort = (key) => {
+  const handleSort = (key: string) => {
     let direction = "asc";
     if (sortConfig.key === key && sortConfig.direction === "asc") {
       direction = "desc";
@@ -66,10 +89,10 @@ const DataTable = ({
   const sortedData = React.useMemo(() => {
     if (sortConfig.key) {
       return [...data].sort((a, b) => {
-        if (a[sortConfig.key] < b[sortConfig.key]) {
+        if (a[sortConfig.key!] < b[sortConfig.key!]) {
           return sortConfig.direction === "asc" ? -1 : 1;
         }
-        if (a[sortConfig.key] > b[sortConfig.key]) {
+        if (a[sortConfig.key!] > b[sortConfig.key!]) {
           return sortConfig.direction === "asc" ? 1 : -1;
         }
         return 0;
@@ -90,7 +113,7 @@ const DataTable = ({
 
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
 
-  const handlePageChange = (pageNumber) => {
+  const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber);
   };
 

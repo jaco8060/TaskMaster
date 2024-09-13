@@ -1,32 +1,46 @@
 import axios from "axios";
-import { useContext, useState } from "react";
+import React, { useContext, useState } from "react";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { Route, Routes, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../contexts/AuthProvider";
 import ForgotPassword from "./ForgotPassword";
-import ResetPassword from "./ResetPassword";
+import ResetPassword from "./ResetPassword.tsx";
 
-// Enum for window states
-export const WindowState = {
-  LOGIN: "LOGIN",
-  REGISTER: "REGISTER",
-  DEMO: "DEMO",
-  FORGOT_PASSWORD: "FORGOT_PASSWORD",
-  RESET_PASSWORD: "RESET_PASSWORD",
-};
+// Custom hook for form handling
+const useForm = <T extends Object>(initialState: T) => {
+  const [formData, setFormData] = useState<T>(initialState);
 
-const useForm = (initialState) => {
-  const [formData, setFormData] = useState(initialState);
-
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  return [formData, handleChange];
+  return [formData, handleChange] as const;
 };
 
-const FormComponent = ({ title, fields, onSubmit, children }) => {
+// Define props for FormComponent
+interface FormComponentProps {
+  title: string;
+  fields: Array<{
+    label: string;
+    type: string;
+    placeholder: string;
+    name: string;
+    value: string;
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    required?: boolean;
+  }>;
+  onSubmit: (e: React.FormEvent) => void;
+  children?: React.ReactNode;
+}
+
+// General form component
+const FormComponent: React.FC<FormComponentProps> = ({
+  title,
+  fields,
+  onSubmit,
+  children,
+}) => {
   return (
     <Container>
       <Row className="vh-100 d-flex justify-content-center align-items-center">
@@ -66,12 +80,18 @@ const FormComponent = ({ title, fields, onSubmit, children }) => {
   );
 };
 
-const Login = ({ setWindow }) => {
+interface AuthContextType {
+  user: any;
+  setUser: React.Dispatch<React.SetStateAction<any>>;
+}
+
+// Login component
+const Login: React.FC = () => {
   const [formData, handleChange] = useForm({ username: "", password: "" });
   const navigate = useNavigate();
-  const { setUser } = useContext(AuthContext);
+  const { setUser } = useContext(AuthContext) as AuthContextType;
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       const response = await axios.post(
@@ -123,10 +143,7 @@ const Login = ({ setWindow }) => {
           <p className="my-0">
             Forgot your{" "}
             <span>
-              <a
-                href="#"
-                onClick={() => setWindow(WindowState.FORGOT_PASSWORD)}
-              >
+              <a href="#" onClick={() => navigate("/login/forgot-password")}>
                 password
               </a>
             </span>
@@ -135,7 +152,7 @@ const Login = ({ setWindow }) => {
           <p className="my-0">
             New account?{" "}
             <span>
-              <a href="#" onClick={() => setWindow(WindowState.REGISTER)}>
+              <a href="#" onClick={() => navigate("/login/register")}>
                 Register
               </a>
             </span>
@@ -143,7 +160,7 @@ const Login = ({ setWindow }) => {
           <p className="my-0">
             Sign in as a{" "}
             <span>
-              <a href="#" onClick={() => setWindow(WindowState.DEMO)}>
+              <a href="#" onClick={() => navigate("/login/demo")}>
                 demo user
               </a>
             </span>
@@ -154,14 +171,16 @@ const Login = ({ setWindow }) => {
   );
 };
 
-const Register = ({ setWindow }) => {
+// Register component
+const Register: React.FC = () => {
   const [formData, handleChange] = useForm({
     username: "",
     password: "",
     email: "",
   });
+  const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       await axios.post(
@@ -174,7 +193,7 @@ const Register = ({ setWindow }) => {
           withCredentials: true,
         }
       );
-      setWindow(WindowState.LOGIN); // go back to login
+      navigate("/login");
     } catch (error) {
       console.error("Registration error:", error);
       alert("Registration failed");
@@ -213,7 +232,7 @@ const Register = ({ setWindow }) => {
 
   return (
     <FormComponent title="Register" fields={fields} onSubmit={handleSubmit}>
-      <Button variant="secondary" onClick={() => setWindow(WindowState.LOGIN)}>
+      <Button variant="secondary" onClick={() => navigate("/login")}>
         Back to login
       </Button>
       <Button variant="success" type="submit">
@@ -223,9 +242,10 @@ const Register = ({ setWindow }) => {
   );
 };
 
-const DemoUser = ({ setWindow }) => {
+// DemoUser component
+const DemoUser: React.FC = () => {
   const navigate = useNavigate();
-  const { setUser } = useContext(AuthContext);
+  const { setUser } = useContext(AuthContext) as AuthContextType;
 
   const demoUsers = [
     { role: "admin", username: "admin", password: "admin123" },
@@ -234,7 +254,10 @@ const DemoUser = ({ setWindow }) => {
     { role: "submitter", username: "demo_sub", password: "sub123" },
   ];
 
-  const handleDemoLogin = async (user) => {
+  const handleDemoLogin = async (user: {
+    username: string;
+    password: string;
+  }) => {
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_URL}/auth/login`,
@@ -270,10 +293,7 @@ const DemoUser = ({ setWindow }) => {
                 Login as {user.role.replace("_", " ")}
               </Button>
             ))}
-            <Button
-              variant="secondary"
-              onClick={() => setWindow(WindowState.LOGIN)}
-            >
+            <Button variant="secondary" onClick={() => navigate("/login")}>
               Back to login
             </Button>
           </div>
@@ -283,24 +303,16 @@ const DemoUser = ({ setWindow }) => {
   );
 };
 
-const LoginPage = () => {
-  const [activeWindow, setWindow] = useState(WindowState.LOGIN);
-  const [resetToken, setResetToken] = useState(null); // State to hold the reset token
-
+// Main LoginPage component using React Router
+const LoginPage: React.FC = () => {
   return (
-    <>
-      {activeWindow === WindowState.LOGIN && <Login setWindow={setWindow} />}
-      {activeWindow === WindowState.REGISTER && (
-        <Register setWindow={setWindow} />
-      )}
-      {activeWindow === WindowState.DEMO && <DemoUser setWindow={setWindow} />}
-      {activeWindow === WindowState.FORGOT_PASSWORD && (
-        <ForgotPassword setWindow={setWindow} />
-      )}
-      {activeWindow === WindowState.RESET_PASSWORD && (
-        <ResetPassword setWindow={setWindow} resetToken={resetToken} />
-      )}
-    </>
+    <Routes>
+      <Route path="/" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/demo" element={<DemoUser />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password/:token" element={<ResetPassword />} />
+    </Routes>
   );
 };
 

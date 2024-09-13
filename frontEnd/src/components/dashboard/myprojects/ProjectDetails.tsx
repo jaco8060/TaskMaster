@@ -11,19 +11,35 @@ import {
   Spinner,
 } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
-import DataTable from "../../../hooks/DataTable.jsx";
-import { MainNav } from "../NavBars.jsx";
+import DataTable from "../../../hooks/DataTable";
+import { MainNav } from "../NavBars";
 
-const ProjectDetails = () => {
-  const { id } = useParams(); // Get the project ID from the URL
+// Define types for Project and Personnel
+interface Project {
+  id: string;
+  name: string;
+  description: string;
+  created_at: string;
+  is_active: boolean;
+}
+
+interface Personnel {
+  id: string;
+  username: string;
+  email: string;
+  assigned_at: string;
+}
+
+const ProjectDetails: React.FC = () => {
+  const { id } = useParams<{ id: string }>(); // Get the project ID from the URL
   const navigate = useNavigate();
-  const [project, setProject] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [personnel, setPersonnel] = useState([]);
-  const [showModal, setShowModal] = useState(false);
-  const [projectName, setProjectName] = useState("");
-  const [description, setDescription] = useState("");
-  const [isActive, setIsActive] = useState(true);
+  const [project, setProject] = useState<Project | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [personnel, setPersonnel] = useState<Personnel[]>([]);
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const [projectName, setProjectName] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
+  const [isActive, setIsActive] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchProjectDetails = async () => {
@@ -83,7 +99,7 @@ const ProjectDetails = () => {
 
       setShowModal(false);
       setProject((prevProject) => ({
-        ...prevProject,
+        ...prevProject!,
         name: projectName,
         description,
         is_active: isActive,
@@ -94,7 +110,7 @@ const ProjectDetails = () => {
     }
   };
 
-  const formatDate = (dateString) => {
+  const formatDate = (dateString: string) => {
     return format(new Date(dateString), "MMMM d, yyyy h:mm a");
   };
 
@@ -128,7 +144,7 @@ const ProjectDetails = () => {
     {
       header: "Assigned At",
       accessor: "assigned_at",
-      renderCell: (item) => formatDate(item.assigned_at),
+      renderCell: (item: Personnel) => formatDate(item.assigned_at),
     },
   ];
 
@@ -173,11 +189,12 @@ const ProjectDetails = () => {
               endpoint={`${import.meta.env.VITE_URL}/projects/${id}/personnel`}
               columns={personnelColumns}
               searchFields={["username", "email"]}
-              renderCell={(item, accessor) => {
+              renderCell={(item: Personnel, accessor: string) => {
+                // Cast accessor to keyof Personnel when needed
                 if (accessor === "assigned_at") {
-                  return formatDate(item[accessor]);
+                  return formatDate(item[accessor as keyof Personnel]);
                 }
-                return item[accessor];
+                return item[accessor as keyof Personnel];
               }}
             />
           </Col>

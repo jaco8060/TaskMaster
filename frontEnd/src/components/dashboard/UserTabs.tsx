@@ -1,24 +1,48 @@
 import React, { useContext, useEffect } from "react";
 import { Col, Nav, Row, Tab } from "react-bootstrap";
+import { IconType } from "react-icons";
 import {
   FaHome,
   FaTasks,
   FaTicketAlt,
   FaUser,
   FaUserShield,
-} from "react-icons/fa"; // Import the icons
+} from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
-import { AuthContext } from "../../contexts/AuthProvider.jsx";
-import "../../styles/dashboard/NavBars.scss"; // Import the SCSS file
+import { AuthContext } from "../../contexts/AuthProvider";
+import "../../styles/dashboard/NavBars.scss";
 
-const UserTabs = ({ activeTab, handleSelect }) => {
-  const { user } = useContext(AuthContext);
+// Define types for props
+interface UserTabsProps {
+  activeTab: string;
+  handleSelect: (key: string) => void;
+}
+
+// Define the available roles
+type UserRole = "admin" | "pm" | "submitter" | "developer";
+
+// Define the shape of the tabs for each role
+interface TabItem {
+  eventKey: string;
+  title: string;
+  icon: IconType;
+}
+
+const UserTabs: React.FC<UserTabsProps> = ({ activeTab, handleSelect }) => {
+  const context = useContext(AuthContext);
+
+  if (!context) {
+    throw new Error("UserTabs must be used within an AuthProvider");
+  }
+
+  const { user } = context;
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
-    // Define the path to tab mapping based on user role
-    const roleToPathMap = {
+    if (!user) return;
+
+    const roleToPathMap: Record<UserRole, Record<string, string>> = {
       admin: {
         "/dashboard": "first",
         "/manage-roles": "second",
@@ -29,7 +53,8 @@ const UserTabs = ({ activeTab, handleSelect }) => {
       pm: {
         "/dashboard": "first",
         "/myprojects": "second",
-        "/userprofile": "third",
+        "/mytickets": "third",
+        "/userprofile": "fourth",
       },
       submitter: {
         "/dashboard": "first",
@@ -45,47 +70,57 @@ const UserTabs = ({ activeTab, handleSelect }) => {
       },
     };
 
-    const currentTab = roleToPathMap[user.role]?.[location.pathname];
+    const currentTab =
+      roleToPathMap[user.role as UserRole]?.[location.pathname];
     if (currentTab) {
       handleSelect(currentTab);
     }
-  }, [location.pathname, user.role]);
+  }, [location.pathname, user, handleSelect]);
 
-  const handleNavSelect = (eventKey) => {
-    handleSelect(eventKey);
-    const tabToPathMap = {
-      admin: {
-        first: "/dashboard",
-        second: "/manage-roles",
-        third: "/myprojects",
-        fourth: "/mytickets",
-        fifth: "/userprofile",
-      },
-      pm: {
-        first: "/dashboard",
-        second: "/myprojects",
-        third: "/mytickets",
-        fourth: "/userprofile",
-      },
-      submitter: {
-        first: "/dashboard",
-        second: "/myprojects",
-        third: "/mytickets",
-        fourth: "/userprofile",
-      },
-      developer: {
-        first: "/dashboard",
-        second: "/myprojects",
-        third: "/mytickets",
-        fourth: "/userprofile",
-      },
-    };
+  const handleNavSelect = (eventKey: string | null) => {
+    if (!user) return;
 
-    const path = tabToPathMap[user.role][eventKey];
-    navigate(path);
+    if (eventKey) {
+      handleSelect(eventKey);
+
+      const tabToPathMap: Record<UserRole, Record<string, string>> = {
+        admin: {
+          first: "/dashboard",
+          second: "/manage-roles",
+          third: "/myprojects",
+          fourth: "/mytickets",
+          fifth: "/userprofile",
+        },
+        pm: {
+          first: "/dashboard",
+          second: "/myprojects",
+          third: "/mytickets",
+          fourth: "/userprofile",
+        },
+        submitter: {
+          first: "/dashboard",
+          second: "/myprojects",
+          third: "/mytickets",
+          fourth: "/userprofile",
+        },
+        developer: {
+          first: "/dashboard",
+          second: "/myprojects",
+          third: "/mytickets",
+          fourth: "/userprofile",
+        },
+      };
+
+      const path = tabToPathMap[user.role as UserRole][eventKey];
+      navigate(path);
+    }
   };
 
-  const tabs = {
+  if (!user) {
+    return null; // Or render a fallback UI if user is not available
+  }
+
+  const tabs: Record<UserRole, TabItem[]> = {
     admin: [
       { eventKey: "first", title: "Dashboard Home", icon: FaHome },
       {
@@ -117,7 +152,7 @@ const UserTabs = ({ activeTab, handleSelect }) => {
     ],
   };
 
-  const userTabs = tabs[user.role] || [];
+  const userTabs = tabs[user.role as UserRole] || [];
 
   return (
     <Tab.Container activeKey={activeTab} onSelect={handleNavSelect}>

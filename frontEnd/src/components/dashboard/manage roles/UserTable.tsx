@@ -1,10 +1,21 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Spinner } from "react-bootstrap";
-import { AuthContext } from "../../../contexts/AuthProvider.jsx";
+import { AuthContext } from "../../../contexts/AuthProvider";
 import DataTable from "../../../hooks/DataTable";
 
-const UserTable = ({ refresh }) => {
-  const { user } = useContext(AuthContext); // Get the current logged-in user
+// Define types for the props and user
+interface UserTableProps {
+  refresh: boolean;
+}
+
+interface User {
+  id: number;
+  role: string;
+  username: string;
+  email: string;
+}
+
+const UserTable: React.FC<UserTableProps> = ({ refresh }) => {
+  const { user } = useContext(AuthContext) as { user: User }; // Get the current logged-in user and cast to User type
   const columns = [
     { header: "Username", accessor: "username" },
     { header: "Email", accessor: "email" },
@@ -12,7 +23,7 @@ const UserTable = ({ refresh }) => {
   ];
 
   const searchFields = ["username", "email", "role"];
-  const [key, setKey] = useState(0);
+  const [key, setKey] = useState<number>(0);
 
   useEffect(() => {
     setKey((prev) => prev + 1);

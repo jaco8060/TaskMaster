@@ -2,16 +2,31 @@ import axios from "axios";
 import { format } from "date-fns";
 import React, { useContext, useState } from "react";
 import { Button, Col, Container, Form, Modal, Row } from "react-bootstrap";
-
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../../../contexts/AuthProvider.jsx";
-import DataTable from "../../../hooks/DataTable.jsx";
+import { AuthContext } from "../../../contexts/AuthProvider";
+import DataTable from "../../../hooks/DataTable";
 import "../../../styles/dashboard/MyProjects.scss"; // Import the custom CSS file
-import { MainNav } from "../NavBars.jsx";
+import { MainNav } from "../NavBars";
 
-const MyProjects = () => {
+// Define types for project and user
+interface Project {
+  id: string;
+  name: string;
+  description: string;
+  created_at: string;
+}
+
+interface User {
+  id: number;
+  role: string;
+  username: string;
+  email: string;
+}
+
+const MyProjects: React.FC = () => {
   const navigate = useNavigate();
-  const { user } = useContext(AuthContext); // Get the current logged-in user
+  const { user } = useContext(AuthContext) as { user: User }; // Get the current logged-in user with type
+
   const columns = [
     { header: "Project Name", accessor: "name" },
     { header: "Description", accessor: "description" },
@@ -22,10 +37,10 @@ const MyProjects = () => {
   const searchFields = ["name", "description"];
   const endpoint = `${import.meta.env.VITE_URL}/projects/user/${user.id}`;
 
-  const [showModal, setShowModal] = useState(false);
-  const [projectName, setProjectName] = useState("");
-  const [description, setDescription] = useState("");
-  const [refresh, setRefresh] = useState(false); // State to handle refresh
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const [projectName, setProjectName] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
+  const [refresh, setRefresh] = useState<boolean>(false); // State to handle refresh
 
   const handleShowModal = () => setShowModal(true);
   const handleCloseModal = () => setShowModal(false);
@@ -54,30 +69,13 @@ const MyProjects = () => {
     }
   };
 
-  const formatDate = (dateString) => {
+  const formatDate = (dateString: string) => {
     return format(new Date(dateString), "MMMM d, yyyy h:mm a");
   };
 
   return (
     <MainNav>
-      {/* <div className="p-0 d-flex flex-column">
-        <Row>
-          <Col>
-            <h1 className="mb-3">Manage Role Assignment</h1>
-          </Col>
-        </Row>
-        <Row>
-          <Col xs={10} sm={12} className="p-0">
-            <AssignUserRole onRoleAssigned={handleRefresh} />
-          </Col>
-        </Row>
-        <Row>
-          <Col xs={10} sm={12}>
-            <UserTable refresh={refresh} />
-          </Col>
-        </Row>
-      </div> */}
-      <Container className="p-0 m-0 d-flex flex-column ">
+      <Container className="p-0 m-0 d-flex flex-column">
         <Row>
           <Col>
             <h1 className="mb-3">My Projects</h1>
@@ -97,7 +95,7 @@ const MyProjects = () => {
         <Row className="dataTable">
           <Col xs={12} sm={12}>
             <DataTable
-              key={refresh} // Add the refresh key
+              key={refresh ? "refresh-true" : "refresh-false"} // Ensure a string key
               endpoint={endpoint}
               columns={columns}
               searchFields={searchFields}

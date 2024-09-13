@@ -11,12 +11,30 @@ import {
 } from "react-bootstrap";
 import "../styles/hooks/UserSelector.scss"; // Import the CSS file
 
-const UserSelector = ({ endpoint, onAssign, roleSelection = false }) => {
-  const [users, setUsers] = useState([]);
-  const [selectedUsers, setSelectedUsers] = useState([]);
-  const [role, setRole] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
+// Define the types for props
+interface UserSelectorProps {
+  endpoint: string;
+  onAssign: (userIds: number[], role?: string) => void;
+  roleSelection?: boolean;
+}
+
+// Define the types for user object
+interface User {
+  id: number;
+  username: string;
+  email: string;
+}
+
+const UserSelector: React.FC<UserSelectorProps> = ({
+  endpoint,
+  onAssign,
+  roleSelection = false,
+}) => {
+  const [users, setUsers] = useState<User[]>([]);
+  const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
+  const [role, setRole] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [searchTerm, setSearchTerm] = useState<string>("");
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -33,7 +51,7 @@ const UserSelector = ({ endpoint, onAssign, roleSelection = false }) => {
     fetchUsers();
   }, [endpoint]);
 
-  const handleSelectUser = (userId) => {
+  const handleSelectUser = (userId: number) => {
     setSelectedUsers((prevSelected) =>
       prevSelected.includes(userId)
         ? prevSelected.filter((id) => id !== userId)
@@ -41,27 +59,27 @@ const UserSelector = ({ endpoint, onAssign, roleSelection = false }) => {
     );
   };
 
-  const handleRoleChange = (event) => {
+  const handleRoleChange = (event: React.ChangeEvent<any>) => {
     setRole(event.target.value);
   };
 
   const handleAssign = () => {
     if (selectedUsers.length > 0) {
       if (roleSelection) {
-        onAssign(selectedUsers, role);
+        onAssign(selectedUsers, role); // Passing number[]
       } else {
-        onAssign(selectedUsers);
+        onAssign(selectedUsers); // Passing number[]
       }
     } else {
       alert("Please select at least one user.");
     }
   };
 
-  const handleSearchChange = (event) => {
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
   };
 
-  const handleKeyPress = (event) => {
+  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
       event.preventDefault();
     }
