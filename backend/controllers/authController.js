@@ -30,7 +30,11 @@ export const handleLogin = (req, res, next) => {
     if (!user) {
       return res.status(401).json({ error: "Invalid username or password" });
     }
-    req.logIn(user, (err) => {
+
+    // Strip password from user object before calling req.logIn
+    const { password, ...userWithoutPassword } = user;
+
+    req.logIn(userWithoutPassword, (err) => {
       if (err) {
         return next(err);
       }
