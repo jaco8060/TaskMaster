@@ -9,6 +9,14 @@ import { createUser } from "../models/authModel.js";
 jest.mock("../models/authModel.js");
 
 describe("Auth Controller", () => {
+  beforeAll(() => {
+    consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+  });
+
+  afterAll(() => {
+    consoleErrorSpy.mockRestore();
+  });
+
   afterEach(() => {
     jest.clearAllMocks(); // Clear mocks after each test
   });
