@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import {
   Button,
   Col,
-  Container,
   Form,
   InputGroup,
   Pagination,
@@ -12,6 +11,7 @@ import {
   Spinner,
 } from "react-bootstrap";
 import Table from "react-bootstrap/Table";
+import { FaSearch, FaTimes } from "react-icons/fa"; // Import icons
 import "../styles/hooks/DataTable.scss"; // Import the CSS file
 
 // Define types for the component props and state
@@ -121,8 +121,8 @@ const DataTable: React.FC<DataTableProps> = ({
   const endEntry = Math.min(indexOfLastItem, filteredData.length);
 
   return (
-    <div>
-      <Row className="mb-3">
+    <div className="data-table-container">
+      <Row className="mb-3 align-items-center">
         <Col xs={12} md={6} className="d-flex justify-content-start">
           <Form.Group
             controlId="itemsPerPageSelect"
@@ -133,36 +133,37 @@ const DataTable: React.FC<DataTableProps> = ({
               type="number"
               value={itemsPerPage}
               onChange={handleItemsPerPageChange}
-              className="ml-2"
-              style={{ width: "80px", marginLeft: "10px" }}
+              className="ml-2 items-per-page-input"
               min="1"
             />
-            <span className="ml-2" style={{ marginLeft: "10px" }}>
-              entries
-            </span>
+            <span className="ml-2">entries</span>
           </Form.Group>
         </Col>
-        <Col
-          xs={8}
-          md={6}
-          className="d-flex align-items-center justify-content-end"
-        >
-          <InputGroup>
+        <Col xs={12} md={6} className="d-flex justify-content-end">
+          <InputGroup className="search-input-group">
+            <InputGroup.Text id="search-icon">
+              <FaSearch />
+            </InputGroup.Text>
             <Form.Control
               placeholder="Search"
               value={searchTerm}
               onChange={handleSearchChange}
+              aria-label="Search"
+              aria-describedby="search-icon"
             />
-            <Button
-              variant="secondary"
-              className="text-primary-subtle"
-              onClick={() => setSearchTerm("")}
-            >
-              Clear
-            </Button>
+            {searchTerm && (
+              <Button
+                variant="outline-secondary"
+                className="clear-button"
+                onClick={() => setSearchTerm("")}
+              >
+                <FaTimes />
+              </Button>
+            )}
           </InputGroup>
         </Col>
       </Row>
+
       {loading ? (
         <div className="d-flex justify-content-center align-items-center">
           <Spinner animation="border" />

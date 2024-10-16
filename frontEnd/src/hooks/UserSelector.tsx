@@ -9,6 +9,7 @@ import {
   Spinner,
   Table,
 } from "react-bootstrap";
+import { FaSearch, FaTimes } from "react-icons/fa"; // Optional: Import icons if you want to update the search input
 import "../styles/hooks/UserSelector.scss"; // Import the CSS file
 
 // Define the types for props
@@ -125,7 +126,7 @@ const UserSelector: React.FC<UserSelectorProps> = ({
       ) : (
         <Table responsive hover className="user-list-table">
           <thead>
-            <tr>
+            <tr className="table-dark table-active text-uppercase text-white text-nowrap">
               <th>Username</th>
               <th>Email</th>
             </tr>

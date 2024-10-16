@@ -1,34 +1,35 @@
-@import "../../color-theme.scss"; // Make sure to import your variables file if it's not already imported
+@import "../../color-theme.scss"; // Import your variables file if it's not already imported
 
 .user-list-table {
   width: 100%;
   border-collapse: collapse;
-}
 
-.user-list-table th,
-.user-list-table td {
-  padding: 10px;
-  white-space: normal;
-  border: none; /* Remove borders */
-  cursor: pointer; /* Indicate that the rows are clickable */
-  font-size: 1rem;
-}
+  th,
+  td {
+    padding: 10px;
+    white-space: normal;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+  }
 
-.user-list-table th {
-  background-color: #f8f9fa;
-  color: #343a40;
-  font-weight: bold;
-}
+  th {
+    // Remove background-color and color styles to let Bootstrap classes take effect
+    // background-color: #f8f9fa;
+    // color: #343a40;
+    font-weight: bold;
+  }
 
-.user-list-table td {
-  background-color: #ffffff;
-}
+  td {
+    background-color: #ffffff;
+  }
 
-.user-list-table tr:hover {
-  background-color: #e9ecef;
-}
+  tr:hover {
+    background-color: #e9ecef;
+  }
 
-.user-list-table-row.selected td {
-  background-color: var(--bs-primary) !important;
-  color: var(--bs-light) !important;
+  .user-list-table-row.selected td {
+    background-color: var(--bs-primary) !important;
+    color: var(--bs-light) !important;
+  }
 }

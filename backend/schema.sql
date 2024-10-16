@@ -67,15 +67,15 @@ CREATE TABLE tickets (
 CREATE TABLE comments (
     id SERIAL PRIMARY KEY,
     comment TEXT NOT NULL,
-    bug_id INT REFERENCES bugs(id),
+    ticket_id INT REFERENCES tickets(id),
     user_id INT REFERENCES users(id),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Bug History Table
-CREATE TABLE bug_history (
+CREATE TABLE ticket_history (
     id SERIAL PRIMARY KEY,
-    bug_id INT REFERENCES bugs(id),
+    ticket_id INT REFERENCES tickets(id),
     action_type VARCHAR(50),  -- e.g., 'update', 'comment', 'status change'
     field_changed VARCHAR(50),
     old_value TEXT,
