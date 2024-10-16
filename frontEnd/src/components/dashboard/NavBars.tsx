@@ -155,7 +155,11 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ children }) => {
 };
 
 const SideNavBar: React.FC<SideNavBarProps> = ({ children }) => {
-  return <aside id="SideNavBar">{children}</aside>;
+  return (
+    <aside id="SideNavBar">
+      <div className="sticky-nav">{children}</div>
+    </aside>
+  );
 };
 
 const MainNav: React.FC<MainNavProps> = ({ children }) => {

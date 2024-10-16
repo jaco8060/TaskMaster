@@ -32,10 +32,15 @@
   @include media-breakpoint-up(lg) {
     border-right: 1px solid var(--bs-dark);
     display: flex;
+    flex-direction: column;
     padding: 0.5rem;
     width: 270px;
-    height: 100%;
-    // For larger screens
+    height: 100%; // Ensure the sidebar stretches full height
+    // Remove position: sticky
+    .sticky-nav {
+      position: sticky;
+      top: 70px; // Adjust based on your header height
+    }
   }
 
   // For smaller screens
