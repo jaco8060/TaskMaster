@@ -1,10 +1,12 @@
+// MyTickets.tsx
+
 import axios from "axios";
 import { format } from "date-fns";
 import React, { ChangeEvent, useContext, useEffect, useState } from "react";
 import { Button, Container, Form, Modal } from "react-bootstrap";
-import { AuthContext, AuthContextType } from "../../../contexts/AuthProvider"; // Adjust path as needed
+import { AuthContext, AuthContextType } from "../../../contexts/AuthProvider";
 import DataTable from "../../../hooks/DataTable";
-import "../../../styles/dashboard/MyTickets.scss"; // Import your custom CSS file
+import "../../../styles/dashboard/MyTickets.scss";
 import { MainNav } from "../NavBars";
 
 interface Project {
@@ -13,24 +15,29 @@ interface Project {
 }
 
 interface Ticket {
+  id: string;
   title: string;
   description: string;
   status: string;
   priority: string;
   project_id: string;
+  created_at?: string;
 }
 
 const MyTickets: React.FC = () => {
-  const { user } = useContext(AuthContext) as AuthContextType; // Properly type the context
+  const { user } = useContext(AuthContext) as AuthContextType;
   const [projects, setProjects] = useState<Project[]>([]);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [newTicket, setNewTicket] = useState<Ticket>({
+    id: "",
     title: "",
     description: "",
     status: "Open",
     priority: "Low",
     project_id: "",
   });
+  const [isEditMode, setIsEditMode] = useState<boolean>(false);
+  const [refresh, setRefresh] = useState<boolean>(false);
 
   const fetchProjects = async () => {
     try {
@@ -54,7 +61,7 @@ const MyTickets: React.FC = () => {
   }, [user?.id]);
 
   const formatDate = (dateString: string | null) => {
-    if (!dateString) return "N/A"; // Handle undefined or null dates
+    if (!dateString) return "N/A";
     try {
       return format(new Date(dateString), "MMMM d, yyyy h:mm a");
     } catch (error) {
@@ -63,7 +70,19 @@ const MyTickets: React.FC = () => {
     }
   };
 
-  const handleShowModal = () => setShowModal(true);
+  const handleShowModal = () => {
+    setIsEditMode(false);
+    setNewTicket({
+      id: "",
+      title: "",
+      description: "",
+      status: "Open",
+      priority: "Low",
+      project_id: "",
+    });
+    setShowModal(true);
+  };
+
   const handleCloseModal = () => setShowModal(false);
 
   const handleCreateTicket = async () => {
@@ -73,7 +92,7 @@ const MyTickets: React.FC = () => {
         {
           ...newTicket,
           reported_by: user?.id,
-          assigned_to: user?.id, // Assuming the ticket is assigned to the user who creates it
+          assigned_to: user?.id,
         },
         {
           headers: {
@@ -83,9 +102,34 @@ const MyTickets: React.FC = () => {
         }
       );
       handleCloseModal();
+      setRefresh(!refresh);
     } catch (error) {
       console.error("Error creating ticket:", error);
       alert("Failed to create ticket.");
+    }
+  };
+
+  const handleUpdateTicket = async () => {
+    try {
+      await axios.put(
+        `${import.meta.env.VITE_URL}/tickets/${newTicket.id}`,
+        {
+          ...newTicket,
+          reported_by: user?.id,
+          assigned_to: user?.id,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+      handleCloseModal();
+      setRefresh(!refresh);
+    } catch (error) {
+      console.error("Error updating ticket:", error);
+      alert("Failed to update ticket.");
     }
   };
 
@@ -113,10 +157,42 @@ const MyTickets: React.FC = () => {
       accessor: "created_at",
       className: "nowrap-column",
     },
+    {
+      header: "",
+      accessor: "actions",
+    },
   ];
 
   const searchFields = ["title", "description", "status", "priority"];
   const endpoint = `${import.meta.env.VITE_URL}/tickets/user/${user?.id}`;
+
+  const renderCell = (item: any, accessor: string) => {
+    if (accessor === "created_at") {
+      return formatDate(item[accessor]);
+    } else if (accessor === "actions") {
+      return (
+        <Button
+          variant="link"
+          onClick={() => {
+            setIsEditMode(true);
+            setNewTicket({
+              id: item.id,
+              title: item.title,
+              description: item.description,
+              status: item.status,
+              priority: item.priority,
+              project_id: item.project_id,
+            });
+            setShowModal(true);
+          }}
+        >
+          Edit
+        </Button>
+      );
+    } else {
+      return item[accessor];
+    }
+  };
 
   return (
     <MainNav>
@@ -129,17 +205,15 @@ const MyTickets: React.FC = () => {
           endpoint={endpoint}
           columns={columns}
           searchFields={searchFields}
-          renderCell={(item, accessor) => {
-            if (accessor === "created_at") {
-              return formatDate(item[accessor]);
-            }
-            return item[accessor];
-          }}
+          refresh={refresh}
+          renderCell={renderCell}
         />
-        {/* Modal for creating new ticket */}
+        {/* Modal for creating/editing ticket */}
         <Modal show={showModal} onHide={handleCloseModal}>
           <Modal.Header closeButton>
-            <Modal.Title>Create New Ticket</Modal.Title>
+            <Modal.Title>
+              {isEditMode ? "Edit Ticket" : "Create New Ticket"}
+            </Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Form>
@@ -217,13 +291,23 @@ const MyTickets: React.FC = () => {
             <Button variant="secondary" onClick={handleCloseModal}>
               Close
             </Button>
-            <Button
-              variant="primary"
-              onClick={handleCreateTicket}
-              disabled={!newTicket.project_id}
-            >
-              Create Ticket
-            </Button>
+            {isEditMode ? (
+              <Button
+                variant="primary"
+                onClick={handleUpdateTicket}
+                disabled={!newTicket.project_id}
+              >
+                Save Changes
+              </Button>
+            ) : (
+              <Button
+                variant="primary"
+                onClick={handleCreateTicket}
+                disabled={!newTicket.project_id}
+              >
+                Create Ticket
+              </Button>
+            )}
           </Modal.Footer>
         </Modal>
       </Container>
