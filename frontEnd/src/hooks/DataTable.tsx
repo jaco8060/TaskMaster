@@ -139,7 +139,7 @@ const DataTable: React.FC<DataTableProps> = ({
             <span className="ml-2">entries</span>
           </Form.Group>
         </Col>
-        <Col xs={12} md={6} className="d-flex justify-content-end">
+        <Col xs={12} md={6} className="d-flex justify-content-start">
           <InputGroup className="search-input-group">
             <InputGroup.Text id="search-icon">
               <FaSearch />

@@ -1,6 +1,6 @@
 export default {
   transform: {
-    "^.+\\.js$": "babel-jest"
+    "^.+\\.js$": "babel-jest",
   },
-  testEnvironment: 'node', // ensures Node.js environment for backend testing
+  testEnvironment: "node", // ensures Node.js environment for backend testing
 };

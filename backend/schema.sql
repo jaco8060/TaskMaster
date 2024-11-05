@@ -1,20 +1,7 @@
--- Database: bugtracker
-
--- DROP DATABASE IF EXISTS bugtracker;
-
-CREATE DATABASE bugtracker
-    WITH
-    OWNER = postgres
-    ENCODING = 'UTF8'
-    LC_COLLATE = 'English_Canada.1252'
-    LC_CTYPE = 'English_Canada.1252'
-    LOCALE_PROVIDER = 'libc'
-    TABLESPACE = pg_default
-    CONNECTION LIMIT = -1
-    IS_TEMPLATE = False;
+-- backend/schema.sql
 
 -- Users Table
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
@@ -30,7 +17,7 @@ CREATE TABLE users (
 );
 
 -- Projects Table
-CREATE TABLE projects (
+CREATE TABLE IF NOT EXISTS projects (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     description TEXT,
@@ -39,8 +26,8 @@ CREATE TABLE projects (
     is_active BOOLEAN DEFAULT TRUE
 );
 
--- Add Assigned Personnel Table
-CREATE TABLE assigned_personnel (
+-- Assigned Personnel Table
+CREATE TABLE IF NOT EXISTS assigned_personnel (
     id SERIAL PRIMARY KEY,
     project_id INT REFERENCES projects(id) ON DELETE CASCADE,
     user_id INT REFERENCES users(id) ON DELETE CASCADE,
@@ -48,9 +35,8 @@ CREATE TABLE assigned_personnel (
     assigned_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-
--- Bugs Table
-CREATE TABLE tickets (
+-- Tickets Table
+CREATE TABLE IF NOT EXISTS tickets (
     id SERIAL PRIMARY KEY,
     title VARCHAR(100) NOT NULL,
     description TEXT,
@@ -64,7 +50,7 @@ CREATE TABLE tickets (
 );
 
 -- Comments Table
-CREATE TABLE comments (
+CREATE TABLE IF NOT EXISTS comments (
     id SERIAL PRIMARY KEY,
     comment TEXT NOT NULL,
     ticket_id INT REFERENCES tickets(id),
@@ -72,29 +58,21 @@ CREATE TABLE comments (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Bug History Table
-CREATE TABLE ticket_history (
+-- Ticket History Table
+CREATE TABLE IF NOT EXISTS ticket_history (
     id SERIAL PRIMARY KEY,
     ticket_id INT REFERENCES tickets(id),
-    action_type VARCHAR(50),  -- e.g., 'update', 'comment', 'status change'
-    field_changed VARCHAR(50),
-    old_value TEXT,
-    new_value TEXT,
-    status VARCHAR(20),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_by INT REFERENCES users(id)
+    old_title TEXT,
+    new_title TEXT,
+    old_description TEXT,
+    new_description TEXT,
+    old_status VARCHAR(20),
+    new_status VARCHAR(20),
+    old_priority VARCHAR(20),
+    new_priority VARCHAR(20),
+    old_project_id INT,
+    new_project_id INT,
+    change_message TEXT,
+    changed_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    changed_by INT REFERENCES users(id)
 );
-
-
-
-
-SELECT * FROM projects
-SELECT * FROM users
-SELECT * FROM bug_history
-SELECT * FROM bugs
-SELECT * FROM comments
-SELECT * FROM tickets
-ALTER TABLE projects
-
-
-

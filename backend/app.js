@@ -7,6 +7,8 @@ import authRouter from "./routes/auth.js";
 import projectRouter from "./routes/projects.js";
 import ticketRouter from "./routes/tickets.js";
 import userRouter from "./routes/users.js";
+import seedUsers from "./seed.js"; // Import the seed function
+
 dotenv.config();
 
 const app = express();
@@ -47,6 +49,10 @@ app.use("/users", userRouter);
 app.use("/projects", projectRouter);
 app.use("/tickets", ticketRouter);
 
-app.listen(5000, () => {
+if (process.env.NODE_ENV !== "production") {
+  seedUsers();
+}
+
+app.listen(process.env.PORT || 5000, () => {
   console.log("Server is running on port 5000");
 });

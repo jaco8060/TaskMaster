@@ -248,10 +248,14 @@ const DemoUser: React.FC = () => {
   const { setUser } = useContext(AuthContext) as AuthContextType;
 
   const demoUsers = [
-    { role: "admin", username: "admin", password: "admin123" },
-    { role: "project_manager", username: "project_manager", password: "pm123" },
+    { role: "admin", username: "demo_admin", password: "demo123" },
+    {
+      role: "pm",
+      username: "demo_pm",
+      password: "demo123",
+    },
     { role: "developer", username: "demo_dev", password: "demo123" },
-    { role: "submitter", username: "demo_sub", password: "sub123" },
+    { role: "submitter", username: "demo_sub", password: "demo123" },
   ];
 
   const handleDemoLogin = async (user: {

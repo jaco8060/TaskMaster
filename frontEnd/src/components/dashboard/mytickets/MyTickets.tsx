@@ -196,18 +196,20 @@ const MyTickets: React.FC = () => {
 
   return (
     <MainNav>
-      <Container className="p-0 m-0">
+      <Container fluid className="p-0">
         <h1 className="mb-3">My Tickets</h1>
         <Button className="mb-3" onClick={handleShowModal}>
           Create New Ticket
         </Button>
-        <DataTable
-          endpoint={endpoint}
-          columns={columns}
-          searchFields={searchFields}
-          refresh={refresh}
-          renderCell={renderCell}
-        />
+        <div className="table-responsive-wrapper">
+          <DataTable
+            endpoint={endpoint}
+            columns={columns}
+            searchFields={searchFields}
+            refresh={refresh}
+            renderCell={renderCell}
+          />
+        </div>
         {/* Modal for creating/editing ticket */}
         <Modal show={showModal} onHide={handleCloseModal}>
           <Modal.Header closeButton>

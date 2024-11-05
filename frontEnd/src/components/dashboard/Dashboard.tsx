@@ -14,7 +14,7 @@ const Dashboard: React.FC = () => {
       {/* <p>{`${user?.username} ${user?.role}, ${user?.id}`}</p> */}
       <MainNav>
         <div>
-          <h1>Dashboard Home</h1>
+          <h1>Dashboard home</h1>
           <p>dashboard home content</p>
         </div>
       </MainNav>
