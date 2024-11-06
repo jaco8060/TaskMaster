@@ -1,9 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Col, Container, Form, Modal, Row, Spinner, Table } from 'react-bootstrap';
-import { useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
-import { format } from 'date-fns';
-import { MainNav } from '../NavBars';
+import axios from "axios";
+import { format } from "date-fns";
+import React, { useEffect, useState } from "react";
+import {
+  Button,
+  Col,
+  Container,
+  Form,
+  Modal,
+  Row,
+  Spinner,
+  Table,
+} from "react-bootstrap";
+import { useNavigate, useParams } from "react-router-dom";
+import { MainNav } from "../NavBars";
 
 interface Ticket {
   id: string;
@@ -38,8 +47,8 @@ const TicketDetails: React.FC = () => {
       );
       setTicket(response.data);
     } catch (error) {
-      console.error('Error fetching ticket details:', error);
-      alert('Failed to fetch ticket details.');
+      console.error("Error fetching ticket details:", error);
+      alert("Failed to fetch ticket details.");
     } finally {
       setLoading(false);
     }
@@ -57,27 +66,30 @@ const TicketDetails: React.FC = () => {
         `${import.meta.env.VITE_URL}/tickets/${id}`,
         editTicket,
         {
-          headers: { 'Content-Type': 'application/json' },
+          headers: { "Content-Type": "application/json" },
           withCredentials: true,
         }
       );
       setTicket(response.data);
       setShowModal(false);
     } catch (error) {
-      console.error('Error updating ticket:', error);
-      alert('Failed to update ticket.');
+      console.error("Error updating ticket:", error);
+      alert("Failed to update ticket.");
     }
   };
 
   const formatDate = (dateString: string | null) => {
-    if (!dateString) return 'N/A';
-    return format(new Date(dateString), 'MMMM d, yyyy h:mm a');
+    if (!dateString) return "N/A";
+    return format(new Date(dateString), "MMMM d, yyyy h:mm a");
   };
 
   if (loading) {
     return (
       <MainNav>
-        <Container className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
+        <Container
+          className="d-flex justify-content-center align-items-center"
+          style={{ height: "100vh" }}
+        >
           <Spinner animation="border" />
         </Container>
       </MainNav>
@@ -157,7 +169,6 @@ const TicketDetails: React.FC = () => {
                   </tr>
                 </tbody>
               </Table>
-
             </div>
           </Col>
         </Row>
@@ -173,7 +184,12 @@ const TicketDetails: React.FC = () => {
                 <Form.Control
                   type="text"
                   value={editTicket?.title}
-                  onChange={(e) => setEditTicket(prev => ({ ...prev!, title: e.target.value }))}
+                  onChange={(e) =>
+                    setEditTicket((prev) => ({
+                      ...prev!,
+                      title: e.target.value,
+                    }))
+                  }
                 />
               </Form.Group>
               <Form.Group controlId="ticketDescription" className="mt-3">
@@ -182,7 +198,12 @@ const TicketDetails: React.FC = () => {
                   as="textarea"
                   rows={3}
                   value={editTicket?.description}
-                  onChange={(e) => setEditTicket(prev => ({ ...prev!, description: e.target.value }))}
+                  onChange={(e) =>
+                    setEditTicket((prev) => ({
+                      ...prev!,
+                      description: e.target.value,
+                    }))
+                  }
                 />
               </Form.Group>
               <Form.Group controlId="ticketStatus" className="mt-3">
@@ -190,7 +211,12 @@ const TicketDetails: React.FC = () => {
                 <Form.Control
                   as="select"
                   value={editTicket?.status}
-                  onChange={(e) => setEditTicket(prev => ({ ...prev!, status: e.target.value }))}
+                  onChange={(e) =>
+                    setEditTicket((prev) => ({
+                      ...prev!,
+                      status: e.target.value,
+                    }))
+                  }
                 >
                   <option>Open</option>
                   <option>In Progress</option>
@@ -202,7 +228,12 @@ const TicketDetails: React.FC = () => {
                 <Form.Control
                   as="select"
                   value={editTicket?.priority}
-                  onChange={(e) => setEditTicket(prev => ({ ...prev!, priority: e.target.value }))}
+                  onChange={(e) =>
+                    setEditTicket((prev) => ({
+                      ...prev!,
+                      priority: e.target.value,
+                    }))
+                  }
                 >
                   <option>Low</option>
                   <option>Medium</option>
@@ -225,4 +256,4 @@ const TicketDetails: React.FC = () => {
   );
 };
 
-export default TicketDetails; 
+export default TicketDetails;
