@@ -30,6 +30,15 @@ interface Personnel {
   assigned_at: string;
 }
 
+interface Ticket {
+  id: string;
+  title: string;
+  description: string;
+  status: string;
+  priority: string;
+  created_at: string;
+}
+
 const ProjectDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>(); // Get the project ID from the URL
   const navigate = useNavigate();
@@ -148,6 +157,27 @@ const ProjectDetails: React.FC = () => {
     }
   ];
 
+  const ticketColumns = [
+    { header: "Title", accessor: "title" },
+    { 
+      header: "Description", 
+      accessor: "description",
+      className: "description-column"
+    },
+    { header: "Status", accessor: "status" },
+    { header: "Priority", accessor: "priority" },
+    {
+      header: "Created At",
+      accessor: "created_at",
+      type: "date" as const
+    },
+    {
+      header: "",
+      accessor: "actions",
+      sortable: false
+    }
+  ];
+
   return (
     <MainNav>
       <div className="d-flex flex-column">
@@ -195,6 +225,35 @@ const ProjectDetails: React.FC = () => {
                   return formatDate(item[accessor as keyof Personnel]);
                 }
                 return item[accessor as keyof Personnel];
+              }}
+            />
+          </Col>
+        </Row>
+        <Row className="mt-4">
+          <Col>
+            <h2>Project Tickets</h2>
+            <DataTable
+              endpoint={`${import.meta.env.VITE_URL}/tickets/project/${id}`}
+              columns={ticketColumns}
+              searchFields={["title", "description", "status", "priority"]}
+              renderCell={(item: Ticket, accessor: string) => {
+                if (accessor === "actions") {
+                  return (
+                    <div className="d-flex justify-content-end gap-2">
+                      <Button
+                        variant="info"
+                        size="sm"
+                        onClick={() => navigate(`/ticket-details/${item.id}`)}
+                      >
+                        Ticket Details
+                      </Button>
+                    </div>
+                  );
+                }
+                if (accessor === "created_at") {
+                  return formatDate(item[accessor as keyof Ticket]);
+                }
+                return item[accessor as keyof Ticket];
               }}
             />
           </Col>

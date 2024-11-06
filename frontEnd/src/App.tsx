@@ -14,6 +14,7 @@ import AdminRoute from "./components/routes/AdminRoute";
 import PMRoute from "./components/routes/PMRoute";
 import PrivateRoute from "./components/routes/PrivateRoute";
 import PublicRoute from "./components/routes/PublicRoute";
+import TicketDetails from "./components/dashboard/tickets/TicketDetails";
 
 const App: React.FC = () => {
   return (
@@ -31,6 +32,7 @@ const App: React.FC = () => {
         <Route path="/project-details/:id" element={<ProjectDetails />} />
         <Route path="/assign-personnel/:id" element={<AssignPersonnel />} />
         <Route path="/mytickets" element={<MyTickets />} />
+        <Route path="/ticket-details/:id" element={<TicketDetails />} />
       </Route>
       <Route element={<AdminRoute />}>
         <Route path="/manage-roles" element={<ManageRoles />} />

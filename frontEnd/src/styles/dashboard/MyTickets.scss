@@ -7,3 +7,19 @@
 .nowrap-column {
   white-space: nowrap;
 }
+
+.ticket-details-table {
+  font-size: 0.9rem;
+  max-width: 800px;
+  
+  th {
+    width: 200px;
+    white-space: nowrap;
+  }
+  
+  td {
+    white-space: normal;
+    word-wrap: break-word;
+    max-width: 600px;
+  }
+}
