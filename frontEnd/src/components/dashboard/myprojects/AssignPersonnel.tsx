@@ -161,22 +161,12 @@ const AssignPersonnel: React.FC = () => {
     {
       header: "Assigned At",
       accessor: "assigned_at",
-      renderCell: (item: Personnel) => formatDate(item.assigned_at),
+      type: "date" as const
     },
     {
       header: "",
       accessor: "actions",
-      renderCell: (item: Personnel) => (
-        <Button
-          variant="danger"
-          onClick={() => {
-            setSelectedUser(item);
-            setShowModal(true);
-          }}
-        >
-          Remove
-        </Button>
-      ),
+      sortable: false,
     },
   ];
 

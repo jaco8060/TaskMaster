@@ -144,8 +144,8 @@ const ProjectDetails: React.FC = () => {
     {
       header: "Assigned At",
       accessor: "assigned_at",
-      renderCell: (item: Personnel) => formatDate(item.assigned_at),
-    },
+      type: "date" as const
+    }
   ];
 
   return (

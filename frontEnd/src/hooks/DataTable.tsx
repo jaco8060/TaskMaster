@@ -12,12 +12,19 @@ import {
 } from "react-bootstrap";
 import Table from "react-bootstrap/Table";
 import { FaSearch, FaTimes } from "react-icons/fa"; // Import icons
+import { 
+  MdUnfoldMore,  // For unsorted (⋮⋮)
+  MdExpandLess,  // For ascending (▲)
+  MdExpandMore   // For descending (▼)
+} from "react-icons/md";
 import "../styles/hooks/DataTable.scss"; // Import the CSS file
 
 // Define types for the component props and state
 interface Column {
   header: string;
   accessor: string;
+  sortable?: boolean;
+  type?: 'date' | 'string' | 'number';
 }
 
 interface DataTableProps {
@@ -89,6 +96,16 @@ const DataTable: React.FC<DataTableProps> = ({
   const sortedData = React.useMemo(() => {
     if (sortConfig.key) {
       return [...data].sort((a, b) => {
+        const column = columns.find(col => col.accessor === sortConfig.key);
+        
+        if (column?.type === 'date') {
+          const dateA = new Date(a[sortConfig.key!]);
+          const dateB = new Date(b[sortConfig.key!]);
+          return sortConfig.direction === "asc" 
+            ? dateA.getTime() - dateB.getTime()
+            : dateB.getTime() - dateA.getTime();
+        }
+        
         if (a[sortConfig.key!] < b[sortConfig.key!]) {
           return sortConfig.direction === "asc" ? -1 : 1;
         }
@@ -99,7 +116,7 @@ const DataTable: React.FC<DataTableProps> = ({
       });
     }
     return data;
-  }, [data, sortConfig]);
+  }, [data, sortConfig, columns]);
 
   const filteredData = sortedData.filter((item) =>
     searchFields.some((field) =>
@@ -175,23 +192,26 @@ const DataTable: React.FC<DataTableProps> = ({
               <tr className="table-dark table-active text-uppercase text-white text-nowrap">
                 {columns.map((column, index) => (
                   <th key={index} className="header-cell">
-                    <div className="d-flex justify-content-between align-items-center">
-                      <span>{column.header}</span>
-                      <Button
-                        variant="link"
-                        onClick={() => handleSort(column.accessor)}
-                        className="sort-button text-white"
-                      >
-                        {sortConfig.key === column.accessor ? (
-                          sortConfig.direction === "asc" ? (
-                            <span style={{ fontSize: "0.75rem" }}>▲</span>
+                    <div className="header-content">
+                      <span className="header-text">{column.header}</span>
+                      {column.sortable !== false && ( // Only show sort button if sortable is not false
+                        <Button
+                          variant="link"
+                          onClick={() => handleSort(column.accessor)}
+                          className="sort-button"
+                          title={`Sort by ${column.header}`}
+                        >
+                          {sortConfig.key === column.accessor ? (
+                            sortConfig.direction === "asc" ? (
+                              <MdExpandLess className="sort-icon" />
+                            ) : (
+                              <MdExpandMore className="sort-icon" />
+                            )
                           ) : (
-                            <span style={{ fontSize: "0.75rem" }}>▼</span>
-                          )
-                        ) : (
-                          <span style={{ fontSize: "0.75rem" }}>↕</span>
-                        )}
-                      </Button>
+                            <MdUnfoldMore className="sort-icon" />
+                          )}
+                        </Button>
+                      )}
                     </div>
                   </th>
                 ))}

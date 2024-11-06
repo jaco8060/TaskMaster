@@ -23,22 +23,66 @@
     }
   }
 
-  // Table header styling
+  // Updated table header styling
   .table thead th {
     position: relative;
+    padding-right: 24px; // Add space for the sort button
+    min-width: 100px; // Minimum width for columns
+    
+    .header-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      
+      .header-text {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
 
     .sort-button {
-      position: absolute;
-      top: 50%;
-      right: 8px;
-      transform: translateY(-50%);
       padding: 0;
       border: none;
       background: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 20px;
+      color: var(--bs-secondary); // Default color for unsorted state
+      transition: color 0.2s ease;
+
+      &:hover {
+        color: var(--bs-primary);
+      }
 
       &:focus {
         outline: none;
         box-shadow: none;
+      }
+
+      .sort-icon {
+        font-size: 1rem; // Adjust size as needed
+      }
+    }
+
+    // Style for active sort column
+    &.active-sort {
+      .sort-button {
+        color: var(--bs-primary);
+      }
+    }
+  }
+
+  // Add responsive styles
+  @media (max-width: 576px) {
+    .table thead th {
+      min-width: 80px;
+      font-size: 0.875rem;
+
+      .sort-icon {
+        font-size: 0.75rem; // Slightly smaller icons on mobile
       }
     }
   }

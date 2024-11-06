@@ -2,29 +2,11 @@
 @import "../node_modules/bootstrap/scss/variables";
 @import "../node_modules/bootstrap/scss/mixins";
 
-.details-cell-container {
-  display: flex;
-  justify-content: end;
-}
-
-.details-cell {
-  display: flex;
-  flex-direction: column;
-  align-items: start;
-  padding: 0;
-  margin: 0;
-  text-wrap: nowrap;
-}
-
-.details-cell button {
-  padding: 0;
-  text-decoration: none;
-
-  color: rgb(71, 71, 228);
-}
-
-.details-cell button:hover {
-  text-decoration: underline;
+.btn-sm {
+  &.py-1 {
+    line-height: 1.2;
+    font-size: 0.875rem;
+  }
 }
 
 // Custom widths for the dataTable row

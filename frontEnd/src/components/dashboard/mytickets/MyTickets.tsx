@@ -156,10 +156,12 @@ const MyTickets: React.FC = () => {
       header: "Created At",
       accessor: "created_at",
       className: "nowrap-column",
+      type: "date" as "date"
     },
     {
       header: "",
       accessor: "actions",
+      sortable: false,
     },
   ];
 
@@ -171,23 +173,25 @@ const MyTickets: React.FC = () => {
       return formatDate(item[accessor]);
     } else if (accessor === "actions") {
       return (
-        <Button
-          variant="link"
-          onClick={() => {
-            setIsEditMode(true);
-            setNewTicket({
-              id: item.id,
-              title: item.title,
-              description: item.description,
-              status: item.status,
-              priority: item.priority,
-              project_id: item.project_id,
-            });
-            setShowModal(true);
-          }}
-        >
-          Edit
-        </Button>
+        <div className="d-flex justify-content-end">
+          <Button
+            variant="primary"
+            onClick={() => {
+              setIsEditMode(true);
+              setNewTicket({
+                id: item.id,
+                title: item.title,
+                description: item.description,
+                status: item.status,
+                priority: item.priority,
+                project_id: item.project_id,
+              });
+              setShowModal(true);
+            }}
+          >
+            Edit
+          </Button>
+        </div>
       );
     } else {
       return item[accessor];

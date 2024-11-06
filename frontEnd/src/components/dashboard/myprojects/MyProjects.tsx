@@ -23,15 +23,31 @@ interface User {
   email: string;
 }
 
+// Add this interface at the top with your other interfaces
+interface Column {
+  header: string;
+  accessor: string;
+  type?: "string" | "number" | "date";
+  sortable?: boolean;
+}
+
 const MyProjects: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useContext(AuthContext) as { user: User }; // Get the current logged-in user with type
 
-  const columns = [
-    { header: "Project Name", accessor: "name" },
+  const columns: Column[] = [
+    { header: "Name", accessor: "name" },
     { header: "Description", accessor: "description" },
-    { header: "Created At", accessor: "created_at" },
-    { header: "", accessor: "details" }, // Empty header for the details column
+    { 
+      header: "Created At", 
+      accessor: "created_at",
+      type: "date"
+    },
+    { 
+      header: "", 
+      accessor: "details",
+      sortable: false 
+    }
   ];
 
   const searchFields = ["name", "description"];
@@ -102,31 +118,25 @@ const MyProjects: React.FC = () => {
               renderCell={(item, accessor) => {
                 if (accessor === "details") {
                   return (
-                    <div className="details-cell-container">
-                      <ul className="details-cell">
-                        <li>
-                          <Button
-                            variant="link"
-                            onClick={() =>
-                              navigate(`/project-details/${item.id}`)
-                            }
-                          >
-                            Details
-                          </Button>
-                        </li>
-                        <li>
-                          {(user.role === "admin" || user.role === "pm") && (
-                            <Button
-                              variant="link"
-                              onClick={() =>
-                                navigate(`/assign-personnel/${item.id}`)
-                              }
-                            >
-                              Assign Personnel
-                            </Button>
-                          )}
-                        </li>
-                      </ul>
+                    <div className="d-flex justify-content-end gap-2">
+                      <Button
+                        variant="info"
+                        size="sm"
+                        className="py-1"
+                        onClick={() => navigate(`/project-details/${item.id}`)}
+                      >
+                        Details
+                      </Button>
+                      {(user.role === "admin" || user.role === "pm") && (
+                        <Button
+                          variant="primary"
+                          size="sm"
+                          className="py-1"
+                          onClick={() => navigate(`/assign-personnel/${item.id}`)}
+                        >
+                          Assign
+                        </Button>
+                      )}
                     </div>
                   );
                 }
