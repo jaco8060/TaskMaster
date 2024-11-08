@@ -50,11 +50,19 @@ export const getAssignedPersonnel = async (projectId) => {
   }
 };
 
-export const assignPersonnel = async (projectId, userId, role) => {
+export const assignPersonnel = async (projectId, userId) => {
   try {
+    // Fetch the user's current role
+    const { rows } = await pool.query(
+      "SELECT role FROM users WHERE id = $1",
+      [userId]
+    );
+    const userRole = rows[0]?.role;
+
+    // Insert into assigned_personnel with the user's role
     const result = await pool.query(
       "INSERT INTO assigned_personnel (project_id, user_id, role) VALUES ($1, $2, $3) RETURNING *",
-      [projectId, userId, role]
+      [projectId, userId, userRole]
     );
     return result.rows[0];
   } catch (error) {

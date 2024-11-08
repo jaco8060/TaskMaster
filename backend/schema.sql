@@ -76,3 +76,20 @@ CREATE TABLE IF NOT EXISTS ticket_history (
     changed_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     changed_by INT REFERENCES users(id)
 );
+
+-- Function to update assigned_personnel role when users role changes
+CREATE OR REPLACE FUNCTION update_assigned_personnel_role()
+RETURNS TRIGGER AS $$
+BEGIN
+  UPDATE assigned_personnel
+  SET role = NEW.role
+  WHERE user_id = OLD.id;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger to call the function on update of users table
+CREATE TRIGGER user_role_update
+AFTER UPDATE OF role ON users
+FOR EACH ROW
+EXECUTE FUNCTION update_assigned_personnel_role();
