@@ -12,10 +12,10 @@ import {
 } from "react-bootstrap";
 import Table from "react-bootstrap/Table";
 import { FaSearch, FaTimes } from "react-icons/fa"; // Import icons
-import { 
-  MdUnfoldMore,  // For unsorted (⋮⋮)
-  MdExpandLess,  // For ascending (▲)
-  MdExpandMore   // For descending (▼)
+import {
+  MdExpandLess, // For ascending (▲)
+  MdExpandMore, // For descending (▼)
+  MdUnfoldMore,
 } from "react-icons/md";
 import "../styles/hooks/DataTable.scss"; // Import the CSS file
 
@@ -24,7 +24,7 @@ interface Column {
   header: string;
   accessor: string;
   sortable?: boolean;
-  type?: 'date' | 'string' | 'number';
+  type?: "date" | "string" | "number";
 }
 
 interface DataTableProps {
@@ -96,16 +96,16 @@ const DataTable: React.FC<DataTableProps> = ({
   const sortedData = React.useMemo(() => {
     if (sortConfig.key) {
       return [...data].sort((a, b) => {
-        const column = columns.find(col => col.accessor === sortConfig.key);
-        
-        if (column?.type === 'date') {
+        const column = columns.find((col) => col.accessor === sortConfig.key);
+
+        if (column?.type === "date") {
           const dateA = new Date(a[sortConfig.key!]);
           const dateB = new Date(b[sortConfig.key!]);
-          return sortConfig.direction === "asc" 
+          return sortConfig.direction === "asc"
             ? dateA.getTime() - dateB.getTime()
             : dateB.getTime() - dateA.getTime();
         }
-        
+
         if (a[sortConfig.key!] < b[sortConfig.key!]) {
           return sortConfig.direction === "asc" ? -1 : 1;
         }

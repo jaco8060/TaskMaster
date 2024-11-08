@@ -156,7 +156,7 @@ const MyTickets: React.FC = () => {
       header: "Created At",
       accessor: "created_at",
       className: "nowrap-column",
-      type: "date" as "date"
+      type: "date" as "date",
     },
     {
       header: "",

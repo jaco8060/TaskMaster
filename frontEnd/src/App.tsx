@@ -8,13 +8,13 @@ import AssignPersonnel from "./components/dashboard/myprojects/AssignPersonnel";
 import MyProjects from "./components/dashboard/myprojects/MyProjects";
 import ProjectDetails from "./components/dashboard/myprojects/ProjectDetails";
 import MyTickets from "./components/dashboard/mytickets/MyTickets";
+import TicketDetails from "./components/dashboard/tickets/TicketDetails";
 import LoginPage from "./components/login/LoginPage";
 import ResetPassword from "./components/login/ResetPassword";
 import AdminRoute from "./components/routes/AdminRoute";
 import PMRoute from "./components/routes/PMRoute";
 import PrivateRoute from "./components/routes/PrivateRoute";
 import PublicRoute from "./components/routes/PublicRoute";
-import TicketDetails from "./components/dashboard/tickets/TicketDetails";
 
 const App: React.FC = () => {
   return (

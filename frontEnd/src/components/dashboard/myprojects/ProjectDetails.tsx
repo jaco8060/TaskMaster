@@ -153,29 +153,29 @@ const ProjectDetails: React.FC = () => {
     {
       header: "Assigned At",
       accessor: "assigned_at",
-      type: "date" as const
-    }
+      type: "date" as const,
+    },
   ];
 
   const ticketColumns = [
     { header: "Title", accessor: "title" },
-    { 
-      header: "Description", 
+    {
+      header: "Description",
       accessor: "description",
-      className: "description-column"
+      className: "description-column",
     },
     { header: "Status", accessor: "status" },
     { header: "Priority", accessor: "priority" },
     {
       header: "Created At",
       accessor: "created_at",
-      type: "date" as const
+      type: "date" as const,
     },
     {
       header: "",
       accessor: "actions",
-      sortable: false
-    }
+      sortable: false,
+    },
   ];
 
   return (

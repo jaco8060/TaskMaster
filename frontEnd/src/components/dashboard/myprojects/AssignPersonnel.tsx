@@ -161,7 +161,7 @@ const AssignPersonnel: React.FC = () => {
     {
       header: "Assigned At",
       accessor: "assigned_at",
-      type: "date" as const
+      type: "date" as const,
     },
     {
       header: "",

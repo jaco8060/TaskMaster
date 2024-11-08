@@ -1,0 +1,14 @@
+// src/styles/dashboard/CommentsSection.scss
+
+.comments-section {
+  max-width: 100%; // Adjust width as needed or remove to let it fill the container
+
+  .comments-list {
+    max-height: 300px; // Set the desired height
+    overflow-y: auto; // Enable vertical scrolling
+    overflow-x: hidden; // Hide horizontal scrollbar if not needed
+    border: 1px solid #dee2e6; // Optional border
+    padding: 10px; // Adjust padding as needed
+    background-color: #f8f9fa; // Optional background color
+  }
+}

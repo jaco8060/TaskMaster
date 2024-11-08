@@ -13,6 +13,7 @@ import {
 } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import { MainNav } from "../NavBars";
+import CommentsSection from "./CommentsSection.tsx";
 
 interface Ticket {
   id: string;
@@ -111,7 +112,7 @@ const TicketDetails: React.FC = () => {
     <MainNav>
       <div className="d-flex flex-column">
         <Row>
-          <Col>
+          <Col md={6}>
             <div className="d-flex flex-column align-items-left fs-5">
               <h2 className="fs-2">Ticket Details</h2>
               <div className="mb-3">
@@ -170,6 +171,9 @@ const TicketDetails: React.FC = () => {
                 </tbody>
               </Table>
             </div>
+          </Col>
+          <Col md={4}>
+            <CommentsSection ticketId={id!} />
           </Col>
         </Row>
 

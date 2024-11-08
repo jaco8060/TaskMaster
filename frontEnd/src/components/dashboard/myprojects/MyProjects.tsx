@@ -38,16 +38,16 @@ const MyProjects: React.FC = () => {
   const columns: Column[] = [
     { header: "Name", accessor: "name" },
     { header: "Description", accessor: "description" },
-    { 
-      header: "Created At", 
+    {
+      header: "Created At",
       accessor: "created_at",
-      type: "date"
+      type: "date",
     },
-    { 
-      header: "", 
+    {
+      header: "",
       accessor: "details",
-      sortable: false 
-    }
+      sortable: false,
+    },
   ];
 
   const searchFields = ["name", "description"];
@@ -132,7 +132,9 @@ const MyProjects: React.FC = () => {
                           variant="primary"
                           size="sm"
                           className="py-1"
-                          onClick={() => navigate(`/assign-personnel/${item.id}`)}
+                          onClick={() =>
+                            navigate(`/assign-personnel/${item.id}`)
+                          }
                         >
                           Assign
                         </Button>
