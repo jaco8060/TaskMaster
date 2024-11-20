@@ -8,7 +8,7 @@ import Navbar from "react-bootstrap/Navbar";
 import Offcanvas from "react-bootstrap/Offcanvas";
 import { FaBell, FaCog, FaSignOutAlt } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
-import TaskMasterIcon from "../../assets/task-master-icon.png";
+import TaskMasterIcon from "../../assets/taskmaster-logo.svg";
 import { AuthContext, AuthContextType } from "../../contexts/AuthProvider";
 import "../../styles/dashboard/NavBars.scss";
 import UserTabs from "./UserTabs";
