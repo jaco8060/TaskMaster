@@ -4,9 +4,10 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: root123
-      POSTGRES_DB: bugtracker
+      POSTGRES_DB: taskmaster
     volumes:
       - db_data:/var/lib/postgresql/data
+      - ./db-init/:/docker-entrypoint-initdb.d/
     ports:
       - "5433:5432"
     networks:
@@ -18,7 +19,7 @@ services:
       target: builder # Use 'builder' stage for development; remove for production
     environment:
       NODE_ENV: development
-      DATABASE_URL: postgresql://postgres:root123@db:5432/bugtracker
+      DATABASE_URL: postgresql://postgres:root123@db:5432/taskmaster
       PORT: 5000
     ports:
       - "5000:5000"
