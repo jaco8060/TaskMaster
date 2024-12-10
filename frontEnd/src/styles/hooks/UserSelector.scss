@@ -1,35 +1,75 @@
-@import "../../color-theme.scss"; // Import your variables file if it's not already imported
-
-.user-list-table {
-  width: 100%;
-  border-collapse: collapse;
-
-  th,
-  td {
-    padding: 10px;
-    white-space: normal;
-    border: none;
-    cursor: pointer;
-    font-size: 1rem;
+.user-selector {
+  .user-selector-table-container {
+    max-height: 300px; // Set a maximum height for the scrollable area
+    overflow-y: auto; // Enable vertical scrolling
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
   }
 
-  th {
-    // Remove background-color and color styles to let Bootstrap classes take effect
-    // background-color: #f8f9fa;
-    // color: #343a40;
-    font-weight: bold;
+  .user-list-table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th,
+    td {
+      padding: 10px;
+      white-space: normal;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    th {
+      font-weight: bold;
+    }
+
+    td {
+      background-color: #ffffff;
+    }
+
+    tr:hover {
+      background-color: #e9ecef;
+    }
+
+    .user-list-table-row.selected td {
+      background-color: var(--bs-primary) !important;
+      color: var(--bs-light) !important;
+    }
   }
 
-  td {
-    background-color: #ffffff;
+  .spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
   }
 
-  tr:hover {
-    background-color: #e9ecef;
-  }
+  .role-selection-container {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 
-  .user-list-table-row.selected td {
-    background-color: var(--bs-primary) !important;
-    color: var(--bs-light) !important;
+    .role-selection-group {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+
+      .role-control-container {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+
+        .role-dropdown {
+          width: fit-content;
+          padding-right: 1.5rem;
+          text-align: left;
+        }
+      }
+
+      .assign-button {
+        margin-left: 0; // Ensure no extra margin
+      }
+    }
   }
 }
