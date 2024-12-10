@@ -62,21 +62,14 @@ CREATE TABLE IF NOT EXISTS comments (
 CREATE TABLE IF NOT EXISTS ticket_history (
     id SERIAL PRIMARY KEY,
     ticket_id INT REFERENCES tickets(id),
-    old_title TEXT,
-    new_title TEXT,
-    old_description TEXT,
-    new_description TEXT,
-    old_status VARCHAR(20),
-    new_status VARCHAR(20),
-    old_priority VARCHAR(20),
-    new_priority VARCHAR(20),
-    old_project_id INT,
-    new_project_id INT,
-    change_message TEXT,
+    property VARCHAR(50),          -- e.g. "Title", "Description", "Status", "Priority", "Project", "Assigned To"
+    old_value TEXT,
+    new_value TEXT,
     changed_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     changed_by INT REFERENCES users(id)
 );
 
+-- Attachments table
 CREATE TABLE IF NOT EXISTS attachments (
     id SERIAL PRIMARY KEY,
     ticket_id INT REFERENCES tickets(id) ON DELETE CASCADE,

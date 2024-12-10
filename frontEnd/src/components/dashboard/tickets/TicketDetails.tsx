@@ -11,9 +11,9 @@ import {
   Modal,
   Row,
   Spinner,
-  Table,
 } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
+import DataTable from "../../../hooks/DataTable";
 import { MainNav } from "../NavBars";
 import CommentsSection from "./CommentsSection.tsx";
 
@@ -32,6 +32,7 @@ interface Ticket {
   created_at: string;
   updated_at: string;
 }
+
 // Define types for attachments
 interface Attachment {
   id: number;
@@ -49,6 +50,7 @@ interface AttachmentToEdit {
 const TicketDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+
   const [ticket, setTicket] = useState<Ticket | null>(null);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -175,6 +177,96 @@ const TicketDetails: React.FC = () => {
     }
   };
 
+  // Columns for ticket history
+  const historyColumns = [
+    { header: "Property", accessor: "property", type: "string" as const },
+    { header: "Old Value", accessor: "old_value", type: "string" as const },
+    { header: "New Value", accessor: "new_value", type: "string" as const },
+    { header: "Changed By", accessor: "changed_by", type: "string" as const },
+    { header: "Date Changed", accessor: "changed_at", type: "string" as const },
+  ];
+
+  // Columns for attachments
+  const attachmentColumns = [
+    { header: "Filename", accessor: "filename", type: "string" as const },
+    { header: "Description", accessor: "description", type: "string" as const },
+    { header: "Uploaded At", accessor: "uploaded_at", type: "date" as const },
+    {
+      header: "Preview",
+      accessor: "preview",
+      type: "string" as const,
+      sortable: false,
+    },
+    {
+      header: "Actions",
+      accessor: "edit",
+      type: "string" as const,
+      sortable: false,
+    },
+  ];
+
+  const renderAttachmentCell = (item: any, accessor: string) => {
+    const fileUrl = `${import.meta.env.VITE_URL}/uploads/${item.filename}`;
+    const fileExtension = item.filename.split(".").pop()?.toLowerCase();
+    const isImage = ["jpg", "jpeg", "png", "gif", "webp"].includes(
+      fileExtension || ""
+    );
+    const isPdf = fileExtension === "pdf";
+
+    if (accessor === "uploaded_at") {
+      return formatDate(item.uploaded_at);
+    } else if (accessor === "preview") {
+      if (isImage) {
+        return (
+          <img
+            src={fileUrl}
+            alt={item.description || "Attachment"}
+            style={{
+              width: "50px",
+              height: "50px",
+              objectFit: "cover",
+              cursor: "pointer",
+            }}
+            onClick={() => {
+              setSelectedImage(fileUrl);
+              setShowImageModal(true);
+            }}
+          />
+        );
+      } else if (isPdf) {
+        return (
+          <a href={fileUrl} target="_blank" rel="noopener noreferrer">
+            View PDF
+          </a>
+        );
+      } else {
+        return (
+          <a href={fileUrl} download target="_blank" rel="noopener noreferrer">
+            Download File
+          </a>
+        );
+      }
+    } else if (accessor === "edit") {
+      return (
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={() => {
+            setAttachmentToEdit({
+              id: item.id,
+              description: item.description,
+            });
+            setShowEditAttachmentModal(true);
+          }}
+        >
+          Edit Description
+        </Button>
+      );
+    }
+
+    return item[accessor];
+  };
+
   if (loading) {
     return (
       <MainNav>
@@ -221,7 +313,7 @@ const TicketDetails: React.FC = () => {
                   Edit Ticket
                 </Button>
               </div>
-              <Table striped bordered className="ticket-details-table">
+              <table className="table table-striped table-bordered ticket-details-table">
                 <tbody>
                   <tr>
                     <th>Title</th>
@@ -260,16 +352,15 @@ const TicketDetails: React.FC = () => {
                     <td>{formatDate(ticket.updated_at)}</td>
                   </tr>
                 </tbody>
-              </Table>
+              </table>
             </div>
           </Col>
-          <Col md={4}>
-            {/* Conditionally Render Comments Section */}
+          <Col md={6}>
             <CommentsSection ticketId={id!} />
           </Col>
         </Row>
-        {/* Attachment upload section */}
-        <Row className="mt-4">
+        {/* Attachment section */}
+        <Row className="mt-5">
           <Col md={6}>
             <h3>Attachments</h3>
             <Form onSubmit={handleAddAttachment}>
@@ -296,95 +387,20 @@ const TicketDetails: React.FC = () => {
                   onChange={(e) => setAttachmentDescription(e.target.value)}
                 />
               </Form.Group>
-              <Button variant="primary" type="submit">
+              <Button className="mb-3" variant="primary" type="submit">
                 Upload Attachment
               </Button>
             </Form>
             {attachments.length > 0 ? (
-              <Table striped bordered hover className="mt-3">
-                <thead>
-                  <tr>
-                    <th>Filename</th>
-                    <th>Description</th>
-                    <th>Uploaded At</th>
-                    <th>Preview</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {attachments.map((att) => {
-                    const fileUrl = `${import.meta.env.VITE_URL}/uploads/${
-                      att.filename
-                    }`;
-                    const fileExtension = att.filename
-                      .split(".")
-                      .pop()
-                      ?.toLowerCase();
-
-                    const isImage = [
-                      "jpg",
-                      "jpeg",
-                      "png",
-                      "gif",
-                      "webp",
-                    ].includes(fileExtension || "");
-                    const isPdf = fileExtension === "pdf";
-
-                    return (
-                      <tr key={att.id}>
-                        <td>{att.filename}</td>
-                        <td>{att.description}</td>
-                        <td>{formatDate(att.uploaded_at)}</td>
-                        <td>
-                          {isImage ? (
-                            <img
-                              src={fileUrl}
-                              alt={att.description || "Attachment"}
-                              style={{
-                                width: "50px",
-                                height: "50px",
-                                objectFit: "cover",
-                                cursor: "pointer",
-                              }}
-                              onClick={() => {
-                                setSelectedImage(fileUrl);
-                                setShowImageModal(true);
-                              }}
-                            />
-                          ) : isPdf ? (
-                            <a
-                              href={fileUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              View PDF
-                            </a>
-                          ) : (
-                            <a href={fileUrl} download>
-                              Download File
-                            </a>
-                          )}
-                        </td>
-                        <td>
-                          <Button
-                            variant="secondary"
-                            size="sm"
-                            onClick={() => {
-                              setAttachmentToEdit({
-                                id: att.id,
-                                description: att.description,
-                              });
-                              setShowEditAttachmentModal(true);
-                            }}
-                          >
-                            Edit Description
-                          </Button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </Table>
+              <DataTable
+                endpoint={`${
+                  import.meta.env.VITE_URL
+                }/tickets/${id}/attachments`}
+                columns={attachmentColumns}
+                searchFields={["filename", "description"]}
+                refresh={refresh}
+                renderCell={renderAttachmentCell}
+              />
             ) : (
               <p className="fst-italic mt-2">No attachments yet.</p>
             )}
@@ -408,7 +424,23 @@ const TicketDetails: React.FC = () => {
               )}
             </Modal.Body>
           </Modal>
+
+          <Col md={6}>
+            <h3>Ticket History</h3>
+            <DataTable
+              endpoint={`${import.meta.env.VITE_URL}/tickets/${id}/history`}
+              columns={historyColumns}
+              searchFields={[
+                "property",
+                "old_value",
+                "new_value",
+                "changed_by",
+              ]}
+            />
+          </Col>
         </Row>
+
+        {/* Edit Ticket Modal */}
         <Modal show={showModal} onHide={() => setShowModal(false)}>
           <Modal.Header closeButton>
             <Modal.Title>Edit Ticket</Modal.Title>
@@ -487,6 +519,8 @@ const TicketDetails: React.FC = () => {
             </Button>
           </Modal.Footer>
         </Modal>
+
+        {/* Edit Attachment Modal */}
         <Modal
           show={showEditAttachmentModal}
           onHide={() => setShowEditAttachmentModal(false)}

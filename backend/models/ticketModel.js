@@ -50,24 +50,20 @@ export const getTicketsByProjectId = async (projectId) => {
 };
 
 export const getTicketById = async (ticketId) => {
-  try {
-    const result = await pool.query(
-      `SELECT 
-        t.*,
-        p.name as project_name,
-        reporter.username as reported_by_name,
-        assignee.username as assigned_to_name
-      FROM tickets t
-      LEFT JOIN projects p ON t.project_id = p.id
-      LEFT JOIN users reporter ON t.reported_by = reporter.id
-      LEFT JOIN users assignee ON t.assigned_to = assignee.id
-      WHERE t.id = $1`,
-      [ticketId]
-    );
-    return result.rows[0];
-  } catch (error) {
-    throw error;
-  }
+  const result = await pool.query(
+    `SELECT 
+      t.*,
+      p.name as project_name,
+      reporter.username as reported_by_name,
+      assignee.username as assigned_to_name
+    FROM tickets t
+    LEFT JOIN projects p ON t.project_id = p.id
+    LEFT JOIN users reporter ON t.reported_by = reporter.id
+    LEFT JOIN users assignee ON t.assigned_to = assignee.id
+    WHERE t.id = $1`,
+    [ticketId]
+  );
+  return result.rows[0];
 };
 
 export const updateTicket = async (
@@ -76,33 +72,50 @@ export const updateTicket = async (
   description,
   status,
   priority,
-  assigned_to
+  assigned_to,
+  changed_by
 ) => {
-  try {
-    // First update the ticket
-    await pool.query(
-      "UPDATE tickets SET title = $1, description = $2, status = $3, priority = $4, assigned_to = $5, updated_at = CURRENT_TIMESTAMP WHERE id = $6",
-      [title, description, status, priority, assigned_to, id]
-    );
+  const oldTicket = await getTicketById(id);
 
-    // Then fetch the updated ticket with all joined data
-    const result = await pool.query(
-      `SELECT 
-        t.*,
-        p.name as project_name,
-        reporter.username as reported_by_name,
-        assignee.username as assigned_to_name
-      FROM tickets t
-      LEFT JOIN projects p ON t.project_id = p.id
-      LEFT JOIN users reporter ON t.reported_by = reporter.id
-      LEFT JOIN users assignee ON t.assigned_to = assignee.id
-      WHERE t.id = $1`,
-      [id]
-    );
-    return result.rows[0];
-  } catch (error) {
-    throw error;
-  }
+  await pool.query(
+    "UPDATE tickets SET title = $1, description = $2, status = $3, priority = $4, assigned_to = $5, updated_at = CURRENT_TIMESTAMP WHERE id = $6",
+    [title, description, status, priority, assigned_to, id]
+  );
+
+  const newTicket = await getTicketById(id);
+
+  const recordChange = async (property, oldVal, newVal) => {
+    if (oldVal !== newVal) {
+      await pool.query(
+        "INSERT INTO ticket_history (ticket_id, property, old_value, new_value, changed_by) VALUES ($1, $2, $3, $4, $5)",
+        [
+          id,
+          property,
+          oldVal === null ? "N/A" : oldVal.toString(),
+          newVal === null ? "N/A" : newVal.toString(),
+          changed_by,
+        ]
+      );
+    }
+  };
+
+  // Track field changes
+  await recordChange("Title", oldTicket.title, newTicket.title);
+  await recordChange(
+    "Description",
+    oldTicket.description,
+    newTicket.description
+  );
+  await recordChange("Status", oldTicket.status, newTicket.status);
+  await recordChange("Priority", oldTicket.priority, newTicket.priority);
+  await recordChange("Project", oldTicket.project_name, newTicket.project_name);
+  await recordChange(
+    "Assigned To",
+    oldTicket.assigned_to_name,
+    newTicket.assigned_to_name
+  );
+
+  return newTicket;
 };
 
 export const deleteTicket = async (id) => {
@@ -136,4 +149,21 @@ export const getTicketsByUserId = async (userId) => {
   } catch (error) {
     throw error;
   }
+};
+
+export const getTicketHistoryByTicketId = async (ticketId) => {
+  const result = await pool.query(
+    `SELECT 
+      th.property,
+      th.old_value,
+      th.new_value,
+      th.changed_at,
+      changer.username AS changed_by_username
+     FROM ticket_history th
+     LEFT JOIN users changer ON th.changed_by = changer.id
+     WHERE th.ticket_id = $1
+     ORDER BY th.changed_at ASC`,
+    [ticketId]
+  );
+  return result.rows;
 };

@@ -2,6 +2,7 @@ import {
   createTicket,
   deleteTicket,
   getTicketById,
+  getTicketHistoryByTicketId,
   getTicketsByProjectId,
   getTicketsByUserId,
   updateTicket,
@@ -70,6 +71,11 @@ export const handleGetTicketById = async (req, res) => {
 export const handleUpdateTicket = async (req, res) => {
   const ticketId = req.params.id;
   const { title, description, status, priority, assigned_to } = req.body;
+
+  // This requires the route to be protected by ensureAuthenticated
+  // so that req.user is defined.
+  const changed_by = req.user.id;
+
   try {
     const updatedTicket = await updateTicket(
       ticketId,
@@ -77,7 +83,8 @@ export const handleUpdateTicket = async (req, res) => {
       description,
       status,
       priority,
-      assigned_to
+      assigned_to,
+      changed_by // Pass the user ID here
     );
     res.status(200).json(updatedTicket);
   } catch (error) {
@@ -97,5 +104,25 @@ export const handleDeleteTicket = async (req, res) => {
   } catch (error) {
     console.error("Error deleting ticket:", error);
     res.status(500).json({ error: "Server error" });
+  }
+};
+// ticketController.js
+
+export const handleGetTicketHistory = async (req, res) => {
+  const ticketId = req.params.id;
+  try {
+    const history = await getTicketHistoryByTicketId(ticketId);
+    // history is already in the form {property, old_value, new_value, changed_at, changed_by_username}
+    const formatted = history.map((h) => ({
+      property: h.property,
+      old_value: h.old_value,
+      new_value: h.new_value,
+      changed_by: h.changed_by_username || "Unknown",
+      changed_at: new Date(h.changed_at).toLocaleString(),
+    }));
+    res.status(200).json(formatted);
+  } catch (error) {
+    console.error("Error fetching ticket history:", error);
+    res.status(500).json({ error: "Failed to fetch ticket history." });
   }
 };
