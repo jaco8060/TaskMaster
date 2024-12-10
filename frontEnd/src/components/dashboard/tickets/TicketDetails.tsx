@@ -2,7 +2,7 @@
 
 import axios from "axios";
 import { format } from "date-fns";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   Col,
@@ -32,7 +32,6 @@ interface Ticket {
   created_at: string;
   updated_at: string;
 }
-
 // Define types for attachments
 interface Attachment {
   id: number;
@@ -41,7 +40,7 @@ interface Attachment {
   uploaded_at: string;
 }
 
-// Add a modal state for editing attachment description
+// modal state for editing attachment description
 interface AttachmentToEdit {
   id: number;
   description: string;
@@ -56,12 +55,10 @@ const TicketDetails: React.FC = () => {
   const [editTicket, setEditTicket] = useState<Ticket | null>(null);
   const [refresh, setRefresh] = useState(false);
 
-  // Attachments state
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [attachmentFile, setAttachmentFile] = useState<File | null>(null);
   const [attachmentDescription, setAttachmentDescription] = useState("");
 
-  // Modal for editing attachment description
   const [showEditAttachmentModal, setShowEditAttachmentModal] = useState(false);
   const [attachmentToEdit, setAttachmentToEdit] =
     useState<AttachmentToEdit | null>(null);
@@ -84,7 +81,6 @@ const TicketDetails: React.FC = () => {
     }
   };
 
-  // Fetch attachments function
   const fetchAttachments = async () => {
     try {
       const response = await axios.get(
@@ -272,7 +268,6 @@ const TicketDetails: React.FC = () => {
             <CommentsSection ticketId={id!} />
           </Col>
         </Row>
-
         {/* Attachment upload section */}
         <Row className="mt-4">
           <Col md={6}>
@@ -305,8 +300,6 @@ const TicketDetails: React.FC = () => {
                 Upload Attachment
               </Button>
             </Form>
-
-            {/* Attachment list */}
             {attachments.length > 0 ? (
               <Table striped bordered hover className="mt-3">
                 <thead>
@@ -314,55 +307,82 @@ const TicketDetails: React.FC = () => {
                     <th>Filename</th>
                     <th>Description</th>
                     <th>Uploaded At</th>
-                    <th>Preview</th> {/* Add a column for preview */}
+                    <th>Preview</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {attachments.map((att) => (
-                    <tr key={att.id}>
-                      <td>{att.filename}</td>
-                      <td>{att.description}</td>
-                      <td>{formatDate(att.uploaded_at)}</td>
-                      <td>
-                        <img
-                          src={`${import.meta.env.VITE_URL}/uploads/${
-                            att.filename
-                          }`}
-                          alt={att.description || "Attachment"}
-                          style={{
-                            width: "50px", // small width for a low-res look
-                            height: "50px", // small height for a low-res look
-                            objectFit: "cover",
-                            cursor: "pointer",
-                          }}
-                          onClick={() => {
-                            setSelectedImage(
-                              `${import.meta.env.VITE_URL}/uploads/${
-                                att.filename
-                              }`
-                            );
-                            setShowImageModal(true);
-                          }}
-                        />
-                      </td>
-                      <td>
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          onClick={() => {
-                            setAttachmentToEdit({
-                              id: att.id,
-                              description: att.description,
-                            });
-                            setShowEditAttachmentModal(true);
-                          }}
-                        >
-                          Edit Description
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
+                  {attachments.map((att) => {
+                    const fileUrl = `${import.meta.env.VITE_URL}/uploads/${
+                      att.filename
+                    }`;
+                    const fileExtension = att.filename
+                      .split(".")
+                      .pop()
+                      ?.toLowerCase();
+
+                    const isImage = [
+                      "jpg",
+                      "jpeg",
+                      "png",
+                      "gif",
+                      "webp",
+                    ].includes(fileExtension || "");
+                    const isPdf = fileExtension === "pdf";
+
+                    return (
+                      <tr key={att.id}>
+                        <td>{att.filename}</td>
+                        <td>{att.description}</td>
+                        <td>{formatDate(att.uploaded_at)}</td>
+                        <td>
+                          {isImage ? (
+                            <img
+                              src={fileUrl}
+                              alt={att.description || "Attachment"}
+                              style={{
+                                width: "50px",
+                                height: "50px",
+                                objectFit: "cover",
+                                cursor: "pointer",
+                              }}
+                              onClick={() => {
+                                setSelectedImage(fileUrl);
+                                setShowImageModal(true);
+                              }}
+                            />
+                          ) : isPdf ? (
+                            <a
+                              href={fileUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              View PDF
+                            </a>
+                          ) : (
+                            <a href={fileUrl} download>
+                              Download File
+                            </a>
+                          )}
+                        </td>
+                        <td>
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => {
+                              setAttachmentToEdit({
+                                id: att.id,
+                                description: att.description,
+                              });
+                              setShowEditAttachmentModal(true);
+                            }}
+                          >
+                            Edit Description
+                          </Button>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </Table>
             ) : (
@@ -389,8 +409,6 @@ const TicketDetails: React.FC = () => {
             </Modal.Body>
           </Modal>
         </Row>
-
-        {/* Modal for editing ticket details */}
         <Modal show={showModal} onHide={() => setShowModal(false)}>
           <Modal.Header closeButton>
             <Modal.Title>Edit Ticket</Modal.Title>
@@ -469,8 +487,6 @@ const TicketDetails: React.FC = () => {
             </Button>
           </Modal.Footer>
         </Modal>
-
-        {/* Modal for editing attachment description */}
         <Modal
           show={showEditAttachmentModal}
           onHide={() => setShowEditAttachmentModal(false)}
