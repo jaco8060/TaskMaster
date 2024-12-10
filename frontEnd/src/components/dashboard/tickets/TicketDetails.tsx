@@ -66,6 +66,9 @@ const TicketDetails: React.FC = () => {
   const [attachmentToEdit, setAttachmentToEdit] =
     useState<AttachmentToEdit | null>(null);
 
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [showImageModal, setShowImageModal] = useState<boolean>(false);
+
   const fetchTicketDetails = async () => {
     try {
       const response = await axios.get(
@@ -311,6 +314,7 @@ const TicketDetails: React.FC = () => {
                     <th>Filename</th>
                     <th>Description</th>
                     <th>Uploaded At</th>
+                    <th>Preview</th> {/* Add a column for preview */}
                     <th>Actions</th>
                   </tr>
                 </thead>
@@ -320,6 +324,28 @@ const TicketDetails: React.FC = () => {
                       <td>{att.filename}</td>
                       <td>{att.description}</td>
                       <td>{formatDate(att.uploaded_at)}</td>
+                      <td>
+                        <img
+                          src={`${import.meta.env.VITE_URL}/uploads/${
+                            att.filename
+                          }`}
+                          alt={att.description || "Attachment"}
+                          style={{
+                            width: "50px", // small width for a low-res look
+                            height: "50px", // small height for a low-res look
+                            objectFit: "cover",
+                            cursor: "pointer",
+                          }}
+                          onClick={() => {
+                            setSelectedImage(
+                              `${import.meta.env.VITE_URL}/uploads/${
+                                att.filename
+                              }`
+                            );
+                            setShowImageModal(true);
+                          }}
+                        />
+                      </td>
                       <td>
                         <Button
                           variant="secondary"
@@ -343,6 +369,25 @@ const TicketDetails: React.FC = () => {
               <p className="fst-italic mt-2">No attachments yet.</p>
             )}
           </Col>
+          <Modal
+            show={showImageModal}
+            onHide={() => setShowImageModal(false)}
+            centered
+            size="lg"
+          >
+            <Modal.Header closeButton>
+              <Modal.Title>Image Preview</Modal.Title>
+            </Modal.Header>
+            <Modal.Body className="d-flex justify-content-center align-items-center">
+              {selectedImage && (
+                <img
+                  src={selectedImage}
+                  alt="Full-size Attachment Preview"
+                  style={{ maxWidth: "100%", maxHeight: "80vh" }}
+                />
+              )}
+            </Modal.Body>
+          </Modal>
         </Row>
 
         {/* Modal for editing ticket details */}
