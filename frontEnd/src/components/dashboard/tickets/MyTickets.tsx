@@ -4,6 +4,7 @@ import axios from "axios";
 import { format } from "date-fns";
 import React, { ChangeEvent, useContext, useEffect, useState } from "react";
 import { Button, Container, Form, Modal } from "react-bootstrap";
+import { useNavigate } from "react-router-dom"; // Import useNavigate if not already imported
 import { AuthContext, AuthContextType } from "../../../contexts/AuthProvider";
 import DataTable from "../../../hooks/DataTable";
 import "../../../styles/dashboard/MyTickets.scss";
@@ -38,6 +39,7 @@ const MyTickets: React.FC = () => {
   });
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
   const [refresh, setRefresh] = useState<boolean>(false);
+  const navigate = useNavigate(); // Hook to navigate between routes
 
   const fetchProjects = async () => {
     try {
@@ -173,9 +175,21 @@ const MyTickets: React.FC = () => {
       return formatDate(item[accessor]);
     } else if (accessor === "actions") {
       return (
-        <div className="d-flex justify-content-end">
+        <div className="d-flex justify-content-end gap-2">
+          {/* 
+            Add a button similar to the 'My Projects' page:
+            This "Ticket Details" button navigates the user to the ticket-details page for the given ticket ID.
+          */}
+          <Button
+            variant="info"
+            size="sm"
+            onClick={() => navigate(`/ticket-details/${item.id}`)}
+          >
+            Ticket Details
+          </Button>
           <Button
             variant="primary"
+            size="sm"
             onClick={() => {
               setIsEditMode(true);
               setNewTicket({

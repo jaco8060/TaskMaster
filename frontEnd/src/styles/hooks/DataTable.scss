@@ -28,13 +28,13 @@
     position: relative;
     padding-right: 24px; // Add space for the sort button
     min-width: 100px; // Minimum width for columns
-    
+
     .header-content {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 8px;
-      
+
       .header-text {
         overflow: hidden;
         text-overflow: ellipsis;

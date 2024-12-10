@@ -77,6 +77,15 @@ CREATE TABLE IF NOT EXISTS ticket_history (
     changed_by INT REFERENCES users(id)
 );
 
+CREATE TABLE IF NOT EXISTS attachments (
+    id SERIAL PRIMARY KEY,
+    ticket_id INT REFERENCES tickets(id) ON DELETE CASCADE,
+    filename VARCHAR(255) NOT NULL,
+    description TEXT,
+    uploaded_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+
 -- Function to update assigned_personnel role when users role changes
 CREATE OR REPLACE FUNCTION update_assigned_personnel_role()
 RETURNS TRIGGER AS $$

@@ -1,10 +1,10 @@
-// src/components/dashboard/tickets/CommentsSection.tsx
+// CommentsSection.tsx
 
 import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
 import { Button, Form, ListGroup } from "react-bootstrap";
 import { AuthContext, AuthContextType } from "../../../contexts/AuthProvider";
-import "../../../styles/dashboard/CommentsSection.scss"; // Import the new SCSS file
+import "../../../styles/dashboard/CommentsSection.scss";
 
 interface Comment {
   id: number;
@@ -23,11 +23,6 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ ticketId }) => {
   const [newComment, setNewComment] = useState("");
   const { user } = useContext(AuthContext) as AuthContextType;
 
-  useEffect(() => {
-    fetchComments();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ticketId]);
-
   const fetchComments = async () => {
     try {
       const response = await axios.get(
@@ -39,6 +34,10 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ ticketId }) => {
       console.error("Error fetching comments:", error);
     }
   };
+
+  useEffect(() => {
+    fetchComments();
+  }, [ticketId]);
 
   const handleAddComment = async () => {
     if (!newComment.trim()) return;
@@ -72,17 +71,21 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ ticketId }) => {
         Add Comment
       </Button>
       <div className="comments-list mt-3">
-        <ListGroup variant="flush">
-          {comments.map((comment) => (
-            <ListGroup.Item key={comment.id}>
-              <strong>{comment.commenter_username}</strong>{" "}
-              <span className="text-muted">
-                {new Date(comment.created_at).toLocaleString()}
-              </span>
-              <p>{comment.comment}</p>
-            </ListGroup.Item>
-          ))}
-        </ListGroup>
+        {comments.length === 0 ? (
+          <p className="fst-italic">No comments yet for this post</p>
+        ) : (
+          <ListGroup variant="flush">
+            {comments.map((comment) => (
+              <ListGroup.Item key={comment.id}>
+                <strong>{comment.commenter_username}</strong>{" "}
+                <span className="text-muted">
+                  {new Date(comment.created_at).toLocaleString()}
+                </span>
+                <p>{comment.comment}</p>
+              </ListGroup.Item>
+            ))}
+          </ListGroup>
+        )}
       </div>
     </div>
   );
