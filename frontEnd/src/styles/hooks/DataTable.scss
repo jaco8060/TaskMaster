@@ -74,6 +74,15 @@
       }
     }
   }
+  .wrapped-cell {
+    white-space: normal; /* Enable text wrapping */
+    word-wrap: break-word; /* Break words if needed */
+    overflow-wrap: break-word; /* Ensure compatibility */
+  }
+
+  .description-column {
+    max-width: 300px; /* Set a fixed maximum width for this column */
+  }
 
   // Add responsive styles
   @media (max-width: 576px) {

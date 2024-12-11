@@ -28,11 +28,12 @@ interface Column {
 }
 
 interface DataTableProps {
-  endpoint: string;
+  endpoint?: string;
   columns: Column[];
   searchFields: string[];
   refresh?: boolean;
   renderCell?: (item: any, accessor: string) => React.ReactNode;
+  staticData?: any[];
 }
 
 const DataTable: React.FC<DataTableProps> = ({
@@ -41,6 +42,7 @@ const DataTable: React.FC<DataTableProps> = ({
   searchFields,
   refresh,
   renderCell,
+  staticData,
 }) => {
   const [data, setData] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -57,18 +59,25 @@ const DataTable: React.FC<DataTableProps> = ({
 
   useEffect(() => {
     const fetchData = async () => {
-      setLoading(true);
-      try {
-        const response = await axios.get(endpoint, { withCredentials: true });
-        setData(response.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
+      if (staticData) {
+        setData(staticData);
+        setLoading(false);
+        return;
       }
-      setLoading(false);
+      if (endpoint) {
+        setLoading(true);
+        try {
+          const response = await axios.get(endpoint, { withCredentials: true });
+          setData(response.data);
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        }
+        setLoading(false);
+      }
     };
 
     fetchData();
-  }, [endpoint, refresh]);
+  }, [endpoint, refresh, staticData]);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
@@ -224,7 +233,7 @@ const DataTable: React.FC<DataTableProps> = ({
                     <td
                       key={colIndex}
                       className={
-                        column.accessor === "description"
+                        column.accessor === "description" || "comment"
                           ? "wrapped-cell description-column"
                           : "wrapped-cell"
                       }
