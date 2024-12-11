@@ -296,114 +296,120 @@ const TicketDetails: React.FC = () => {
       <div className="d-flex flex-column">
         <Row>
           <Col md={6}>
-            <div className="d-flex flex-column align-items-left fs-5">
-              <h2 className="fs-2">Ticket Details</h2>
-              <div className="mb-3">
-                <Button variant="primary" onClick={() => navigate(-1)}>
-                  Go Back
-                </Button>
-                <Button
-                  variant="secondary"
-                  onClick={() => {
-                    setEditTicket(ticket);
-                    setShowModal(true);
-                  }}
-                  className="ms-2"
-                >
-                  Edit Ticket
-                </Button>
+            <div className="section-container">
+              <div className="d-flex flex-column align-items-left fs-5">
+                <h2 className="fs-2">Ticket Details</h2>
+                <div className="mb-3">
+                  <Button variant="primary" onClick={() => navigate(-1)}>
+                    Go Back
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    onClick={() => {
+                      setEditTicket(ticket);
+                      setShowModal(true);
+                    }}
+                    className="ms-2"
+                  >
+                    Edit Ticket
+                  </Button>
+                </div>
+                <table className="table table-striped table-bordered ticket-details-table">
+                  <tbody>
+                    <tr>
+                      <th>Title</th>
+                      <td>{ticket.title}</td>
+                    </tr>
+                    <tr>
+                      <th>Description</th>
+                      <td>{ticket.description}</td>
+                    </tr>
+                    <tr>
+                      <th>Assigned Developer</th>
+                      <td>{ticket.assigned_to_name}</td>
+                    </tr>
+                    <tr>
+                      <th>Submitter</th>
+                      <td>{ticket.reported_by_name}</td>
+                    </tr>
+                    <tr>
+                      <th>Project</th>
+                      <td>{ticket.project_name}</td>
+                    </tr>
+                    <tr>
+                      <th>Priority</th>
+                      <td>{ticket.priority}</td>
+                    </tr>
+                    <tr>
+                      <th>Status</th>
+                      <td>{ticket.status}</td>
+                    </tr>
+                    <tr>
+                      <th>Created</th>
+                      <td>{formatDate(ticket.created_at)}</td>
+                    </tr>
+                    <tr>
+                      <th>Updated</th>
+                      <td>{formatDate(ticket.updated_at)}</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
-              <table className="table table-striped table-bordered ticket-details-table">
-                <tbody>
-                  <tr>
-                    <th>Title</th>
-                    <td>{ticket.title}</td>
-                  </tr>
-                  <tr>
-                    <th>Description</th>
-                    <td>{ticket.description}</td>
-                  </tr>
-                  <tr>
-                    <th>Assigned Developer</th>
-                    <td>{ticket.assigned_to_name}</td>
-                  </tr>
-                  <tr>
-                    <th>Submitter</th>
-                    <td>{ticket.reported_by_name}</td>
-                  </tr>
-                  <tr>
-                    <th>Project</th>
-                    <td>{ticket.project_name}</td>
-                  </tr>
-                  <tr>
-                    <th>Priority</th>
-                    <td>{ticket.priority}</td>
-                  </tr>
-                  <tr>
-                    <th>Status</th>
-                    <td>{ticket.status}</td>
-                  </tr>
-                  <tr>
-                    <th>Created</th>
-                    <td>{formatDate(ticket.created_at)}</td>
-                  </tr>
-                  <tr>
-                    <th>Updated</th>
-                    <td>{formatDate(ticket.updated_at)}</td>
-                  </tr>
-                </tbody>
-              </table>
             </div>
           </Col>
           <Col md={6}>
-            <CommentsSection ticketId={id!} />
+            <div className="section-container">
+              <CommentsSection ticketId={id!} />
+            </div>
           </Col>
         </Row>
         {/* Attachment section */}
         <Row className="mt-5">
           <Col md={6}>
-            <h3>Attachments</h3>
-            <Form onSubmit={handleAddAttachment}>
-              <Form.Group controlId="attachmentFile" className="mb-3">
-                <Form.Label>Select Attachment File</Form.Label>
-                <Form.Control
-                  type="file"
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    const fileInput = e.target;
-                    setAttachmentFile(
-                      fileInput.files && fileInput.files.length > 0
-                        ? fileInput.files[0]
-                        : null
-                    );
-                  }}
+            <div className="section-container">
+              <h3>Attachments</h3>
+              <Form onSubmit={handleAddAttachment}>
+                <Form.Group controlId="attachmentFile" className="mb-3">
+                  <Form.Label>Select Attachment File</Form.Label>
+                  <Form.Control
+                    type="file"
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      const fileInput = e.target;
+                      setAttachmentFile(
+                        fileInput.files && fileInput.files.length > 0
+                          ? fileInput.files[0]
+                          : null
+                      );
+                    }}
+                  />
+                </Form.Group>
+                <Form.Group controlId="attachmentDescription" className="mb-3">
+                  <Form.Label>Description</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Enter attachment description"
+                    value={attachmentDescription}
+                    onChange={(e) => setAttachmentDescription(e.target.value)}
+                  />
+                </Form.Group>
+                <Button className="mb-3" variant="primary" type="submit">
+                  Upload Attachment
+                </Button>
+              </Form>
+              {attachments.length > 0 ? (
+                <DataTable
+                  endpoint={`${
+                    import.meta.env.VITE_URL
+                  }/tickets/${id}/attachments`}
+                  columns={attachmentColumns}
+                  searchFields={["filename", "description"]}
+                  refresh={refresh}
+                  renderCell={renderAttachmentCell}
                 />
-              </Form.Group>
-              <Form.Group controlId="attachmentDescription" className="mb-3">
-                <Form.Label>Description</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Enter attachment description"
-                  value={attachmentDescription}
-                  onChange={(e) => setAttachmentDescription(e.target.value)}
-                />
-              </Form.Group>
-              <Button className="mb-3" variant="primary" type="submit">
-                Upload Attachment
-              </Button>
-            </Form>
-            {attachments.length > 0 ? (
-              <DataTable
-                endpoint={`${
-                  import.meta.env.VITE_URL
-                }/tickets/${id}/attachments`}
-                columns={attachmentColumns}
-                searchFields={["filename", "description"]}
-                refresh={refresh}
-                renderCell={renderAttachmentCell}
-              />
-            ) : (
-              <p className="fst-italic mt-2">No attachments yet.</p>
-            )}
+              ) : (
+                <p className="fst-italic mt-2">No attachments yet.</p>
+              )}
+            </div>
           </Col>
           <Modal
             show={showImageModal}
@@ -426,17 +432,19 @@ const TicketDetails: React.FC = () => {
           </Modal>
 
           <Col md={6}>
-            <h3>Ticket History</h3>
-            <DataTable
-              endpoint={`${import.meta.env.VITE_URL}/tickets/${id}/history`}
-              columns={historyColumns}
-              searchFields={[
-                "property",
-                "old_value",
-                "new_value",
-                "changed_by",
-              ]}
-            />
+            <div className="section-container">
+              <h3>Ticket History</h3>
+              <DataTable
+                endpoint={`${import.meta.env.VITE_URL}/tickets/${id}/history`}
+                columns={historyColumns}
+                searchFields={[
+                  "property",
+                  "old_value",
+                  "new_value",
+                  "changed_by",
+                ]}
+              />
+            </div>
           </Col>
         </Row>
 

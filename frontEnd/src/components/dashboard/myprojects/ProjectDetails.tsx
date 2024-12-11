@@ -183,79 +183,84 @@ const ProjectDetails: React.FC = () => {
       <div className="d-flex flex-column">
         <Row>
           <Col>
-            <div className="d-flex flex-column align-items-left fs-5">
-              <h2 className="fs-2">Project Details</h2>
-              <p>
-                <strong>Project Name:</strong> {project.name}
-              </p>
-              <p>
-                <strong>Description:</strong> {project.description}
-              </p>
-              <p>
-                <strong>Created At:</strong> {formatDate(project.created_at)}
-              </p>
-              <p>
-                <strong>Is Active:</strong> {project.is_active ? "Yes" : "No"}
-              </p>
-              <div>
-                <Button variant="primary" onClick={() => navigate(-1)}>
-                  Go Back
-                </Button>
-                <Button
-                  variant="secondary"
-                  onClick={handleShowModal}
-                  className="ms-2 "
-                >
-                  Edit Project
-                </Button>
+            <div className="section-container">
+              <div className="d-flex flex-column align-items-left fs-5">
+                <h2 className="fs-2">Project Details</h2>
+                <p>
+                  <strong>Project Name:</strong> {project.name}
+                </p>
+                <p>
+                  <strong>Description:</strong> {project.description}
+                </p>
+                <p>
+                  <strong>Created At:</strong> {formatDate(project.created_at)}
+                </p>
+                <p>
+                  <strong>Is Active:</strong> {project.is_active ? "Yes" : "No"}
+                </p>
+                <div>
+                  <Button variant="primary" onClick={() => navigate(-1)}>
+                    Go Back
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    onClick={handleShowModal}
+                    className="ms-2"
+                  >
+                    Edit Project
+                  </Button>
+                </div>
               </div>
             </div>
           </Col>
         </Row>
         <Row className="mt-4">
           <Col>
-            <h2>Assigned Personnel</h2>
-            <DataTable
-              endpoint={`${import.meta.env.VITE_URL}/projects/${id}/personnel`}
-              columns={personnelColumns}
-              searchFields={["username", "email"]}
-              renderCell={(item: Personnel, accessor: string) => {
-                // Cast accessor to keyof Personnel when needed
-                if (accessor === "assigned_at") {
-                  return formatDate(item[accessor as keyof Personnel]);
-                }
-                return item[accessor as keyof Personnel];
-              }}
-            />
+            <div className="section-container">
+              <h2>Assigned Personnel</h2>
+              <DataTable
+                endpoint={`${import.meta.env.VITE_URL}/projects/${id}/personnel`}
+                columns={personnelColumns}
+                searchFields={["username", "email"]}
+                renderCell={(item: Personnel, accessor: string) => {
+                  if (accessor === "assigned_at") {
+                    return formatDate(item[accessor as keyof Personnel]);
+                  }
+                  return item[accessor as keyof Personnel];
+                }}
+              />
+            </div>
           </Col>
         </Row>
         <Row className="mt-4">
           <Col>
-            <h2>Project Tickets</h2>
-            <DataTable
-              endpoint={`${import.meta.env.VITE_URL}/tickets/project/${id}`}
-              columns={ticketColumns}
-              searchFields={["title", "description", "status", "priority"]}
-              renderCell={(item: Ticket, accessor: string) => {
-                if (accessor === "actions") {
-                  return (
-                    <div className="d-flex justify-content-end gap-2">
-                      <Button
-                        variant="info"
-                        size="sm"
-                        onClick={() => navigate(`/ticket-details/${item.id}`)}
-                      >
-                        Ticket Details
-                      </Button>
-                    </div>
-                  );
-                }
-                if (accessor === "created_at") {
-                  return formatDate(item[accessor as keyof Ticket]);
-                }
-                return item[accessor as keyof Ticket];
-              }}
-            />
+            <div className="section-container">
+              <h2>Project Tickets</h2>
+              <DataTable
+                endpoint={`${import.meta.env.VITE_URL}/tickets/project/${id}`}
+                columns={ticketColumns}
+                searchFields={["title", "description", "status", "priority"]}
+                renderCell={(item: Ticket, accessor: string) => {
+                  if (accessor === "actions") {
+                    return (
+                      <div className="d-flex justify-content-end gap-2">
+                        <Button
+                          variant="info"
+                          size="sm"
+                          onClick={() => navigate(`/ticket-details/${item.id}`)}
+                        >
+                          Ticket Details
+                        </Button>
+                      </div>
+                    );
+                  }
+                  if (accessor === "created_at") {
+                    return formatDate(item[accessor as keyof Ticket]);
+                  }
+                  return item[accessor as keyof Ticket];
+                }}
+              />
+            </div>
           </Col>
         </Row>
       </div>

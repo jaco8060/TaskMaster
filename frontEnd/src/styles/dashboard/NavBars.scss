@@ -67,3 +67,29 @@
     }
   }
 }
+
+// Add these styles for the offcanvas components
+@include media-breakpoint-down(lg) {
+  .offcanvas {
+    .offcanvas-header {
+      background-color: #F5BA41;
+    }
+    
+    .offcanvas-body {
+      background-color: #F5BA41;
+    }
+  }
+
+  #TopNavBarMobile {
+    background-color: #F5BA41;
+    color: var(--bs-dark);
+
+    .nav-link {
+      color: var(--bs-dark);
+      &.active {
+        background-color: #2C3750;
+        color: var(--bs-light);
+      }
+    }
+  }
+}

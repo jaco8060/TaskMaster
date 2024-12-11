@@ -214,7 +214,7 @@ const MyTickets: React.FC = () => {
 
   return (
     <MainNav>
-      <Container fluid className="p-0">
+      <Container fluid className=" section-container">
         <h1 className="mb-3">My Tickets</h1>
         <Button className="mb-3" onClick={handleShowModal}>
           Create New Ticket

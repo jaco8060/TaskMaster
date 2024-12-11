@@ -15,7 +15,7 @@ const ManageRoles: React.FC = () => {
 
   return (
     <MainNav>
-      <div className="p-0 d-flex flex-column">
+      <div className="section-container d-flex flex-column">
         <Row>
           <Col>
             <h1 className="mb-3">Manage Role Assignment</h1>

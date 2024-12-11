@@ -84,7 +84,7 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ ticketId }) => {
   };
 
   return (
-    <div className="comments-section mt-4">
+    <div className="comments-section">
       <h3>Comments</h3>
       <Form.Group controlId="newComment">
         <Form.Label>Add a Comment</Form.Label>
@@ -104,22 +104,11 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ ticketId }) => {
           <p className="fst-italic">No comments yet for this post</p>
         ) : (
           <DataTable
-            endpoint="" // We won't be fetching inside DataTable since we already have comments
+            endpoint=""
             columns={columns}
             searchFields={["commenter_username", "comment"]}
-            // We'll not rely on DataTable fetching data. Instead, we can modify DataTable to accept data directly or mock endpoint.
-            // One workaround: Just pass the comments as a prop and modify DataTable to accept a 'data' prop directly:
-            // For demonstration, let's assume DataTable can accept a 'data' prop. If not, you'd have to refactor DataTable or create a custom hook version.
-            // Comment out endpoint usage and rely on 'data':
-
-            // This requires a slight modification of DataTable to accept a data prop if endpoint is not provided.
-            // If you cannot modify DataTable, you'll need an endpoint or mock. For now, let's assume we can modify DataTable to accept a data prop.
-            // DataTable's code: if endpoint is empty, use provided data directly.
-
-            // We'll show how we can handle that:
             refresh={refresh}
             renderCell={renderCell}
-            // Add a new optional prop 'staticData' to DataTable to handle this scenario without fetching:
             staticData={comments}
           />
         )}

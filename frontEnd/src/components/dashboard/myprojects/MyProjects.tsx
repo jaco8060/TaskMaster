@@ -91,14 +91,10 @@ const MyProjects: React.FC = () => {
 
   return (
     <MainNav>
-      <Container className="p-0 m-0 d-flex flex-column">
+      <div className="d-flex flex-column section-container">
         <Row>
           <Col>
             <h1 className="mb-3">My Projects</h1>
-          </Col>
-        </Row>
-        <Row>
-          <Col xs={6} sm={6} className="ml-1">
             <Button
               className="mb-3"
               variant="primary"
@@ -108,49 +104,51 @@ const MyProjects: React.FC = () => {
             </Button>
           </Col>
         </Row>
-        <Row className="dataTable">
-          <Col xs={12} sm={12}>
-            <DataTable
-              key={refresh ? "refresh-true" : "refresh-false"} // Ensure a string key
-              endpoint={endpoint}
-              columns={columns}
-              searchFields={searchFields}
-              renderCell={(item, accessor) => {
-                if (accessor === "details") {
-                  return (
-                    <div className="d-flex justify-content-end gap-2">
-                      <Button
-                        variant="info"
-                        size="sm"
-                        className="py-1"
-                        onClick={() => navigate(`/project-details/${item.id}`)}
-                      >
-                        Details
-                      </Button>
-                      {(user.role === "admin" || user.role === "pm") && (
+        <Row>
+          <Col>
+            <div >
+              <DataTable
+                key={refresh ? "refresh-true" : "refresh-false"}
+                endpoint={endpoint}
+                columns={columns}
+                searchFields={searchFields}
+                renderCell={(item, accessor) => {
+                  if (accessor === "details") {
+                    return (
+                      <div className="d-flex justify-content-end gap-2">
                         <Button
-                          variant="primary"
+                          variant="info"
                           size="sm"
                           className="py-1"
-                          onClick={() =>
-                            navigate(`/assign-personnel/${item.id}`)
-                          }
+                          onClick={() => navigate(`/project-details/${item.id}`)}
                         >
-                          Assign
+                          Details
                         </Button>
-                      )}
-                    </div>
-                  );
-                }
-                if (accessor === "created_at") {
-                  return formatDate(item[accessor]);
-                }
-                return item[accessor];
-              }}
-            />
+                        {(user.role === "admin" || user.role === "pm") && (
+                          <Button
+                            variant="primary"
+                            size="sm"
+                            className="py-1"
+                            onClick={() =>
+                              navigate(`/assign-personnel/${item.id}`)
+                            }
+                          >
+                            Assign
+                          </Button>
+                        )}
+                      </div>
+                    );
+                  }
+                  if (accessor === "created_at") {
+                    return formatDate(item[accessor]);
+                  }
+                  return item[accessor];
+                }}
+              />
+            </div>
           </Col>
         </Row>
-      </Container>
+      </div>
 
       <Modal show={showModal} onHide={handleCloseModal}>
         <Modal.Header closeButton>
