@@ -18,15 +18,21 @@ export const handleCreateComment = async (req, res) => {
   }
 
   try {
-    // find ticket info for notifications
+    // Create the new comment first
+    const newComment = await createComment(ticket_id, user_id, comment.trim());
+
+    // Fetch ticket details for notifications
     const ticket = await getTicketById(ticket_id);
 
+    // Notify assigned user if they are not the one commenting
     if (ticket.assigned_to && ticket.assigned_to !== user_id) {
       await createNotification(
         ticket.assigned_to,
         `New comment on ticket (#${ticket_id}).`
       );
     }
+
+    // Notify the ticket creator if they are not the one commenting
     if (ticket.reported_by && ticket.reported_by !== user_id) {
       await createNotification(
         ticket.reported_by,
