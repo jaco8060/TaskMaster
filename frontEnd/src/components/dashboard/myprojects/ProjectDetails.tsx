@@ -219,7 +219,9 @@ const ProjectDetails: React.FC = () => {
             <div className="section-container">
               <h2>Assigned Personnel</h2>
               <DataTable
-                endpoint={`${import.meta.env.VITE_URL}/projects/${id}/personnel`}
+                endpoint={`${
+                  import.meta.env.VITE_URL
+                }/projects/${id}/personnel`}
                 columns={personnelColumns}
                 searchFields={["username", "email"]}
                 renderCell={(item: Personnel, accessor: string) => {

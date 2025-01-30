@@ -95,3 +95,12 @@ CREATE TRIGGER user_role_update
 AFTER UPDATE OF role ON users
 FOR EACH ROW
 EXECUTE FUNCTION update_assigned_personnel_role();
+
+-- Notifications table:
+CREATE TABLE IF NOT EXISTS notifications (
+    id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(id) ON DELETE CASCADE,
+    message TEXT NOT NULL,
+    is_read BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);

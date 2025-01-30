@@ -7,6 +7,7 @@ import session from "express-session";
 import { pool } from "./database.js";
 import passport from "./passport-config.js";
 import authRouter from "./routes/auth.js";
+import notificationRouter from "./routes/notifications.js";
 import projectRouter from "./routes/projects.js";
 import ticketRouter from "./routes/tickets.js";
 import userRouter from "./routes/users.js";
@@ -51,6 +52,7 @@ app.use("/auth", authRouter);
 app.use("/users", userRouter);
 app.use("/projects", projectRouter);
 app.use("/tickets", ticketRouter);
+app.use("/notifications", notificationRouter);
 
 // Function to start the server after database is ready
 const startServer = async () => {

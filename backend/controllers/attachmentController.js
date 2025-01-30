@@ -3,6 +3,8 @@ import {
   getAttachmentsByTicketId,
   updateAttachmentDescription,
 } from "../models/attachmentModel.js";
+import { createNotification } from "../models/notificationModel.js";
+import { getTicketById } from "../models/ticketModel.js";
 
 export const handleCreateAttachment = async (req, res) => {
   const ticket_id = req.params.id;
@@ -19,6 +21,23 @@ export const handleCreateAttachment = async (req, res) => {
       file.filename,
       description
     );
+
+    // find ticket info for notifications
+    const ticket = await getTicketById(ticket_id);
+
+    if (ticket.assigned_to) {
+      await createNotification(
+        ticket.assigned_to,
+        `A new attachment was added to ticket (#${ticket_id}).`
+      );
+    }
+    if (ticket.reported_by) {
+      await createNotification(
+        ticket.reported_by,
+        `A new attachment was added to ticket (#${ticket_id}).`
+      );
+    }
+
     res.status(201).json(attachment);
   } catch (error) {
     console.error("Error creating attachment:", error);

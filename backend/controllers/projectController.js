@@ -1,3 +1,4 @@
+import { createNotification } from "../models/notificationModel.js";
 import {
   assignPersonnel,
   createProject,
@@ -68,6 +69,13 @@ export const handleAssignPersonnel = async (req, res) => {
   const { userId, role } = req.body;
   try {
     const assignment = await assignPersonnel(projectId, userId, role);
+
+    // notify user assigned
+    await createNotification(
+      userId,
+      `You have been assigned to project (ID: ${projectId})`
+    );
+
     res.status(201).json(assignment);
   } catch (error) {
     console.error("Error assigning personnel:", error);

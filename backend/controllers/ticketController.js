@@ -1,3 +1,4 @@
+import { createNotification } from "../models/notificationModel.js";
 import {
   createTicket,
   deleteTicket,
@@ -39,6 +40,13 @@ export const handleCreateTicket = async (req, res) => {
       reported_by,
       assigned_to
     );
+    // notify assigned user
+    if (assigned_to) {
+      await createNotification(
+        assigned_to,
+        `A new ticket (#${ticket.id}) has been assigned to you.`
+      );
+    }
     res.status(201).json(ticket);
   } catch (error) {
     console.error("Error creating ticket:", error);
@@ -77,6 +85,8 @@ export const handleUpdateTicket = async (req, res) => {
   const changed_by = req.user.id;
 
   try {
+    const oldTicket = await getTicketById(ticketId);
+    const oldAssignedTo = oldTicket.assigned_to;
     const updatedTicket = await updateTicket(
       ticketId,
       title,
@@ -86,6 +96,16 @@ export const handleUpdateTicket = async (req, res) => {
       assigned_to,
       changed_by // Pass the user ID here
     );
+    // if assigned_to changed
+    if (
+      updatedTicket.assigned_to &&
+      updatedTicket.assigned_to !== oldAssignedTo
+    ) {
+      await createNotification(
+        updatedTicket.assigned_to,
+        `Ticket (#${updatedTicket.id}) is now assigned to you.`
+      );
+    }
     res.status(200).json(updatedTicket);
   } catch (error) {
     console.error("Error updating ticket:", error);

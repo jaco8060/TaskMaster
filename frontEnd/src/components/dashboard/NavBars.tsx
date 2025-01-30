@@ -11,7 +11,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 import TaskMasterIcon from "../../assets/taskmaster-logo.svg";
 import { AuthContext, AuthContextType } from "../../contexts/AuthProvider";
 import "../../styles/dashboard/NavBars.scss";
+import Notifications from "./Notifications";
 import UserTabs from "./UserTabs";
+
 // Define the props for each component
 interface TopNavBarProps {
   children: React.ReactNode;
@@ -32,6 +34,7 @@ interface User {
 const TopNavBar: React.FC<TopNavBarProps> = ({ children }) => {
   const navigate = useNavigate();
   const { setUser } = useContext(AuthContext) as AuthContextType; // Use context directly
+  const [showNotifications, setShowNotifications] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -112,7 +115,11 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ children }) => {
             <hr />
             <div className="d-flex d-lg-none justify-content-center">
               <div className="d-inline-flex bg-body-tertiary rounded py-2 px-3 d-lg-none justify-content-center gap-4">
-                <Nav.Link href="#notifications" className="mb-0">
+                <Nav.Link
+                  href="#notifications"
+                  className="mb-0"
+                  onClick={() => setShowNotifications(!showNotifications)}
+                >
                   <FaBell size={30} />
                 </Nav.Link>
                 <Nav.Link href="#settings" className="mb-0">
@@ -129,7 +136,10 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ children }) => {
             </div>
             <Nav className="justify-content-end flex-grow-1 pe-3 offcanvas-nav">
               <Nav.Link href="#notifications" className="d-none d-lg-inline">
-                <div className="d-flex align-items-center">
+                <div
+                  className="d-flex align-items-center"
+                  onClick={() => setShowNotifications(!showNotifications)}
+                >
                   <h6 className="mb-0 me-2">Notifications</h6>
                   <FaBell size={25} />
                 </div>
@@ -147,6 +157,23 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ children }) => {
                 </div>
               </Nav.Link>
             </Nav>
+
+            {/* Notifications popout */}
+            {showNotifications && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: "70px",
+                  right: "20px",
+                  backgroundColor: "#fff",
+                  border: "1px solid #ccc",
+                  borderRadius: "4px",
+                  zIndex: 9999,
+                }}
+              >
+                <Notifications onClose={() => setShowNotifications(false)} />
+              </div>
+            )}
           </Offcanvas.Body>
         </Navbar.Offcanvas>
       </Container>

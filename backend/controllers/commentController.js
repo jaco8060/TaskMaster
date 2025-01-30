@@ -4,6 +4,8 @@ import {
   createComment,
   getCommentsByTicketId,
 } from "../models/commentModel.js";
+import { createNotification } from "../models/notificationModel.js";
+import { getTicketById } from "../models/ticketModel.js";
 
 // Create a new comment
 export const handleCreateComment = async (req, res) => {
@@ -16,7 +18,22 @@ export const handleCreateComment = async (req, res) => {
   }
 
   try {
-    const newComment = await createComment(ticket_id, user_id, comment.trim());
+    // find ticket info for notifications
+    const ticket = await getTicketById(ticket_id);
+
+    if (ticket.assigned_to && ticket.assigned_to !== user_id) {
+      await createNotification(
+        ticket.assigned_to,
+        `New comment on ticket (#${ticket_id}).`
+      );
+    }
+    if (ticket.reported_by && ticket.reported_by !== user_id) {
+      await createNotification(
+        ticket.reported_by,
+        `New comment on ticket (#${ticket_id}) you created.`
+      );
+    }
+
     res.status(201).json(newComment);
   } catch (error) {
     console.error("Error creating comment:", error);

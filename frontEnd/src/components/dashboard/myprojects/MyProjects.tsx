@@ -106,7 +106,7 @@ const MyProjects: React.FC = () => {
         </Row>
         <Row>
           <Col>
-            <div >
+            <div>
               <DataTable
                 key={refresh ? "refresh-true" : "refresh-false"}
                 endpoint={endpoint}
@@ -120,7 +120,9 @@ const MyProjects: React.FC = () => {
                           variant="info"
                           size="sm"
                           className="py-1"
-                          onClick={() => navigate(`/project-details/${item.id}`)}
+                          onClick={() =>
+                            navigate(`/project-details/${item.id}`)
+                          }
                         >
                           Details
                         </Button>
