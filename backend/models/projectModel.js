@@ -69,6 +69,19 @@ export const assignPersonnel = async (projectId, userId) => {
   }
 };
 
+export const assignMultiplePersonnel = async (projectId, userIds, role) => {
+  // Insert each user into assigned_personnel
+  const results = [];
+  for (const userId of userIds) {
+    const result = await pool.query(
+      "INSERT INTO assigned_personnel (project_id, user_id, role) VALUES ($1, $2, $3) RETURNING *",
+      [projectId, userId, role]
+    );
+    results.push(result.rows[0]);
+  }
+  return results;
+};
+
 export const removePersonnel = async (projectId, userId) => {
   try {
     const result = await pool.query(
@@ -91,4 +104,18 @@ export const updateProject = async (id, name, description, is_active) => {
   } catch (error) {
     throw error;
   }
+};
+
+export const getAllProjectsForUser = async (user_id) => {
+  // Pull distinct projects where the user is the project.owner or in assigned_personnel
+  const result = await pool.query(
+    `
+    SELECT DISTINCT p.*
+    FROM projects p
+    LEFT JOIN assigned_personnel ap ON ap.project_id = p.id
+    WHERE p.user_id = $1 OR ap.user_id = $1
+    `,
+    [user_id]
+  );
+  return result.rows;
 };

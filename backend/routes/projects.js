@@ -1,7 +1,9 @@
 import express from "express";
 import {
+  handleAssignMultiplePersonnel,
   handleAssignPersonnel,
   handleCreateProject,
+  handleGetAllProjectsForUser,
   handleGetAssignedPersonnel,
   handleGetProjectById,
   handleGetProjectsByQueryParam,
@@ -20,5 +22,7 @@ projectRouter.put("/:id", handleUpdateProject); // Update project details
 projectRouter.get("/:id/personnel", handleGetAssignedPersonnel);
 projectRouter.post("/:id/personnel", handleAssignPersonnel);
 projectRouter.delete("/:id/personnel/:userId", handleRemovePersonnel);
+projectRouter.post("/:id/personnel/multiple", handleAssignMultiplePersonnel);
+projectRouter.get("/allForUser/:userId", handleGetAllProjectsForUser);
 
 export default projectRouter;

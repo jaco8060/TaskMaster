@@ -1,7 +1,9 @@
 import { createNotification } from "../models/notificationModel.js";
 import {
+  assignMultiplePersonnel,
   assignPersonnel,
   createProject,
+  getAllProjectsForUser,
   getAssignedPersonnel,
   getProjectById,
   getProjectsByUserId,
@@ -110,6 +112,40 @@ export const handleRemovePersonnel = async (req, res) => {
     res.status(200).json(removedPersonnel);
   } catch (error) {
     console.error("Error removing personnel:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+export const handleAssignMultiplePersonnel = async (req, res) => {
+  const projectId = req.params.id;
+  // Expect an array of user IDs
+  const { userIds, role } = req.body;
+  try {
+    // Assign each user in a loop
+    const assignments = await assignMultiplePersonnel(projectId, userIds, role);
+
+    // Example: notify them
+    for (const assignment of assignments) {
+      await createNotification(
+        assignment.user_id,
+        `You have been assigned to project (ID: ${projectId}).`
+      );
+    }
+
+    res.status(201).json(assignments);
+  } catch (error) {
+    console.error("Error assigning multiple personnel:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+export const handleGetAllProjectsForUser = async (req, res) => {
+  const userId = req.params.userId;
+  try {
+    const projects = await getAllProjectsForUser(userId);
+    res.status(200).json(projects);
+  } catch (error) {
+    console.error("Error fetching all projects for user:", error);
     res.status(500).json({ error: "Server error" });
   }
 };

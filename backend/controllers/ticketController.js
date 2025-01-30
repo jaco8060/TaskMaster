@@ -1,5 +1,6 @@
 import { createNotification } from "../models/notificationModel.js";
 import {
+  assignUsersToTicket,
   createTicket,
   deleteTicket,
   getTicketById,
@@ -126,7 +127,6 @@ export const handleDeleteTicket = async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 };
-// ticketController.js
 
 export const handleGetTicketHistory = async (req, res) => {
   const ticketId = req.params.id;
@@ -144,5 +144,26 @@ export const handleGetTicketHistory = async (req, res) => {
   } catch (error) {
     console.error("Error fetching ticket history:", error);
     res.status(500).json({ error: "Failed to fetch ticket history." });
+  }
+};
+
+export const handleAssignUsers = async (req, res) => {
+  const ticketId = req.params.id;
+  const { userIds } = req.body; // array of user IDs
+  try {
+    const assigned = await assignUsersToTicket(ticketId, userIds);
+
+    // notify each assigned user
+    for (const row of assigned) {
+      await createNotification(
+        row.user_id,
+        `You have been assigned to ticket (#${ticketId}).`
+      );
+    }
+
+    res.status(201).json(assigned);
+  } catch (error) {
+    console.error("Error assigning multiple users to ticket:", error);
+    res.status(500).json({ error: "Server error" });
   }
 };

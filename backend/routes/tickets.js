@@ -12,6 +12,7 @@ import {
   handleGetCommentsByTicketId,
 } from "../controllers/commentController.js";
 import {
+  handleAssignUsers,
   handleCreateTicket,
   handleDeleteTicket,
   handleGetTicketById,
@@ -40,8 +41,9 @@ ticketRouter.get("/:id", handleGetTicketById);
 ticketRouter.put("/:id", ensureAuthenticated, handleUpdateTicket);
 ticketRouter.delete("/:id", handleDeleteTicket);
 ticketRouter.get("/user/:userId", handleGetTicketsByUserId);
+ticketRouter.post("/:id/assign-users", ensureAuthenticated, handleAssignUsers);
 
-//Histor route
+//History route
 ticketRouter.get("/:id/history", ensureAuthenticated, handleGetTicketHistory);
 
 // Comment routes

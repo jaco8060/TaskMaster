@@ -51,7 +51,7 @@ const MyProjects: React.FC = () => {
   ];
 
   const searchFields = ["name", "description"];
-  const endpoint = `${import.meta.env.VITE_URL}/projects/user/${user.id}`;
+  const endpoint = `${import.meta.env.VITE_URL}/projects/allForUser/${user.id}`;
 
   const [showModal, setShowModal] = useState<boolean>(false);
   const [projectName, setProjectName] = useState<string>("");

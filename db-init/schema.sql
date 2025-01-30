@@ -104,3 +104,10 @@ CREATE TABLE IF NOT EXISTS notifications (
     is_read BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
+-- For tickets, add a new join table 'assigned_ticket_users' to store multiple users per ticket:
+CREATE TABLE IF NOT EXISTS assigned_ticket_users (
+    id SERIAL PRIMARY KEY,
+    ticket_id INT REFERENCES tickets(id) ON DELETE CASCADE,
+    user_id INT REFERENCES users(id) ON DELETE CASCADE
+);

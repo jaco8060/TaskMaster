@@ -44,10 +44,8 @@ const MyTickets: React.FC = () => {
   const fetchProjects = async () => {
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_URL}/projects/user/${user?.id}`,
-        {
-          withCredentials: true,
-        }
+        `${import.meta.env.VITE_URL}/projects/allForUser/${user?.id}`,
+        { withCredentials: true }
       );
       setProjects(response.data);
     } catch (error) {

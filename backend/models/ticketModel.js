@@ -131,24 +131,34 @@ export const deleteTicket = async (id) => {
 };
 
 export const getTicketsByUserId = async (userId) => {
-  try {
-    const result = await pool.query(
-      `SELECT 
-        t.*,
-        p.name as project_name,
-        reporter.username as reported_by_name,
-        assignee.username as assigned_to_name
-      FROM tickets t
-      LEFT JOIN projects p ON t.project_id = p.id
-      LEFT JOIN users reporter ON t.reported_by = reporter.id
-      LEFT JOIN users assignee ON t.assigned_to = assignee.id
-      WHERE t.reported_by = $1 OR t.assigned_to = $1`,
-      [userId]
-    );
-    return result.rows;
-  } catch (error) {
-    throw error;
-  }
+  const result = await pool.query(
+    `
+    SELECT DISTINCT
+      t.*,
+      p.name AS project_name,
+      reporter.username AS reported_by_name,
+      assignee.username AS assigned_to_name
+    FROM tickets t
+    JOIN projects p ON t.project_id = p.id
+    
+    LEFT JOIN assigned_personnel ap ON ap.project_id = p.id
+    LEFT JOIN assigned_ticket_users atu ON atu.ticket_id = t.id
+    LEFT JOIN users reporter ON t.reported_by = reporter.id
+    LEFT JOIN users assignee ON t.assigned_to = assignee.id
+    
+    WHERE
+      -- user assigned to the project
+      ap.user_id = $1
+      -- or user is reporter
+      OR t.reported_by = $1
+      -- or user is single-assigned
+      OR t.assigned_to = $1
+      -- or user is multi-assigned at ticket-level
+      OR atu.user_id = $1
+    `,
+    [userId]
+  );
+  return result.rows;
 };
 
 export const getTicketHistoryByTicketId = async (ticketId) => {
@@ -166,4 +176,27 @@ export const getTicketHistoryByTicketId = async (ticketId) => {
     [ticketId]
   );
   return result.rows;
+};
+
+// Assign multiple users to a given ticket
+export const assignUsersToTicket = async (ticketId, userIds) => {
+  const assigned = [];
+  for (const userId of userIds) {
+    const result = await pool.query(
+      `INSERT INTO assigned_ticket_users (ticket_id, user_id)
+       VALUES ($1, $2) RETURNING *`,
+      [ticketId, userId]
+    );
+    assigned.push(result.rows[0]);
+  }
+  return assigned;
+};
+
+// Optional: removeUsersFromTicket, etc., for unassigning if needed
+export const removeUsersFromTicket = async (ticketId, userIds) => {
+  await pool.query(
+    `DELETE FROM assigned_ticket_users 
+     WHERE ticket_id = $1 AND user_id = ANY($2::int[])`,
+    [ticketId, userIds]
+  );
 };
