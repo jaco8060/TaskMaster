@@ -94,7 +94,6 @@ const Dashboard: React.FC = () => {
           { withCredentials: true }
         );
         const prioData = priorityRes.data;
-        // Ensure prioData is an array; if not, use fallback dummy data
         setPriorityData(
           Array.isArray(prioData)
             ? prioData
@@ -142,7 +141,7 @@ const Dashboard: React.FC = () => {
         );
       } catch (error) {
         console.error("Dashboard fetch error:", error);
-        // In case of an error, use fallback dummy data
+        // Fallback dummy data in case of error
         setUserMetrics({
           activeProjects: 5,
           totalTickets: 50,
@@ -305,6 +304,7 @@ const Dashboard: React.FC = () => {
                       ))}
                     </Pie>
                     <Tooltip />
+                    <Legend verticalAlign="bottom" height={36} />
                   </PieChart>
                 </ResponsiveContainer>
               </Card.Body>
@@ -336,6 +336,7 @@ const Dashboard: React.FC = () => {
                       ))}
                     </Pie>
                     <Tooltip />
+                    <Legend verticalAlign="bottom" height={36} />
                   </PieChart>
                 </ResponsiveContainer>
               </Card.Body>
