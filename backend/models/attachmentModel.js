@@ -39,3 +39,15 @@ export const updateAttachmentDescription = async (
     throw error;
   }
 };
+
+export const deleteAttachment = async (ticket_id, attachmentId) => {
+  try {
+    const result = await pool.query(
+      "DELETE FROM attachments WHERE id = $1 AND ticket_id = $2 RETURNING *",
+      [attachmentId, ticket_id]
+    );
+    return result.rows[0];
+  } catch (error) {
+    throw error;
+  }
+};

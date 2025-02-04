@@ -1,8 +1,8 @@
-// TicketDetails.tsx
+// frontEnd/src/components/dashboard/tickets/TicketDetails.tsx
 
 import axios from "axios";
 import { format } from "date-fns";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Button,
   Col,
@@ -13,9 +13,10 @@ import {
   Spinner,
 } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
+import { AuthContext, AuthContextType } from "../../../contexts/AuthProvider";
 import DataTable from "../../../hooks/DataTable";
 import { MainNav } from "../NavBars";
-import CommentsSection from "./CommentsSection.tsx";
+import CommentsSection from "./CommentsSection";
 
 interface Ticket {
   id: string;
@@ -33,7 +34,6 @@ interface Ticket {
   updated_at: string;
 }
 
-// Define types for attachments
 interface Attachment {
   id: number;
   filename: string;
@@ -41,7 +41,6 @@ interface Attachment {
   uploaded_at: string;
 }
 
-// modal state for editing attachment description
 interface AttachmentToEdit {
   id: number;
   description: string;
@@ -50,6 +49,7 @@ interface AttachmentToEdit {
 const TicketDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { user } = useContext(AuthContext) as AuthContextType;
 
   const [ticket, setTicket] = useState<Ticket | null>(null);
   const [loading, setLoading] = useState(true);
@@ -103,7 +103,6 @@ const TicketDetails: React.FC = () => {
 
   const handleUpdateTicket = async () => {
     if (!editTicket) return;
-
     try {
       const response = await axios.put(
         `${import.meta.env.VITE_URL}/tickets/${id}`,
@@ -141,11 +140,8 @@ const TicketDetails: React.FC = () => {
       await axios.post(
         `${import.meta.env.VITE_URL}/tickets/${id}/attachments`,
         formData,
-        {
-          withCredentials: true,
-        }
+        { withCredentials: true }
       );
-      // Reset form states
       setAttachmentFile(null);
       setAttachmentDescription("");
       setRefresh(!refresh);
@@ -174,6 +170,20 @@ const TicketDetails: React.FC = () => {
     } catch (error) {
       console.error("Error updating attachment description:", error);
       alert("Failed to update attachment description.");
+    }
+  };
+
+  // New: Handler for removing an attachment
+  const handleRemoveAttachment = async (attachmentId: number) => {
+    try {
+      await axios.delete(
+        `${import.meta.env.VITE_URL}/tickets/${id}/attachments/${attachmentId}`,
+        { withCredentials: true }
+      );
+      setRefresh(!refresh);
+    } catch (error) {
+      console.error("Error deleting attachment:", error);
+      alert("Failed to delete attachment.");
     }
   };
 
@@ -248,22 +258,34 @@ const TicketDetails: React.FC = () => {
       }
     } else if (accessor === "edit") {
       return (
-        <Button
-          variant="secondary"
-          size="sm"
-          onClick={() => {
-            setAttachmentToEdit({
-              id: item.id,
-              description: item.description,
-            });
-            setShowEditAttachmentModal(true);
-          }}
-        >
-          Edit Description
-        </Button>
+        <div className="d-flex gap-2">
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => {
+              setAttachmentToEdit({
+                id: item.id,
+                description: item.description,
+              });
+              setShowEditAttachmentModal(true);
+            }}
+          >
+            Edit Description
+          </Button>
+          {user &&
+            (user.role === "admin" ||
+              user.id.toString() === ticket?.reported_by.toString()) && (
+              <Button
+                variant="danger"
+                size="sm"
+                onClick={() => handleRemoveAttachment(item.id)}
+              >
+                Remove
+              </Button>
+            )}
+        </div>
       );
     }
-
     return item[accessor];
   };
 

@@ -4,6 +4,7 @@ import express from "express";
 import multer from "multer";
 import {
   handleCreateAttachment,
+  handleDeleteAttachment,
   handleGetAttachments,
   handleUpdateAttachmentDescription,
 } from "../controllers/attachmentController.js";
@@ -66,6 +67,11 @@ ticketRouter.put(
   "/:id/attachments/:attachmentId",
   ensureAuthenticated,
   handleUpdateAttachmentDescription
+);
+ticketRouter.delete(
+  "/:id/attachments/:attachmentId",
+  ensureAuthenticated,
+  handleDeleteAttachment
 );
 
 export default ticketRouter;

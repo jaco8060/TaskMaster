@@ -1,5 +1,6 @@
 import {
   createAttachment,
+  deleteAttachment,
   getAttachmentsByTicketId,
   updateAttachmentDescription,
 } from "../models/attachmentModel.js";
@@ -74,5 +75,19 @@ export const handleUpdateAttachmentDescription = async (req, res) => {
   } catch (error) {
     console.error("Error updating attachment description:", error);
     res.status(500).json({ error: "Failed to update attachment description." });
+  }
+};
+export const handleDeleteAttachment = async (req, res) => {
+  const ticket_id = req.params.id;
+  const attachmentId = req.params.attachmentId;
+  try {
+    const deleted = await deleteAttachment(ticket_id, attachmentId);
+    if (!deleted) {
+      return res.status(404).json({ error: "Attachment not found" });
+    }
+    res.status(200).json(deleted);
+  } catch (error) {
+    console.error("Error deleting attachment:", error);
+    res.status(500).json({ error: "Failed to delete attachment." });
   }
 };
