@@ -1,10 +1,10 @@
+// frontEnd/src/components/dashboard/manage roles/ManageRoles.tsx
 import React, { useState } from "react";
 import Col from "react-bootstrap/Col";
-import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
-import { MainNav } from "../NavBars.tsx";
+import { MainNav } from "../NavBars";
 import AssignUserRole from "./AssignUserRole";
-import UserTable from "./UserTable.tsx";
+import UserTable from "./UserTable";
 
 const ManageRoles: React.FC = () => {
   const [refresh, setRefresh] = useState<boolean>(false);
@@ -28,7 +28,8 @@ const ManageRoles: React.FC = () => {
         </Row>
         <Row>
           <Col xs={10} sm={12}>
-            <UserTable refresh={refresh} />
+            {/* Pass the refresh state and the handler to update roles */}
+            <UserTable refresh={refresh} onRoleChanged={handleRefresh} />
           </Col>
         </Row>
       </div>
