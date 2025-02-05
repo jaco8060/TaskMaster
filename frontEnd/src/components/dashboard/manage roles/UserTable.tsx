@@ -53,12 +53,14 @@ const UserTable: React.FC<UserTableProps> = ({ refresh, onRoleChanged }) => {
   const renderCell = (item: any, accessor: string) => {
     if (accessor === "actions") {
       return (
-        <button
-          className="btn btn-danger btn-sm"
-          onClick={() => handleRemoveRole(item.id)}
-        >
-          Remove
-        </button>
+        <div className="d-flex justify-content-end">
+          <button
+            className="btn btn-danger btn-sm "
+            onClick={() => handleRemoveRole(item.id)}
+          >
+            Remove
+          </button>
+        </div>
       );
     }
     return item[accessor as keyof User];
