@@ -95,9 +95,9 @@ const DataTable: React.FC<DataTableProps> = ({
   };
 
   const handleSort = (key: string) => {
-    let direction = "asc";
-    if (sortConfig.key === key && sortConfig.direction === "asc") {
-      direction = "desc";
+    let direction = "desc";
+    if (sortConfig.key === key && sortConfig.direction === "desc") {
+      direction = "asc";
     }
     setSortConfig({ key, direction });
   };
@@ -110,16 +110,17 @@ const DataTable: React.FC<DataTableProps> = ({
         if (column?.type === "date") {
           const dateA = new Date(a[sortConfig.key!]);
           const dateB = new Date(b[sortConfig.key!]);
+          // Invert: when direction is 'asc', sort descending (largest dates first)
           return sortConfig.direction === "asc"
-            ? dateA.getTime() - dateB.getTime()
-            : dateB.getTime() - dateA.getTime();
+            ? dateB.getTime() - dateA.getTime()
+            : dateA.getTime() - dateB.getTime();
         }
 
         if (a[sortConfig.key!] < b[sortConfig.key!]) {
-          return sortConfig.direction === "asc" ? -1 : 1;
+          return sortConfig.direction === "asc" ? 1 : -1;
         }
         if (a[sortConfig.key!] > b[sortConfig.key!]) {
-          return sortConfig.direction === "asc" ? 1 : -1;
+          return sortConfig.direction === "asc" ? -1 : 1;
         }
         return 0;
       });
