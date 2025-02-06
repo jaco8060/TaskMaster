@@ -9,11 +9,7 @@ interface Notification {
   created_at: string;
 }
 
-interface NotificationsProps {
-  onClose: () => void;
-}
-
-const Notifications: React.FC<NotificationsProps> = ({ onClose }) => {
+const Notifications: React.FC = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -65,9 +61,6 @@ const Notifications: React.FC<NotificationsProps> = ({ onClose }) => {
     <div className="p-3" style={{ maxWidth: "400px" }}>
       <div className="d-flex justify-content-between align-items-center mb-2">
         <h4>Notifications</h4>
-        <Button variant="outline-secondary" size="sm" onClick={onClose}>
-          Close
-        </Button>
       </div>
       <div className="mb-2">
         <Button variant="primary" size="sm" onClick={markAllAsRead}>

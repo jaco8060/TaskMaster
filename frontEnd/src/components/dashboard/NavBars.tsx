@@ -2,7 +2,9 @@ import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
+import Dropdown from "react-bootstrap/Dropdown";
 import Form from "react-bootstrap/Form";
+import Modal from "react-bootstrap/Modal";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import Offcanvas from "react-bootstrap/Offcanvas";
@@ -14,7 +16,6 @@ import "../../styles/dashboard/NavBars.scss";
 import Notifications from "./Notifications";
 import UserTabs from "./UserTabs";
 
-// Define the props for each component
 interface TopNavBarProps {
   children: React.ReactNode;
 }
@@ -28,24 +29,20 @@ interface MainNavProps {
 }
 
 interface User {
-  role: "admin" | "pm" | "submitter" | "developer"; // Define roles
+  role: "admin" | "pm" | "submitter" | "developer";
 }
 
 const TopNavBar: React.FC<TopNavBarProps> = ({ children }) => {
   const navigate = useNavigate();
-  const { setUser } = useContext(AuthContext) as AuthContextType; // Use context directly
-  const [showNotifications, setShowNotifications] = useState(false);
+  const { setUser } = useContext(AuthContext) as AuthContextType;
+  const [showMobileNotifModal, setShowMobileNotifModal] = useState(false);
 
   const handleLogout = async () => {
     try {
       await axios.get(`${import.meta.env.VITE_URL}/auth/logout`, {
         withCredentials: true,
       });
-
-      // Clear user context
       setUser(null);
-
-      // Navigate to login
       navigate("/login");
     } catch (error) {
       console.error("Logout error:", error);
@@ -54,36 +51,16 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ children }) => {
   };
 
   return (
-    <Navbar
-      expand="lg"
-      className="bg-secondary border-bottom border-primary-subtle"
-      sticky="top"
-    >
-      <Container fluid>
-        <div className="d-flex align-items-center gap-3">
-          <Navbar.Toggle aria-controls={`offcanvasNavbar-expand-lg`} />
-          <Navbar.Brand href="#">
-            <img
-              src={TaskMasterIcon}
-              alt="TaskMaster Icon"
-              width="30"
-              height="30"
-              className="d-inline-block align-top me-2"
-            />
-            TaskMaster
-          </Navbar.Brand>
-        </div>
-
-        <Navbar.Offcanvas
-          id={`offcanvasNavbar-expand-lg`}
-          aria-labelledby={`offcanvasNavbarLabel-expand-lg`}
-          placement="start"
-        >
-          <Offcanvas.Header closeButton>
-            <Offcanvas.Title
-              id={`offcanvasNavbarLabel-expand-lg`}
-              className="d-flex align-items-center"
-            >
+    <>
+      <Navbar
+        expand="lg"
+        className="bg-secondary border-bottom border-primary-subtle"
+        sticky="top"
+      >
+        <Container fluid>
+          <div className="d-flex align-items-center gap-3">
+            <Navbar.Toggle aria-controls="offcanvasNavbar-expand-lg" />
+            <Navbar.Brand href="#">
               <img
                 src={TaskMasterIcon}
                 alt="TaskMaster Icon"
@@ -92,92 +69,135 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ children }) => {
                 className="d-inline-block align-top me-2"
               />
               TaskMaster
-            </Offcanvas.Title>
-          </Offcanvas.Header>
+            </Navbar.Brand>
+          </div>
 
-          <Offcanvas.Body>
-            <Form
-              className="d-flex me-auto my-2 my-lg-0"
-              style={{ width: "auto" }}
-            >
-              <Form.Control
-                type="search"
-                placeholder="Search"
-                className="me-2"
-                aria-label="Search"
-              />
-              <Button variant="outline-success">Search</Button>
-            </Form>
-            <div className="d-flex flex-column d-lg-none justify-content-center">
-              <hr />
-              <div id="TopNavBarMobile">{children}</div>
-            </div>
-            <hr />
-            <div className="d-flex d-lg-none justify-content-center">
-              <div className="d-inline-flex bg-body-tertiary rounded py-2 px-3 d-lg-none justify-content-center gap-4">
-                <Nav.Link
-                  href="#notifications"
-                  className="mb-0"
-                  onClick={() => setShowNotifications(!showNotifications)}
-                >
-                  <FaBell size={30} />
-                </Nav.Link>
-                <Nav.Link href="#settings" className="mb-0">
-                  <FaCog size={30} />
-                </Nav.Link>
-                <Nav.Link
-                  href="#logout"
-                  className="mb-0"
-                  onClick={handleLogout}
-                >
-                  <FaSignOutAlt size={30} />
-                </Nav.Link>
-              </div>
-            </div>
-            <Nav className="justify-content-end flex-grow-1 pe-3 offcanvas-nav">
-              <Nav.Link href="#notifications" className="d-none d-lg-inline">
-                <div
-                  className="d-flex align-items-center"
-                  onClick={() => setShowNotifications(!showNotifications)}
-                >
-                  <h6 className="mb-0 me-2">Notifications</h6>
-                  <FaBell size={25} />
-                </div>
-              </Nav.Link>
-              <Nav.Link href="#settings" className="d-none d-lg-inline">
-                <div className="d-flex align-items-center">
-                  <h6 className="mb-0 me-2">Settings</h6>
-                  <FaCog size={25} />
-                </div>
-              </Nav.Link>
-              <Nav.Link className="d-none d-lg-inline" onClick={handleLogout}>
-                <div className="d-flex align-items-center">
-                  <h6 className="mb-0 me-2">Logout</h6>
-                  <FaSignOutAlt size={25} />
-                </div>
-              </Nav.Link>
-            </Nav>
-
-            {/* Notifications popout */}
-            {showNotifications && (
-              <div
-                style={{
-                  position: "absolute",
-                  top: "70px",
-                  right: "20px",
-                  backgroundColor: "#fff",
-                  border: "1px solid #ccc",
-                  borderRadius: "4px",
-                  zIndex: 9999,
-                }}
+          <Navbar.Offcanvas
+            id="offcanvasNavbar-expand-lg"
+            aria-labelledby="offcanvasNavbarLabel-expand-lg"
+            placement="start"
+          >
+            <Offcanvas.Header closeButton>
+              <Offcanvas.Title
+                id="offcanvasNavbarLabel-expand-lg"
+                className="d-flex align-items-center"
               >
-                <Notifications onClose={() => setShowNotifications(false)} />
+                <img
+                  src={TaskMasterIcon}
+                  alt="TaskMaster Icon"
+                  width="30"
+                  height="30"
+                  className="d-inline-block align-top me-2"
+                />
+                TaskMaster
+              </Offcanvas.Title>
+            </Offcanvas.Header>
+
+            <Offcanvas.Body>
+              <Form
+                className="d-flex me-auto my-2 my-lg-0"
+                style={{ width: "auto" }}
+              >
+                <Form.Control
+                  type="search"
+                  placeholder="Search"
+                  className="me-2"
+                  aria-label="Search"
+                />
+                <Button variant="outline-success">Search</Button>
+              </Form>
+              <div className="d-flex flex-column d-lg-none justify-content-center">
+                <hr />
+                <div id="TopNavBarMobile">{children}</div>
               </div>
-            )}
-          </Offcanvas.Body>
-        </Navbar.Offcanvas>
-      </Container>
-    </Navbar>
+              <hr />
+              {/* Mobile view: use a modal for notifications */}
+              <div className="d-flex d-lg-none justify-content-center">
+                <div className="d-inline-flex bg-body-tertiary rounded py-2 px-3 justify-content-center gap-4">
+                  <Button
+                    variant="link"
+                    className="no-caret mb-0 p-0"
+                    style={{
+                      textDecoration: "none",
+                      boxShadow: "none",
+                      outline: "none",
+                    }}
+                    onClick={() => setShowMobileNotifModal(true)}
+                  >
+                    <FaBell size={30} />
+                  </Button>
+                  <Nav.Link href="#settings" className="mb-0">
+                    <FaCog size={30} />
+                  </Nav.Link>
+                  <Nav.Link
+                    href="#logout"
+                    className="mb-0"
+                    onClick={handleLogout}
+                  >
+                    <FaSignOutAlt size={30} />
+                  </Nav.Link>
+                </div>
+              </div>
+              {/* Large screen view */}
+              <Nav className="justify-content-end flex-grow-1 pe-3 offcanvas-nav">
+                <Dropdown align="start">
+                  <Dropdown.Toggle
+                    variant="link"
+                    id="dropdown-notifications"
+                    className="no-caret d-none d-lg-inline p-2"
+                    style={{
+                      textDecoration: "none",
+                      boxShadow: "none",
+                      outline: "none",
+                    }}
+                  >
+                    <div className="d-flex align-items-center">
+                      <h6 className="mb-0 me-2">Notifications</h6>
+                      <FaBell size={25} />
+                    </div>
+                  </Dropdown.Toggle>
+                  <Dropdown.Menu
+                    style={{
+                      minWidth: "300px",
+                      maxHeight: "400px",
+                      overflowY: "auto",
+                    }}
+                  >
+                    <Notifications />
+                  </Dropdown.Menu>
+                </Dropdown>
+                <Nav.Link href="#settings" className="d-none d-lg-inline">
+                  <div className="d-flex align-items-center">
+                    <h6 className="mb-0 me-2">Settings</h6>
+                    <FaCog size={25} />
+                  </div>
+                </Nav.Link>
+                <Nav.Link className="d-none d-lg-inline" onClick={handleLogout}>
+                  <div className="d-flex align-items-center">
+                    <h6 className="mb-0 me-2">Logout</h6>
+                    <FaSignOutAlt size={25} />
+                  </div>
+                </Nav.Link>
+              </Nav>
+            </Offcanvas.Body>
+          </Navbar.Offcanvas>
+        </Container>
+      </Navbar>
+
+      {/* Mobile Notifications Modal */}
+      <Modal
+        show={showMobileNotifModal}
+        onHide={() => setShowMobileNotifModal(false)}
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Notifications</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Notifications />
+        </Modal.Body>
+      </Modal>
+    </>
   );
 };
 
@@ -190,7 +210,7 @@ const SideNavBar: React.FC<SideNavBarProps> = ({ children }) => {
 };
 
 const MainNav: React.FC<MainNavProps> = ({ children }) => {
-  const { user } = useContext(AuthContext) as AuthContextType; // Use AuthContext directly
+  const { user } = useContext(AuthContext) as AuthContextType;
   const location = useLocation();
   const [activeTab, setActiveTab] = useState<string>("");
 
