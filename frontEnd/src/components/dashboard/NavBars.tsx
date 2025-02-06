@@ -8,7 +8,14 @@ import Modal from "react-bootstrap/Modal";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import Offcanvas from "react-bootstrap/Offcanvas";
-import { FaBell, FaCog, FaSignOutAlt } from "react-icons/fa";
+import {
+  FaBell,
+  FaEnvelope,
+  FaSignOutAlt,
+  FaSlidersH,
+  FaUser,
+  FaUserShield,
+} from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
 import TaskMasterIcon from "../../assets/taskmaster-logo.svg";
 import { AuthContext, AuthContextType } from "../../contexts/AuthProvider";
@@ -34,8 +41,9 @@ interface User {
 
 const TopNavBar: React.FC<TopNavBarProps> = ({ children }) => {
   const navigate = useNavigate();
-  const { setUser } = useContext(AuthContext) as AuthContextType;
+  const { user, setUser } = useContext(AuthContext) as AuthContextType;
   const [showMobileNotifModal, setShowMobileNotifModal] = useState(false);
+  const [notificationsCount, setNotificationsCount] = useState<number>(0);
 
   const handleLogout = async () => {
     try {
@@ -49,6 +57,22 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ children }) => {
       alert("Logout failed");
     }
   };
+
+  // Fetch unread notifications count (for Account dropdown)
+  useEffect(() => {
+    const fetchNotifCount = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_URL}/notifications?onlyUnread=true`,
+          { withCredentials: true }
+        );
+        setNotificationsCount(response.data.length);
+      } catch (error) {
+        console.error("Error fetching notifications count", error);
+      }
+    };
+    fetchNotifCount();
+  }, []);
 
   return (
     <>
@@ -126,8 +150,9 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ children }) => {
                   >
                     <FaBell size={30} />
                   </Button>
-                  <Nav.Link href="#settings" className="mb-0">
-                    <FaCog size={30} />
+                  {/* For mobile, the Account icon remains as an icon */}
+                  <Nav.Link href="#Account" className="mb-0">
+                    <FaSlidersH size={30} />
                   </Nav.Link>
                   <Nav.Link
                     href="#logout"
@@ -140,11 +165,12 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ children }) => {
               </div>
               {/* Large screen view */}
               <Nav className="justify-content-end flex-grow-1 pe-3 offcanvas-nav">
-                <Dropdown align="start">
+                {/* Notifications dropdown */}
+                <Dropdown align="end" className="d-none d-lg-inline">
                   <Dropdown.Toggle
                     variant="link"
                     id="dropdown-notifications"
-                    className="no-caret d-none d-lg-inline p-2"
+                    className="no-caret p-2"
                     style={{
                       textDecoration: "none",
                       boxShadow: "none",
@@ -166,12 +192,50 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ children }) => {
                     <Notifications />
                   </Dropdown.Menu>
                 </Dropdown>
-                <Nav.Link href="#settings" className="d-none d-lg-inline">
-                  <div className="d-flex align-items-center">
-                    <h6 className="mb-0 me-2">Settings</h6>
-                    <FaCog size={25} />
-                  </div>
-                </Nav.Link>
+                {/* Account dropdown with user info */}
+                <Dropdown align="end" className="d-none d-lg-inline">
+                  <Dropdown.Toggle
+                    variant="link"
+                    id="dropdown-Account"
+                    className="no-caret p-2"
+                    style={{
+                      textDecoration: "none",
+                      boxShadow: "none",
+                      outline: "none",
+                    }}
+                  >
+                    <div className="d-flex align-items-center">
+                      <h6 className="mb-0 me-2">Account</h6>
+                      <FaSlidersH size={25} />
+                    </div>
+                  </Dropdown.Toggle>
+                  <Dropdown.Menu style={{ minWidth: "250px" }}>
+                    <Dropdown.ItemText>
+                      <div className="d-flex align-items-center">
+                        <FaUser size={16} className="me-2" />
+                        {user?.username}
+                      </div>
+                    </Dropdown.ItemText>
+                    <Dropdown.ItemText>
+                      <div className="d-flex align-items-center">
+                        <FaEnvelope size={16} className="me-2" />
+                        {user?.email}
+                      </div>
+                    </Dropdown.ItemText>
+                    <Dropdown.ItemText>
+                      <div className="d-flex align-items-center">
+                        <FaUserShield size={16} className="me-2" />
+                        {user?.role}
+                      </div>
+                    </Dropdown.ItemText>
+                    <Dropdown.ItemText>
+                      <div className="d-flex align-items-center">
+                        <FaBell size={16} className="me-2" />
+                        Notifications: {notificationsCount}
+                      </div>
+                    </Dropdown.ItemText>
+                  </Dropdown.Menu>
+                </Dropdown>
                 <Nav.Link className="d-none d-lg-inline" onClick={handleLogout}>
                   <div className="d-flex align-items-center">
                     <h6 className="mb-0 me-2">Logout</h6>
