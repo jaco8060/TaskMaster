@@ -1,3 +1,4 @@
+import bcrypt from "bcrypt";
 import { pool } from "../database.js";
 
 export const getUsers = async () => {
@@ -57,6 +58,43 @@ export const assignRoles = async (userIds, role, assignedBy) => {
     );
   } catch (error) {
     console.error("Error assigning roles:", error);
+    throw error;
+  }
+};
+
+export const updateUserProfile = async (
+  userId,
+  { username, email, password, profile_picture }
+) => {
+  try {
+    let query;
+    let params;
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      query = `
+        UPDATE users 
+        SET username = COALESCE($2, username),
+            email = COALESCE($3, email),
+            profile_picture = COALESCE($4, profile_picture),
+            password = $5
+        WHERE id = $1 
+        RETURNING *
+      `;
+      params = [userId, username, email, profile_picture, hashedPassword];
+    } else {
+      query = `
+        UPDATE users 
+        SET username = COALESCE($2, username),
+            email = COALESCE($3, email),
+            profile_picture = COALESCE($4, profile_picture)
+        WHERE id = $1 
+        RETURNING *
+      `;
+      params = [userId, username, email, profile_picture];
+    }
+    const result = await pool.query(query, params);
+    return result.rows[0];
+  } catch (error) {
     throw error;
   }
 };

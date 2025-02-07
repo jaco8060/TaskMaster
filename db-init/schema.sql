@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS users (
     role VARCHAR(20) NOT NULL,
     first_name VARCHAR(50),
     last_name VARCHAR(50),
+    profile_picture VARCHAR(255) DEFAULT 'default_profile.png',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     is_active BOOLEAN DEFAULT TRUE,
     reset_password_token VARCHAR(255),

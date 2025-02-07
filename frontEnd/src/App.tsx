@@ -1,4 +1,4 @@
-import "bootstrap/dist/css/bootstrap.min.css";
+// frontEnd/src/App.tsx
 import React from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import "./color-theme.scss";
@@ -9,6 +9,7 @@ import MyProjects from "./components/dashboard/myprojects/MyProjects";
 import ProjectDetails from "./components/dashboard/myprojects/ProjectDetails";
 import MyTickets from "./components/dashboard/tickets/MyTickets";
 import TicketDetails from "./components/dashboard/tickets/TicketDetails";
+import UserProfile from "./components/dashboard/UserProfile"; // <-- Import the new profile page
 import LoginPage from "./components/login/LoginPage";
 import ResetPassword from "./components/login/ResetPassword";
 import AdminRoute from "./components/routes/AdminRoute";
@@ -19,10 +20,12 @@ const App: React.FC = () => {
   return (
     <Routes>
       <Route path="/reset-password/:token" element={<ResetPassword />} />
+      {/* Public routes */}
       {/* Redirect to dashboard if on login and session is active */}
       <Route element={<PublicRoute />}>
         <Route path="/login/*" element={<LoginPage />} />
       </Route>
+      {/* Private routes */}
       {/* Redirect to login if session is not active */}
       <Route element={<PrivateRoute />}>
         <Route path="/" element={<Navigate to="/dashboard" />} />
@@ -32,6 +35,7 @@ const App: React.FC = () => {
         <Route path="/assign-personnel/:id" element={<AssignPersonnel />} />
         <Route path="/mytickets" element={<MyTickets />} />
         <Route path="/ticket-details/:id" element={<TicketDetails />} />
+        <Route path="/userprofile" element={<UserProfile />} />{" "}
       </Route>
       <Route element={<AdminRoute />}>
         <Route path="/manage-roles" element={<ManageRoles />} />

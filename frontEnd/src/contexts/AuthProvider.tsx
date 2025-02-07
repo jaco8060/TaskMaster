@@ -13,6 +13,7 @@ interface User {
   role: string;
   username: string;
   email: string;
+  profile_picture?: string;
 }
 
 // Define the context type

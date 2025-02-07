@@ -2,7 +2,10 @@ import express from "express";
 import {
   handleAssignRoles,
   handleGetUsers,
-  handleRemoveRoleAssignment, // Import the new handler
+  handleRemoveRoleAssignment,
+  handleRequestRoleChange,
+  handleUpdateUserProfile,
+  uploadProfilePicture,
 } from "../controllers/userController.js";
 import { ensureAuthenticated } from "../middleware/authMiddleware.js";
 
@@ -19,6 +22,21 @@ userRouter.delete(
   "/assign-role/:userId",
   ensureAuthenticated,
   handleRemoveRoleAssignment
+);
+
+// Update profile (with profile picture upload)
+userRouter.put(
+  "/profile",
+  ensureAuthenticated,
+  uploadProfilePicture.single("profile_picture"),
+  handleUpdateUserProfile
+);
+
+// Request a role change/message to admin/pm
+userRouter.post(
+  "/request-role-change",
+  ensureAuthenticated,
+  handleRequestRoleChange
 );
 
 export default userRouter;
