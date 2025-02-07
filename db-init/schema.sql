@@ -112,3 +112,23 @@ CREATE TABLE IF NOT EXISTS assigned_ticket_users (
     ticket_id INT REFERENCES tickets(id) ON DELETE CASCADE,
     user_id INT REFERENCES users(id) ON DELETE CASCADE
 );
+
+-- Organizations Table
+CREATE TABLE IF NOT EXISTS organizations (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    org_code VARCHAR(20) UNIQUE,
+    code_expiration TIMESTAMP WITH TIME ZONE,
+    admin_id INT REFERENCES users(id),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Organization Members Table
+CREATE TABLE IF NOT EXISTS organization_members (
+    id SERIAL PRIMARY KEY,
+    organization_id INT REFERENCES organizations(id) ON DELETE CASCADE,
+    user_id INT REFERENCES users(id) ON DELETE CASCADE,
+    status VARCHAR(20) DEFAULT 'pending', -- values: 'pending', 'approved'
+    requested_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    approved_at TIMESTAMP WITH TIME ZONE
+);
