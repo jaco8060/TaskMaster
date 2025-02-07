@@ -319,7 +319,7 @@ const TicketDetails: React.FC = () => {
         <Row>
           <Col md={6}>
             <div className="section-container">
-              <div className="d-flex flex-column align-items-left fs-5">
+              <div className="d-flex flex-column align-items-left">
                 <h2 className="fs-2">Ticket Details</h2>
                 <div className="mb-3">
                   <Button variant="primary" onClick={() => navigate(-1)}>

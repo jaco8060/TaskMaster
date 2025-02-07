@@ -92,128 +92,132 @@ const UserProfile: React.FC = () => {
 
   return (
     <MainNav>
-      <Container className="mt-4">
-        <h2>User Profile</h2>
-        {message && <Alert variant="info">{message}</Alert>}
-        <Form onSubmit={handleProfileSubmit}>
-          <Row className="mb-3">
-            <Col md={4}>
-              <Form.Group>
-                <Form.Label>Profile Picture</Form.Label>
-                <div>
-                  <Image
-                    src={
-                      preview ||
-                      (user?.profile_picture
-                        ? `${
-                            import.meta.env.VITE_URL
-                          }/uploads/profile_pictures/${user.profile_picture}`
-                        : `${
-                            import.meta.env.VITE_URL
-                          }/uploads/profile_pictures/default_profile.svg`)
-                    }
-                    roundedCircle
-                    width={150}
-                    height={150}
+      <div className="d-flex flex-column">
+        <Container className="section-container">
+          <h2>User Profile</h2>
+          {message && <Alert variant="info">{message}</Alert>}
+          <Form onSubmit={handleProfileSubmit}>
+            <Row className="mb-3">
+              <div></div>
+              <Col md={6}>
+                <Form.Group>
+                  <div className="d-flex flex-column justify-content-center align-items-center">
+                    <Form.Label>Profile Picture</Form.Label>
+                    <Image
+                      className="mb-3 mt-2"
+                      src={
+                        preview ||
+                        (user?.profile_picture
+                          ? `${
+                              import.meta.env.VITE_URL
+                            }/uploads/profile_pictures/${user.profile_picture}`
+                          : `${
+                              import.meta.env.VITE_URL
+                            }/uploads/profile_pictures/default_profile.svg`)
+                      }
+                      roundedCircle
+                      width={150}
+                      height={150}
+                    />
+                    <Form.Control
+                      type="file"
+                      onChange={(e) => {
+                        // Typecast e.target as HTMLInputElement to access .files
+                        const target = e.target as HTMLInputElement;
+                        if (target.files) {
+                          setProfilePicture(target.files[0]);
+                        }
+                      }}
+                    />
+                  </div>
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Username</Form.Label>
+                  <Form.Control
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    required
                   />
-                </div>
-                <Form.Control
-                  type="file"
-                  onChange={(e) => {
-                    // Typecast e.target as HTMLInputElement to access .files
-                    const target = e.target as HTMLInputElement;
-                    if (target.files) {
-                      setProfilePicture(target.files[0]);
-                    }
-                  }}
-                />
-              </Form.Group>
-            </Col>
-            <Col md={8}>
-              <Form.Group className="mb-3">
-                <Form.Label>Username</Form.Label>
-                <Form.Control
-                  type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  required
-                />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Email address</Form.Label>
-                <Form.Control
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>New Password</Form.Label>
-                <Form.Control
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Leave blank to keep current password"
-                />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Confirm New Password</Form.Label>
-                <Form.Control
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="Confirm new password"
-                />
-              </Form.Group>
-            </Col>
-          </Row>
+                </Form.Group>
+                <Form.Group className="mb-3">
+                  <Form.Label>Email address</Form.Label>
+                  <Form.Control
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                </Form.Group>
+                <Form.Group className="mb-3">
+                  <Form.Label>New Password</Form.Label>
+                  <Form.Control
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Leave blank to keep current password"
+                  />
+                </Form.Group>
+                <Form.Group className="mb-3">
+                  <Form.Label>Confirm New Password</Form.Label>
+                  <Form.Control
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Confirm new password"
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+            <Form.Group className="mb-3">
+              <Form.Label>Current Role</Form.Label>
+              <Form.Control
+                type="text"
+                value={`${user?.role} - ${getRoleDescription(user?.role)}`}
+                readOnly
+              />
+            </Form.Group>
+            <Button type="submit" variant="primary">
+              Update Profile
+            </Button>
+          </Form>
+
+          <hr />
+
+          <h4>Request Role Change / Message Admin/PM</h4>
           <Form.Group className="mb-3">
-            <Form.Label>Current Role</Form.Label>
+            <Form.Label>Message</Form.Label>
             <Form.Control
-              type="text"
-              value={`${user?.role} - ${getRoleDescription(user?.role)}`}
-              readOnly
+              as="textarea"
+              rows={3}
+              value={roleRequestMessage}
+              onChange={(e) => setRoleRequestMessage(e.target.value)}
+              placeholder="Enter your request message"
             />
           </Form.Group>
-          <Button type="submit" variant="primary">
-            Update Profile
+          <Button onClick={handleRoleRequest} variant="secondary">
+            Send Request
           </Button>
-        </Form>
 
-        <hr />
+          <hr />
 
-        <h4>Request Role Change / Message Admin/PM</h4>
-        <Form.Group className="mb-3">
-          <Form.Label>Message</Form.Label>
-          <Form.Control
-            as="textarea"
-            rows={3}
-            value={roleRequestMessage}
-            onChange={(e) => setRoleRequestMessage(e.target.value)}
-            placeholder="Enter your request message"
-          />
-        </Form.Group>
-        <Button onClick={handleRoleRequest} variant="secondary">
-          Send Request
-        </Button>
-
-        <hr />
-
-        <h4>Feedback and Support</h4>
-        <p>
-          If you encounter issues or have feedback, please submit an issue on
-          our{" "}
-          <a
-            href="https://github.com/jaco8060/TaskMaster/issues"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            GitHub page
-          </a>
-          .
-        </p>
-      </Container>
+          <h4>Feedback and Support</h4>
+          <p>
+            If you encounter issues or have feedback, please submit an issue on
+            our{" "}
+            <a
+              href="https://github.com/jaco8060/TaskMaster/issues"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              GitHub page
+            </a>
+            .
+          </p>
+        </Container>
+      </div>
     </MainNav>
   );
 };
