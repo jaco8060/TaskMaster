@@ -4,13 +4,15 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import "./color-theme.scss";
 import Dashboard from "./components/dashboard/Dashboard";
 import ManageRoles from "./components/dashboard/manage roles/ManageRoles";
+import MyOrganization from "./components/dashboard/MyOrganization"; // New organization management page
 import AssignPersonnel from "./components/dashboard/myprojects/AssignPersonnel";
 import MyProjects from "./components/dashboard/myprojects/MyProjects";
 import ProjectDetails from "./components/dashboard/myprojects/ProjectDetails";
 import MyTickets from "./components/dashboard/tickets/MyTickets";
 import TicketDetails from "./components/dashboard/tickets/TicketDetails";
-import UserProfile from "./components/dashboard/UserProfile"; // <-- Import the new profile page
+import UserProfile from "./components/dashboard/UserProfile";
 import LoginPage from "./components/login/LoginPage";
+import RegisterWithOrganization from "./components/login/RegisterWithOrganization"; // New registration flow
 import ResetPassword from "./components/login/ResetPassword";
 import AdminRoute from "./components/routes/AdminRoute";
 import PrivateRoute from "./components/routes/PrivateRoute";
@@ -24,6 +26,7 @@ const App: React.FC = () => {
       {/* Redirect to dashboard if on login and session is active */}
       <Route element={<PublicRoute />}>
         <Route path="/login/*" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterWithOrganization />} />
       </Route>
       {/* Private routes */}
       {/* Redirect to login if session is not active */}
@@ -35,7 +38,8 @@ const App: React.FC = () => {
         <Route path="/assign-personnel/:id" element={<AssignPersonnel />} />
         <Route path="/mytickets" element={<MyTickets />} />
         <Route path="/ticket-details/:id" element={<TicketDetails />} />
-        <Route path="/userprofile" element={<UserProfile />} />{" "}
+        <Route path="/userprofile" element={<UserProfile />} />
+        <Route path="/myorganization" element={<MyOrganization />} />
       </Route>
       <Route element={<AdminRoute />}>
         <Route path="/manage-roles" element={<ManageRoles />} />
