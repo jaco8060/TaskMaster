@@ -2,6 +2,7 @@ import React, { useContext, useEffect } from "react";
 import { Col, Nav, Row, Tab } from "react-bootstrap";
 import { IconType } from "react-icons";
 import {
+  FaBuilding,
   FaHome,
   FaTasks,
   FaTicketAlt,
@@ -12,7 +13,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../contexts/AuthProvider";
 import "../../styles/dashboard/NavBars.scss";
 
-// Define types for props
 interface UserTabsProps {
   activeTab: string;
   handleSelect: (key: string) => void;
@@ -49,12 +49,14 @@ const UserTabs: React.FC<UserTabsProps> = ({ activeTab, handleSelect }) => {
         "/myprojects": "third",
         "/mytickets": "fourth",
         "/userprofile": "fifth",
+        "/myorganization": "sixth",
       },
       pm: {
         "/dashboard": "first",
         "/myprojects": "second",
         "/mytickets": "third",
         "/userprofile": "fourth",
+        "/myorganization": "fifth",
       },
       submitter: {
         "/dashboard": "first",
@@ -90,12 +92,14 @@ const UserTabs: React.FC<UserTabsProps> = ({ activeTab, handleSelect }) => {
           third: "/myprojects",
           fourth: "/mytickets",
           fifth: "/userprofile",
+          sixth: "/myorganization",
         },
         pm: {
           first: "/dashboard",
           second: "/myprojects",
           third: "/mytickets",
           fourth: "/userprofile",
+          fifth: "/myorganization",
         },
         submitter: {
           first: "/dashboard",
@@ -131,12 +135,14 @@ const UserTabs: React.FC<UserTabsProps> = ({ activeTab, handleSelect }) => {
       { eventKey: "third", title: "My Projects", icon: FaTasks },
       { eventKey: "fourth", title: "My Tickets", icon: FaTicketAlt },
       { eventKey: "fifth", title: "User Profile", icon: FaUser },
+      { eventKey: "sixth", title: "My Organization", icon: FaBuilding },
     ],
     pm: [
       { eventKey: "first", title: "Dashboard Home", icon: FaHome },
       { eventKey: "second", title: "My Projects", icon: FaTasks },
       { eventKey: "third", title: "My Tickets", icon: FaTicketAlt },
       { eventKey: "fourth", title: "User Profile", icon: FaUser },
+      { eventKey: "fifth", title: "My Organization", icon: FaBuilding },
     ],
     submitter: [
       { eventKey: "first", title: "Dashboard Home", icon: FaHome },
