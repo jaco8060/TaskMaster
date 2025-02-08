@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Alert, Button, Container, Spinner, Table } from "react-bootstrap";
-
+import { MainNav } from "./NavBars";
 const MyOrganization: React.FC = () => {
   const [organization, setOrganization] = useState<any>(null);
   const [members, setMembers] = useState<any[]>([]);
@@ -32,42 +32,44 @@ const MyOrganization: React.FC = () => {
   if (loading) return <Spinner animation="border" />;
 
   return (
-    <Container className="mt-4">
-      <h2>My Organization</h2>
-      {message && <Alert variant="danger">{message}</Alert>}
-      {organization ? (
-        <>
-          <h4>{organization.name}</h4>
-          <p>Organization Code: {organization.org_code}</p>
-          <Table striped bordered hover>
-            <thead>
-              <tr>
-                <th>User</th>
-                <th>Status</th>
-                {organization.isAdmin && <th>Actions</th>}
-              </tr>
-            </thead>
-            <tbody>
-              {members.map((member) => (
-                <tr key={member.id}>
-                  <td>{member.username}</td>
-                  <td>{member.status}</td>
-                  {organization.isAdmin && (
-                    <td>
-                      <Button variant="danger" size="sm">
-                        Remove
-                      </Button>
-                    </td>
-                  )}
+    <MainNav>
+      <Container className="section-container">
+        <h2>My Organization</h2>
+        {message && <Alert variant="danger">{message}</Alert>}
+        {organization ? (
+          <>
+            <h4>{organization.name}</h4>
+            <p>Organization Code: {organization.org_code}</p>
+            <Table striped bordered hover>
+              <thead>
+                <tr>
+                  <th>User</th>
+                  <th>Status</th>
+                  {organization.isAdmin && <th>Actions</th>}
                 </tr>
-              ))}
-            </tbody>
-          </Table>
-        </>
-      ) : (
-        <p>You are not a member of any organization.</p>
-      )}
-    </Container>
+              </thead>
+              <tbody>
+                {members.map((member) => (
+                  <tr key={member.id}>
+                    <td>{member.username}</td>
+                    <td>{member.status}</td>
+                    {organization.isAdmin && (
+                      <td>
+                        <Button variant="danger" size="sm">
+                          Remove
+                        </Button>
+                      </td>
+                    )}
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </>
+        ) : (
+          <p>You are not a member of any organization.</p>
+        )}
+      </Container>
+    </MainNav>
   );
 };
 
