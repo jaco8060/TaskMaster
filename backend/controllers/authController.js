@@ -8,13 +8,35 @@ import {
   findUserById,
   findUserByUsername,
 } from "../models/authModel.js";
+import {
+  addOrganizationMember,
+  getOrganizationById,
+} from "../models/organizationModel.js";
+
 import passport from "../passport-config.js";
 
 export const handleRegister = async (req, res) => {
-  const { username, email, password, role } = req.body;
+  const { username, email, password, role, organization_id, org_code } =
+    req.body;
   const hashedPassword = await bcrypt.hash(password, 10);
   try {
     const user = await createUser(username, email, hashedPassword, role);
+    // If organization info is provided, attempt to join with code
+    if (organization_id && org_code) {
+      const organization = await getOrganizationById(organization_id);
+      if (!organization) {
+        return res.status(404).json({ error: "Organization not found" });
+      }
+      if (
+        organization.org_code !== org_code ||
+        new Date(organization.code_expiration) < new Date()
+      ) {
+        return res
+          .status(400)
+          .json({ error: "Invalid or expired organization code" });
+      }
+      await addOrganizationMember(user.id, organization_id, "approved");
+    }
     res.json(user);
   } catch (error) {
     console.error("Error creating user:", error);
