@@ -9,6 +9,7 @@ import passport from "./passport-config.js";
 import authRouter from "./routes/auth.js";
 import dashboardRouter from "./routes/dashboard.js";
 import notificationRouter from "./routes/notifications.js";
+import organizationRouter from "./routes/organizations.js";
 import projectRouter from "./routes/projects.js";
 import ticketRouter from "./routes/tickets.js";
 import userRouter from "./routes/users.js";
@@ -55,6 +56,7 @@ app.use("/projects", projectRouter);
 app.use("/tickets", ticketRouter);
 app.use("/notifications", notificationRouter);
 app.use("/dashboard", dashboardRouter);
+app.use("/organizations", organizationRouter);
 
 // Function to start the server after database is ready
 const startServer = async () => {
