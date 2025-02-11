@@ -1,6 +1,6 @@
 // frontEnd/src/components/login/RegisterWithOrganization.tsx
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Alert,
   Button,
@@ -98,6 +98,18 @@ const RegisterWithOrganization: React.FC = () => {
     }
     setLoadingSearch(false);
   };
+
+  // **Dynamic Search Effect:** When searchTerm changes, debounce and call searchOrganizations.
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      if (searchTerm.trim() !== "") {
+        searchOrganizations();
+      } else {
+        setSearchResults([]);
+      }
+    }, 300); // 300ms debounce delay
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchTerm]);
 
   // --- Final Submission Handler ---
   const handleSubmit = async () => {
@@ -318,7 +330,7 @@ const RegisterWithOrganization: React.FC = () => {
           </div>
         );
       case 5:
-        // Search and request to join
+        // Search and request to join with dynamic search
         return (
           <div className="step-content">
             <h3>Search Organization</h3>
@@ -328,34 +340,37 @@ const RegisterWithOrganization: React.FC = () => {
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Type to search..."
               />
             </Form.Group>
-            <Button onClick={searchOrganizations}>Search</Button>
+            {/* Optionally, you can remove the explicit Search button now since the search is dynamic */}
             {loadingSearch && <Spinner animation="border" className="mt-2" />}
             <div className="mt-3">
-              {searchResults.map((org) => (
-                <div
-                  key={org.id}
-                  className="org-result"
-                  style={{
-                    border: "1px solid #ccc",
-                    padding: "10px",
-                    margin: "10px 0",
-                  }}
-                >
-                  <p>
-                    <strong>{org.name}</strong>
-                  </p>
-                  <Button
+              {searchResults.length > 0 ? (
+                searchResults.map((org) => (
+                  <div
+                    key={org.id}
+                    className="org-result"
+                    style={{
+                      border: "1px solid #ccc",
+                      padding: "10px",
+                      margin: "10px 0",
+                      cursor: "pointer",
+                    }}
                     onClick={() => {
                       setSelectedOrg(org);
                       setStep(8);
                     }}
                   >
-                    Request to Join
-                  </Button>
-                </div>
-              ))}
+                    <p>
+                      <strong>{org.name}</strong>
+                    </p>
+                    <p>Organization ID: {org.id}</p>
+                  </div>
+                ))
+              ) : (
+                <p>No organizations found.</p>
+              )}
             </div>
             <Button variant="link" onClick={() => setStep(3)}>
               Back
