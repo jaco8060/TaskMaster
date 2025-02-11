@@ -4,6 +4,7 @@ import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../contexts/AuthProvider";
 import ForgotPassword from "./ForgotPassword";
+import RegisterWithOrganization from "./RegisterWithOrganization";
 import ResetPassword from "./ResetPassword.tsx";
 
 // Custom hook for form handling
@@ -312,7 +313,7 @@ const LoginPage: React.FC = () => {
   return (
     <Routes>
       <Route path="/" element={<Login />} />
-      <Route path="/register" element={<Register />} />
+      <Route path="/register" element={<RegisterWithOrganization />} />
       <Route path="/demo" element={<DemoUser />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password/:token" element={<ResetPassword />} />
