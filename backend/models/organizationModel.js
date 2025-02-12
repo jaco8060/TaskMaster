@@ -51,3 +51,19 @@ export const requestOrganizationJoin = async (user_id, organization_id) => {
   );
   return result.rows[0];
 };
+
+export const getOrganizationMembers = async (organization_id) => {
+  try {
+    const result = await pool.query(
+      `SELECT u.id, u.username, u.email, u.role, om.status, om.requested_at, om.approved_at
+       FROM organization_members om
+       JOIN users u ON om.user_id = u.id
+       WHERE om.organization_id = $1`,
+      [organization_id]
+    );
+    return result.rows;
+  } catch (error) {
+    console.error("Error fetching organization members:", error);
+    throw error;
+  }
+};

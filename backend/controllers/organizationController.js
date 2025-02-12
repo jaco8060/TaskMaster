@@ -1,8 +1,11 @@
+// backend/controllers/organizationController.js
+
 import { createNotification } from "../models/notificationModel.js";
 import {
   addOrganizationMember,
   createOrganization,
   getOrganizationById,
+  getOrganizationMembers,
   requestOrganizationJoin,
   searchOrganizations,
 } from "../models/organizationModel.js";
@@ -21,7 +24,21 @@ export const handleCreateOrganization = async (req, res) => {
     res.status(500).json({ error: "Failed to create organization" });
   }
 };
-
+export const handleGetMyOrganization = async (req, res) => {
+  const organization_id = req.user.organization_id;
+  if (!organization_id) {
+    // Instead of a 404, return a 200 with organization set to null
+    return res.status(200).json({ organization: null, members: [] });
+  }
+  try {
+    const organization = await getOrganizationById(organization_id);
+    const members = await getOrganizationMembers(organization_id);
+    return res.status(200).json({ organization, members });
+  } catch (error) {
+    console.error("Error fetching organization data:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
 // Join an organization using a code
 export const handleJoinOrganizationWithCode = async (req, res) => {
   const { organization_id, org_code } = req.body;

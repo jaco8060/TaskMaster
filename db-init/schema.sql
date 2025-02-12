@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS projects (
     name VARCHAR(100) NOT NULL,
     description TEXT,
     user_id INT REFERENCES users(id) ON DELETE CASCADE,
+    organization_id INT REFERENCES organizations(id) ON DELETE CASCADE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     is_active BOOLEAN DEFAULT TRUE
 );
@@ -132,3 +133,6 @@ CREATE TABLE IF NOT EXISTS organization_members (
     requested_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     approved_at TIMESTAMP WITH TIME ZONE
 );
+
+CREATE INDEX IF NOT EXISTS idx_organization_members_user ON organization_members(user_id);
+CREATE INDEX IF NOT EXISTS idx_projects_org ON projects(organization_id);

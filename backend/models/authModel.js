@@ -3,7 +3,13 @@ import { pool } from "../database.js";
 export const findUserByUsername = async (username) => {
   try {
     const { rows } = await pool.query(
-      "SELECT * FROM users WHERE username = $1",
+      `SELECT u.*, om.organization_id, o.name AS organization_name
+       FROM users u 
+       LEFT JOIN organization_members om 
+         ON u.id = om.user_id AND om.status = 'approved'
+       LEFT JOIN organizations o 
+         ON om.organization_id = o.id
+       WHERE u.username = $1`,
       [username]
     );
     return rows[0];
@@ -12,7 +18,6 @@ export const findUserByUsername = async (username) => {
     throw error;
   }
 };
-
 export const createUser = async (username, email, hashedPassword, role) => {
   try {
     const result = await pool.query(
@@ -36,9 +41,16 @@ export const createUser = async (username, email, hashedPassword, role) => {
 
 export const findUserById = async (id) => {
   try {
-    const { rows } = await pool.query("SELECT * FROM users WHERE id = $1", [
-      id,
-    ]);
+    const { rows } = await pool.query(
+      `SELECT u.*, om.organization_id, o.name AS organization_name
+       FROM users u 
+       LEFT JOIN organization_members om 
+         ON u.id = om.user_id AND om.status = 'approved'
+       LEFT JOIN organizations o 
+         ON om.organization_id = o.id
+       WHERE u.id = $1`,
+      [id]
+    );
     return rows[0];
   } catch (error) {
     console.error("Error fetching user by ID:", error);

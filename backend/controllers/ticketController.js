@@ -12,8 +12,9 @@ import {
 
 export const handleGetTicketsByUserId = async (req, res) => {
   const userId = req.params.userId;
+  const organizationId = req.user.organization_id;
   try {
-    const tickets = await getTicketsByUserId(userId);
+    const tickets = await getTicketsByUserId(userId, organizationId);
     res.status(200).json(tickets);
   } catch (error) {
     console.error("Error fetching tickets:", error);

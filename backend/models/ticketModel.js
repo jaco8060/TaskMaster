@@ -130,7 +130,7 @@ export const deleteTicket = async (id) => {
   }
 };
 
-export const getTicketsByUserId = async (userId) => {
+export const getTicketsByUserId = async (userId, organizationId) => {
   const result = await pool.query(
     `
     SELECT DISTINCT
@@ -140,23 +140,15 @@ export const getTicketsByUserId = async (userId) => {
       assignee.username AS assigned_to_name
     FROM tickets t
     JOIN projects p ON t.project_id = p.id
-    
-    LEFT JOIN assigned_personnel ap ON ap.project_id = p.id
-    LEFT JOIN assigned_ticket_users atu ON atu.ticket_id = t.id
+    LEFT JOIN assigned_personnel ap ON p.id = ap.project_id
+    LEFT JOIN assigned_ticket_users atu ON t.id = atu.ticket_id
     LEFT JOIN users reporter ON t.reported_by = reporter.id
     LEFT JOIN users assignee ON t.assigned_to = assignee.id
-    
-    WHERE
-      -- user assigned to the project
-      ap.user_id = $1
-      -- or user is reporter
-      OR t.reported_by = $1
-      -- or user is single-assigned
-      OR t.assigned_to = $1
-      -- or user is multi-assigned at ticket-level
-      OR atu.user_id = $1
+    WHERE 
+      (ap.user_id = $1 OR t.reported_by = $1 OR t.assigned_to = $1 OR atu.user_id = $1)
+      AND p.organization_id = $2
     `,
-    [userId]
+    [userId, organizationId]
   );
   return result.rows;
 };
