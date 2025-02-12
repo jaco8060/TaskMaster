@@ -186,7 +186,7 @@ const Register: React.FC = () => {
     try {
       await axios.post(
         `${import.meta.env.VITE_URL}/auth/register`,
-        { ...formData, role: "user" },
+        { ...formData, role: "submitter" },
         {
           headers: {
             "Content-Type": "application/json",

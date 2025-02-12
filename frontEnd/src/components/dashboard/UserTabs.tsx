@@ -1,3 +1,4 @@
+// UserTabs.tsx
 import React, { useContext, useEffect } from "react";
 import { Col, Nav, Row, Tab } from "react-bootstrap";
 import { IconType } from "react-icons";
@@ -18,10 +19,8 @@ interface UserTabsProps {
   handleSelect: (key: string) => void;
 }
 
-// Define the available roles
 type UserRole = "admin" | "pm" | "submitter" | "developer";
 
-// Define the shape of the tabs for each role
 interface TabItem {
   eventKey: string;
   title: string;
@@ -29,20 +28,14 @@ interface TabItem {
 }
 
 const UserTabs: React.FC<UserTabsProps> = ({ activeTab, handleSelect }) => {
-  const context = useContext(AuthContext);
-
-  if (!context) {
-    throw new Error("UserTabs must be used within an AuthProvider");
-  }
-
-  const { user } = context;
+  const { user } = useContext(AuthContext)!;
+  // Directly use the role stored in the database (which should be one of: admin, pm, submitter, developer)
+  const effectiveRole = user?.role as UserRole;
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
-    if (!user) return;
-
-    const roleToPathMap: Record<UserRole, Record<string, string>> = {
+    const pathToTabMap: Record<UserRole, Record<string, string>> = {
       admin: {
         "/dashboard": "first",
         "/manage-roles": "second",
@@ -72,19 +65,16 @@ const UserTabs: React.FC<UserTabsProps> = ({ activeTab, handleSelect }) => {
       },
     };
 
-    const currentTab =
-      roleToPathMap[user.role as UserRole]?.[location.pathname];
+    const currentTab = pathToTabMap[effectiveRole]?.[location.pathname];
     if (currentTab) {
       handleSelect(currentTab);
     }
-  }, [location.pathname, user, handleSelect]);
+  }, [location.pathname, effectiveRole, handleSelect]);
 
   const handleNavSelect = (eventKey: string | null) => {
     if (!user) return;
-
     if (eventKey) {
       handleSelect(eventKey);
-
       const tabToPathMap: Record<UserRole, Record<string, string>> = {
         admin: {
           first: "/dashboard",
@@ -114,15 +104,10 @@ const UserTabs: React.FC<UserTabsProps> = ({ activeTab, handleSelect }) => {
           fourth: "/userprofile",
         },
       };
-
-      const path = tabToPathMap[user.role as UserRole][eventKey];
+      const path = tabToPathMap[effectiveRole][eventKey];
       navigate(path);
     }
   };
-
-  if (!user) {
-    return null; // Or render a fallback UI if user is not available
-  }
 
   const tabs: Record<UserRole, TabItem[]> = {
     admin: [
@@ -158,7 +143,7 @@ const UserTabs: React.FC<UserTabsProps> = ({ activeTab, handleSelect }) => {
     ],
   };
 
-  const userTabs = tabs[user.role as UserRole] || [];
+  const userTabs = tabs[effectiveRole] || [];
 
   return (
     <Tab.Container activeKey={activeTab} onSelect={handleNavSelect}>
