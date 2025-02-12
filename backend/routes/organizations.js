@@ -1,6 +1,8 @@
+// backend/routes/organizations.js
 import express from "express";
 import {
   handleCreateOrganization,
+  handleGetMyOrganization,
   handleJoinOrganizationWithCode,
   handleRequestJoinOrganization,
   handleSearchOrganizations,
@@ -29,5 +31,7 @@ organizationRouter.post(
   ensureAuthenticated,
   handleRequestJoinOrganization
 );
+
+organizationRouter.get("/my", ensureAuthenticated, handleGetMyOrganization);
 
 export default organizationRouter;

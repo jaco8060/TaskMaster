@@ -1,5 +1,5 @@
 // frontEnd/src/components/login/RegisterWithOrganization.tsx
-
+import axios from "axios";
 import React, { useEffect, useState } from "react";
 import {
   Alert,
@@ -14,6 +14,13 @@ import { useNavigate } from "react-router-dom";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 import "../../styles/login/RegisterWithOrganization.scss"; // Contains fade animations
 
+interface BasicInfo {
+  username: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
 const RegisterWithOrganization: React.FC = () => {
   const navigate = useNavigate();
 
@@ -21,13 +28,18 @@ const RegisterWithOrganization: React.FC = () => {
   const [step, setStep] = useState<number>(1);
 
   // Basic registration info state.
-  const [basicInfo, setBasicInfo] = useState({
+  const [basicInfo, setBasicInfo] = useState<BasicInfo>({
     username: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
   const [basicInfoError, setBasicInfoError] = useState<string>("");
+
+  // State: to track username availability.
+  const [usernameAvailable, setUsernameAvailable] = useState<boolean | null>(
+    null
+  );
 
   // Organization-related states.
   const [orgChoice, setOrgChoice] = useState<"join" | "create" | null>(null);
@@ -41,16 +53,63 @@ const RegisterWithOrganization: React.FC = () => {
   const [loadingSearch, setLoadingSearch] = useState<boolean>(false);
   const [selectedOrg, setSelectedOrg] = useState<any>(null);
 
+  // State to capture the organization name when creating one.
+  const [organizationName, setOrganizationName] = useState<string>("");
+
   // Global message for final errors.
   const [message, setMessage] = useState<string>("");
+
+  // Function to check username availability using Axios
+  const checkUsernameAvailability = async (
+    username: string
+  ): Promise<boolean> => {
+    try {
+      const response = await axios.get(
+        `${
+          import.meta.env.VITE_URL
+        }/auth/check-username?username=${encodeURIComponent(username)}`,
+        { withCredentials: true }
+      );
+      // Assume response.data.exists is true if the username exists.
+      return !response.data.exists;
+    } catch (error) {
+      console.error("Error checking username:", error);
+      // In case of error, assume username is unavailable.
+      return false;
+    }
+  };
+
+  // Debounce the username availability check when the username changes.
+  useEffect(() => {
+    if (basicInfo.username.trim() !== "") {
+      const timer = setTimeout(() => {
+        checkUsernameAvailability(basicInfo.username).then((available) => {
+          setUsernameAvailable(available);
+        });
+      }, 500); // 500ms debounce delay
+      return () => clearTimeout(timer);
+    } else {
+      setUsernameAvailable(null);
+    }
+  }, [basicInfo.username]);
 
   // --- Handlers for Basic Information Step ---
   const handleBasicChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setBasicInfo({ ...basicInfo, [e.target.name]: e.target.value });
   };
 
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  const isStep1Valid =
+    basicInfo.username.trim() !== "" &&
+    basicInfo.email.trim() !== "" &&
+    basicInfo.password.trim() !== "" &&
+    basicInfo.confirmPassword.trim() !== "" &&
+    emailRegex.test(basicInfo.email) &&
+    basicInfo.password === basicInfo.confirmPassword &&
+    usernameAvailable === true;
+
   const handleBasicInfoNext = () => {
-    // Check for empty fields.
     if (
       !basicInfo.username ||
       !basicInfo.email ||
@@ -60,18 +119,18 @@ const RegisterWithOrganization: React.FC = () => {
       setBasicInfoError("All fields are required.");
       return;
     }
-    // Validate email format.
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(basicInfo.email)) {
       setBasicInfoError("Please enter a valid email address.");
       return;
     }
-    // Check password match.
     if (basicInfo.password !== basicInfo.confirmPassword) {
       setBasicInfoError("Passwords do not match.");
       return;
     }
-    // All validations passed.
+    if (usernameAvailable === false) {
+      setBasicInfoError("Username is already taken.");
+      return;
+    }
     setBasicInfoError("");
     setStep(2);
   };
@@ -84,22 +143,19 @@ const RegisterWithOrganization: React.FC = () => {
   const searchOrganizations = async () => {
     setLoadingSearch(true);
     try {
-      // Call your backend API to search for organizations.
-      const response = await fetch(
+      const response = await axios.get(
         `${
           import.meta.env.VITE_URL
         }/organizations/search?searchTerm=${encodeURIComponent(searchTerm)}`,
-        { credentials: "include" }
+        { withCredentials: true }
       );
-      const data = await response.json();
-      setSearchResults(data);
+      setSearchResults(response.data);
     } catch (error) {
       console.error("Error searching organizations", error);
     }
     setLoadingSearch(false);
   };
 
-  // **Dynamic Search Effect:** When searchTerm changes, debounce and call searchOrganizations.
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       if (searchTerm.trim() !== "") {
@@ -107,18 +163,16 @@ const RegisterWithOrganization: React.FC = () => {
       } else {
         setSearchResults([]);
       }
-    }, 300); // 300ms debounce delay
+    }, 300);
     return () => clearTimeout(delayDebounceFn);
   }, [searchTerm]);
 
-  // --- Final Submission Handler ---
+  // --- Final Submission Handler using Axios ---
   const handleSubmit = async () => {
-    // Final check on password match.
     if (basicInfo.password !== basicInfo.confirmPassword) {
       setMessage("Passwords do not match.");
       return;
     }
-    // Build the registration data.
     const registrationData: any = {
       username: basicInfo.username,
       email: basicInfo.email,
@@ -126,34 +180,44 @@ const RegisterWithOrganization: React.FC = () => {
       role: "user",
     };
 
-    // If the user chose to join an organization using a code:
+    // If joining with code...
     if (orgChoice === "join" && joinMethod === "code") {
       registrationData.organization_id = orgJoinInfo.organization_id;
       registrationData.org_code = orgJoinInfo.org_code;
     }
-    // (For the "search" branch or organization creation branch, you could add additional logic.)
+    // If creating an organization, include the organization name.
+    else if (orgChoice === "create") {
+      registrationData.organization_name = organizationName;
+    }
 
     try {
-      const response = await fetch(
+      const response = await axios.post(
         `${import.meta.env.VITE_URL}/auth/register`,
+        registrationData,
         {
-          method: "POST",
           headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify(registrationData),
+          withCredentials: true,
         }
       );
-      if (response.ok) {
-        navigate("/login");
-      } else {
-        const errorData = await response.json();
-        setMessage(errorData.error || "Registration failed.");
-      }
+      // Registration successful, navigate to login.
+      navigate("/login");
     } catch (error) {
       console.error("Registration error", error);
-      setMessage("Registration failed.");
+      if (axios.isAxiosError(error) && error.response) {
+        setMessage(error.response.data.error || "Registration failed.");
+      } else {
+        setMessage("Registration failed.");
+      }
     }
   };
+
+  // useEffect to call handleSubmit only once when step === 7
+  useEffect(() => {
+    if (step === 7) {
+      handleSubmit();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step]);
 
   // --- Render Step Content ---
   const getStepContent = () => {
@@ -172,6 +236,18 @@ const RegisterWithOrganization: React.FC = () => {
                 onChange={handleBasicChange}
                 required
               />
+              {basicInfo.username.trim() !== "" &&
+                usernameAvailable === false && (
+                  <Form.Text className="text-danger">
+                    Username is already taken.
+                  </Form.Text>
+                )}
+              {basicInfo.username.trim() !== "" &&
+                usernameAvailable === true && (
+                  <Form.Text className="text-success">
+                    Username is available.
+                  </Form.Text>
+                )}
             </Form.Group>
             <Form.Group controlId="email" className="mb-3">
               <Form.Label>Email</Form.Label>
@@ -207,7 +283,9 @@ const RegisterWithOrganization: React.FC = () => {
               <Button variant="secondary" onClick={() => navigate("/login")}>
                 Cancel
               </Button>
-              <Button onClick={handleBasicInfoNext}>Next</Button>
+              <Button onClick={handleBasicInfoNext} disabled={!isStep1Valid}>
+                Next
+              </Button>
             </div>
           </div>
         );
@@ -282,10 +360,11 @@ const RegisterWithOrganization: React.FC = () => {
                   type="text"
                   name="orgName"
                   placeholder="Enter organization name"
+                  value={organizationName}
+                  onChange={(e) => setOrganizationName(e.target.value)}
                   required
                 />
               </Form.Group>
-              {/* Additional organization creation fields could be added here */}
               <div className="d-flex justify-content-between">
                 <Button variant="link" onClick={() => setStep(2)}>
                   Back
@@ -330,7 +409,7 @@ const RegisterWithOrganization: React.FC = () => {
           </div>
         );
       case 5:
-        // Search and request to join with dynamic search
+        // Search and request to join with dynamic search.
         return (
           <div className="step-content">
             <h3>Search Organization</h3>
@@ -343,7 +422,6 @@ const RegisterWithOrganization: React.FC = () => {
                 placeholder="Type to search..."
               />
             </Form.Group>
-            {/* Optionally, you can remove the explicit Search button now since the search is dynamic */}
             {loadingSearch && <Spinner animation="border" className="mt-2" />}
             <div className="mt-3">
               {searchResults.length > 0 ? (
@@ -378,7 +456,7 @@ const RegisterWithOrganization: React.FC = () => {
           </div>
         );
       case 6:
-        // Confirm organization creation step
+        // Confirm organization creation step.
         return (
           <div className="step-content">
             <h3>Confirm Organization Creation</h3>
@@ -395,9 +473,7 @@ const RegisterWithOrganization: React.FC = () => {
           </div>
         );
       case 7:
-        // Final submission step – call handleSubmit and show a spinner.
-        // Note: handleSubmit is called immediately here.
-        handleSubmit();
+        // Final submission step – now we simply show a spinner.
         return (
           <div className="step-content text-center">
             <h3>Submitting Registration...</h3>
