@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
+import { Col, Row } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Dropdown from "react-bootstrap/Dropdown";
@@ -321,20 +322,20 @@ const MainNav: React.FC<MainNavProps> = ({ children }) => {
   };
 
   return (
-    <Container
-      fluid
-      className="p-0 d-flex flex-column"
-      style={{ height: "100vh" }}
-    >
+    <Container fluid className="p-0 vh-100 d-flex flex-column">
       <TopNavBar>
         <UserTabs activeTab={activeTab} handleSelect={handleSelect} />
       </TopNavBar>
-      <div className="d-flex flex-grow-1">
-        <SideNavBar>
-          <UserTabs activeTab={activeTab} handleSelect={handleSelect} />
-        </SideNavBar>
-        <main className="flex-grow-1 p-3">{children}</main>
-      </div>
+      <Row className="vh-100 g-0">
+        <Col md="auto">
+          <SideNavBar>
+            <UserTabs activeTab={activeTab} handleSelect={handleSelect} />
+          </SideNavBar>
+        </Col>
+        <Col className="p-0">
+          <main className="flex-grow-1 p-4">{children}</main>
+        </Col>
+      </Row>
     </Container>
   );
 };

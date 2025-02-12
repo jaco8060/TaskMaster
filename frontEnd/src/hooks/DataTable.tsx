@@ -149,7 +149,7 @@ const DataTable: React.FC<DataTableProps> = ({
 
   return (
     <div className="data-table-container">
-      <Row className="mb-3 align-items-center">
+      <Row className="mb-3 align-items-center p-0">
         <Col xs={12} md={6} className="d-flex justify-content-start">
           <Form.Group
             controlId="itemsPerPageSelect"
