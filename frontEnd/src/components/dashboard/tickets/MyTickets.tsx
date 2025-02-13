@@ -212,123 +212,125 @@ const MyTickets: React.FC = () => {
 
   return (
     <MainNav>
-      <Container fluid className=" section-container">
-        <h1 className="mb-3">My Tickets</h1>
-        <Button className="mb-3" onClick={handleShowModal}>
-          Create New Ticket
-        </Button>
-        <div className="table-responsive-wrapper">
-          <DataTable
-            endpoint={endpoint}
-            columns={columns}
-            searchFields={searchFields}
-            refresh={refresh}
-            renderCell={renderCell}
-          />
-        </div>
-        {/* Modal for creating/editing ticket */}
-        <Modal show={showModal} onHide={handleCloseModal}>
-          <Modal.Header closeButton>
-            <Modal.Title>
-              {isEditMode ? "Edit Ticket" : "Create New Ticket"}
-            </Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <Form>
-              <Form.Group controlId="ticketTitle">
-                <Form.Label>Title</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Enter title"
-                  name="title"
-                  value={newTicket.title}
-                  onChange={handleChange}
-                  required
-                />
-              </Form.Group>
-              <Form.Group controlId="ticketDescription" className="mt-3">
-                <Form.Label>Description</Form.Label>
-                <Form.Control
-                  as="textarea"
-                  rows={3}
-                  placeholder="Enter description"
-                  name="description"
-                  value={newTicket.description}
-                  onChange={handleChange}
-                  required
-                />
-              </Form.Group>
-              <Form.Group controlId="ticketStatus" className="mt-3">
-                <Form.Label>Status</Form.Label>
-                <Form.Control
-                  as="select"
-                  name="status"
-                  value={newTicket.status}
-                  onChange={handleChange}
-                  required
-                >
-                  <option>Open</option>
-                  <option>In Progress</option>
-                  <option>Closed</option>
-                </Form.Control>
-              </Form.Group>
-              <Form.Group controlId="ticketPriority" className="mt-3">
-                <Form.Label>Priority</Form.Label>
-                <Form.Control
-                  as="select"
-                  name="priority"
-                  value={newTicket.priority}
-                  onChange={handleChange}
-                  required
-                >
-                  <option>Low</option>
-                  <option>Medium</option>
-                  <option>High</option>
-                </Form.Control>
-              </Form.Group>
-              <Form.Group controlId="ticketProject" className="mt-3">
-                <Form.Label>Project</Form.Label>
-                <Form.Control
-                  as="select"
-                  name="project_id"
-                  value={newTicket.project_id}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="">~Select Project~</option>
-                  {projects.map((project) => (
-                    <option key={project.id} value={project.id}>
-                      {project.name}
-                    </option>
-                  ))}
-                </Form.Control>
-              </Form.Group>
-            </Form>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleCloseModal}>
-              Close
-            </Button>
-            {isEditMode ? (
-              <Button
-                variant="primary"
-                onClick={handleUpdateTicket}
-                disabled={!newTicket.project_id}
-              >
-                Save Changes
+      <div className="my-tickets-container">
+        <Container fluid className=" section-container">
+          <h1 className="mb-3">My Tickets</h1>
+          <Button className="mb-3" onClick={handleShowModal}>
+            Create New Ticket
+          </Button>
+          <div className="table-responsive-wrapper">
+            <DataTable
+              endpoint={endpoint}
+              columns={columns}
+              searchFields={searchFields}
+              refresh={refresh}
+              renderCell={renderCell}
+            />
+          </div>
+          {/* Modal for creating/editing ticket */}
+          <Modal show={showModal} onHide={handleCloseModal}>
+            <Modal.Header closeButton>
+              <Modal.Title>
+                {isEditMode ? "Edit Ticket" : "Create New Ticket"}
+              </Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <Form>
+                <Form.Group controlId="ticketTitle">
+                  <Form.Label>Title</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Enter title"
+                    name="title"
+                    value={newTicket.title}
+                    onChange={handleChange}
+                    required
+                  />
+                </Form.Group>
+                <Form.Group controlId="ticketDescription" className="mt-3">
+                  <Form.Label>Description</Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    rows={3}
+                    placeholder="Enter description"
+                    name="description"
+                    value={newTicket.description}
+                    onChange={handleChange}
+                    required
+                  />
+                </Form.Group>
+                <Form.Group controlId="ticketStatus" className="mt-3">
+                  <Form.Label>Status</Form.Label>
+                  <Form.Control
+                    as="select"
+                    name="status"
+                    value={newTicket.status}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option>Open</option>
+                    <option>In Progress</option>
+                    <option>Closed</option>
+                  </Form.Control>
+                </Form.Group>
+                <Form.Group controlId="ticketPriority" className="mt-3">
+                  <Form.Label>Priority</Form.Label>
+                  <Form.Control
+                    as="select"
+                    name="priority"
+                    value={newTicket.priority}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option>Low</option>
+                    <option>Medium</option>
+                    <option>High</option>
+                  </Form.Control>
+                </Form.Group>
+                <Form.Group controlId="ticketProject" className="mt-3">
+                  <Form.Label>Project</Form.Label>
+                  <Form.Control
+                    as="select"
+                    name="project_id"
+                    value={newTicket.project_id}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="">~Select Project~</option>
+                    {projects.map((project) => (
+                      <option key={project.id} value={project.id}>
+                        {project.name}
+                      </option>
+                    ))}
+                  </Form.Control>
+                </Form.Group>
+              </Form>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={handleCloseModal}>
+                Close
               </Button>
-            ) : (
-              <Button
-                variant="primary"
-                onClick={handleCreateTicket}
-                disabled={!newTicket.project_id}
-              >
-                Create Ticket
-              </Button>
-            )}
-          </Modal.Footer>
-        </Modal>
-      </Container>
+              {isEditMode ? (
+                <Button
+                  variant="primary"
+                  onClick={handleUpdateTicket}
+                  disabled={!newTicket.project_id}
+                >
+                  Save Changes
+                </Button>
+              ) : (
+                <Button
+                  variant="primary"
+                  onClick={handleCreateTicket}
+                  disabled={!newTicket.project_id}
+                >
+                  Create Ticket
+                </Button>
+              )}
+            </Modal.Footer>
+          </Modal>
+        </Container>
+      </div>
     </MainNav>
   );
 };

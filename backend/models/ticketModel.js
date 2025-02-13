@@ -1,3 +1,4 @@
+// backend/models/ticketModel.js
 import { pool } from "../database.js";
 
 export const createTicket = async (
@@ -76,14 +77,11 @@ export const updateTicket = async (
   changed_by
 ) => {
   const oldTicket = await getTicketById(id);
-
   await pool.query(
     "UPDATE tickets SET title = $1, description = $2, status = $3, priority = $4, assigned_to = $5, updated_at = CURRENT_TIMESTAMP WHERE id = $6",
     [title, description, status, priority, assigned_to, id]
   );
-
   const newTicket = await getTicketById(id);
-
   const recordChange = async (property, oldVal, newVal) => {
     if (oldVal !== newVal) {
       await pool.query(

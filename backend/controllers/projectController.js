@@ -1,3 +1,4 @@
+// backend/controllers/projectController.js
 import { createNotification } from "../models/notificationModel.js";
 import {
   assignMultiplePersonnel,
@@ -12,9 +13,18 @@ import {
 } from "../models/projectModel.js";
 
 export const handleCreateProject = async (req, res) => {
-  const { name, description, user_id } = req.body;
+  const { name, description } = req.body;
+  // Get the organization_id from the logged in user
+  const organization_id = req.user.organization_id;
+  const user_id = req.user.id;
   try {
-    const project = await createProject(name, description, user_id);
+    // Pass organization_id to the model function (if not provided, it may be null)
+    const project = await createProject(
+      name,
+      description,
+      user_id,
+      organization_id
+    );
     res.status(201).json(project);
   } catch (error) {
     console.error("Error creating project:", error);

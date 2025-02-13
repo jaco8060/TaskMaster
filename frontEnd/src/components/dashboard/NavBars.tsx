@@ -327,13 +327,13 @@ const MainNav: React.FC<MainNavProps> = ({ children }) => {
         <UserTabs activeTab={activeTab} handleSelect={handleSelect} />
       </TopNavBar>
       <Row className="vh-100 g-0">
-        <Col md="auto">
+        <Col xs="auto">
           <SideNavBar>
             <UserTabs activeTab={activeTab} handleSelect={handleSelect} />
           </SideNavBar>
         </Col>
         <Col className="p-0">
-          <main className="flex-grow-1 p-4">{children}</main>
+          <main className="p-4">{children}</main>
         </Col>
       </Row>
     </Container>
