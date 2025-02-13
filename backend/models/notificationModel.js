@@ -1,11 +1,11 @@
 import { pool } from "../database.js";
 
-export const createNotification = async (user_id, message) => {
+export const createNotification = async (user_id, message, ticketId = null) => {
   try {
     const { rows } = await pool.query(
-      `INSERT INTO notifications (user_id, message) 
-       VALUES ($1, $2) RETURNING *`,
-      [user_id, message]
+      `INSERT INTO notifications (user_id, message, ticket_id) 
+       VALUES ($1, $2, $3) RETURNING *`,
+      [user_id, message, ticketId]
     );
     return rows[0];
   } catch (error) {
@@ -13,14 +13,17 @@ export const createNotification = async (user_id, message) => {
   }
 };
 
-export const getNotificationsForUser = async (user_id, onlyUnread = false) => {
+export const getNotificationsForUser = async (userId, onlyUnread = false) => {
   try {
-    let query = `SELECT * FROM notifications WHERE user_id = $1`;
-    if (onlyUnread) {
-      query += ` AND is_read = false`;
-    }
-    query += ` ORDER BY created_at DESC`;
-    const { rows } = await pool.query(query, [user_id]);
+    const { rows } = await pool.query(
+      `SELECT n.*, t.title as ticket_title, p.name as project_name 
+       FROM notifications n
+       LEFT JOIN tickets t ON n.ticket_id = t.id
+       LEFT JOIN projects p ON t.project_id = p.id
+       WHERE n.user_id = $1 ${onlyUnread ? 'AND is_read = false' : ''}
+       ORDER BY created_at DESC`,
+      [userId]
+    );
     return rows;
   } catch (error) {
     throw error;

@@ -1,17 +1,22 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Button, ListGroup, Spinner } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 
 interface Notification {
   id: number;
   message: string;
   is_read: boolean;
   created_at: string;
+  ticket_id?: number;
+  ticket_title?: string;
+  project_name?: string;
 }
 
 const Notifications: React.FC = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const navigate = useNavigate();
 
   const fetchNotifications = async () => {
     setLoading(true);
@@ -78,7 +83,23 @@ const Notifications: React.FC = () => {
                 notif.is_read ? "text-muted" : ""
               }`}
             >
-              <div style={{ flex: 1 }}>{notif.message}</div>
+              <div style={{ flex: 1 }}>
+                <div>{notif.message}</div>
+                {notif.ticket_id && (
+                  <div className="mt-1">
+                    <a
+                      href={`/ticket-details/${notif.ticket_id}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        navigate(`/ticket-details/${notif.ticket_id}`);
+                      }}
+                      style={{ textDecoration: 'none' }}
+                    >
+                      View Ticket: {notif.ticket_title} (Project: {notif.project_name})
+                    </a>
+                  </div>
+                )}
+              </div>
               {!notif.is_read && (
                 <Button
                   variant="link"

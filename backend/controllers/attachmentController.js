@@ -29,13 +29,15 @@ export const handleCreateAttachment = async (req, res) => {
     if (ticket.assigned_to) {
       await createNotification(
         ticket.assigned_to,
-        `A new attachment was added to ticket (#${ticket_id}).`
+        `New attachment added to ticket "${ticket.title}" in project "${ticket.project_name}"`,
+        ticket.id
       );
     }
     if (ticket.reported_by) {
       await createNotification(
         ticket.reported_by,
-        `A new attachment was added to ticket (#${ticket_id}).`
+        `New attachment added to ticket "${ticket.title}" in project "${ticket.project_name}"`,
+        ticket.id
       );
     }
 
