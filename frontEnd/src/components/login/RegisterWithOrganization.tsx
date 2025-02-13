@@ -9,6 +9,7 @@ import {
   Form,
   Row,
   Spinner,
+  Toast,
 } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
@@ -57,7 +58,10 @@ const RegisterWithOrganization: React.FC = () => {
   const [organizationName, setOrganizationName] = useState<string>("");
 
   // Global message for final errors.
-  const [message, setMessage] = useState<string>("");
+  const [message, setMessage] = useState<{ type: string, content: string } | null>(null);
+
+  // State for error toast
+  const [showErrorToast, setShowErrorToast] = useState(false);
 
   // Function to check username availability using Axios
   const checkUsernameAvailability = async (
@@ -170,7 +174,8 @@ const RegisterWithOrganization: React.FC = () => {
   // --- Final Submission Handler using Axios ---
   const handleSubmit = async () => {
     if (basicInfo.password !== basicInfo.confirmPassword) {
-      setMessage("Passwords do not match.");
+      setMessage({ type: 'error', content: "Passwords do not match." });
+      setShowErrorToast(true);
       return;
     }
     const registrationData: any = {
@@ -203,10 +208,11 @@ const RegisterWithOrganization: React.FC = () => {
     } catch (error) {
       console.error("Registration error", error);
       if (axios.isAxiosError(error) && error.response) {
-        setMessage(error.response.data.error || "Registration failed.");
+        setMessage({ type: 'error', content: error.response.data.error || "Registration failed." });
       } else {
-        setMessage("Registration failed.");
+        setMessage({ type: 'error', content: "Registration failed." });
       }
+      setShowErrorToast(true);
     }
   };
 
@@ -495,7 +501,23 @@ const RegisterWithOrganization: React.FC = () => {
 
   return (
     <Container className="mt-5">
-      {message && <Alert variant="danger">{message}</Alert>}
+      {message && (
+        <Toast 
+          onClose={() => setMessage(null)} 
+          show={!!message} 
+          delay={5000} 
+          autohide
+          bg={message.type === 'error' ? 'danger' : 'success'}
+          className="position-fixed top-0 start-50 translate-middle-x mt-3"
+        >
+          <Toast.Header>
+            <strong className="me-auto">{message.type === 'error' ? 'Error' : 'Success'}</strong>
+          </Toast.Header>
+          <Toast.Body className="text-white">
+            {message.content}
+          </Toast.Body>
+        </Toast>
+      )}
       <TransitionGroup>
         <CSSTransition key={step} classNames="fade" timeout={500}>
           <div>{getStepContent()}</div>

@@ -1,7 +1,7 @@
 // frontEnd/src/components/dashboard/MyOrganization.tsx
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Alert, Button, Container, Spinner } from "react-bootstrap";
+import { Alert, Button, Container, Spinner, Toast } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import DataTable from "../../hooks/DataTable";
 import { MainNav } from "./NavBars";
@@ -12,6 +12,7 @@ const MyOrganization: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
+  const [showToast, setShowToast] = useState(false);
 
   // Fetch organization data for the logged-in user.
   const fetchOrganization = async () => {
@@ -39,7 +40,7 @@ const MyOrganization: React.FC = () => {
   const handleCopyCode = () => {
     if (organization && organization.org_code) {
       navigator.clipboard.writeText(organization.org_code);
-      alert("Invite code copied to clipboard!");
+      setShowToast(true);
     }
   };
 
@@ -92,6 +93,20 @@ const MyOrganization: React.FC = () => {
               Create an Organization
             </Button>
           </>
+        )}
+        {showToast && (
+          <Toast 
+            onClose={() => setShowToast(false)} 
+            show={showToast} 
+            delay={3000} 
+            autohide
+            className="position-fixed top-0 start-50 translate-middle-x mt-3"
+          >
+            <Toast.Header>
+              <strong className="me-auto">Success</strong>
+            </Toast.Header>
+            <Toast.Body>Invite code copied to clipboard!</Toast.Body>
+          </Toast>
         )}
       </Container>
     </MainNav>

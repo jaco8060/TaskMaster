@@ -17,34 +17,42 @@ import ResetPassword from "./components/login/ResetPassword";
 import AdminRoute from "./components/routes/AdminRoute";
 import PrivateRoute from "./components/routes/PrivateRoute";
 import PublicRoute from "./components/routes/PublicRoute";
+import { ToastContainer } from "react-bootstrap";
 
 const App: React.FC = () => {
   return (
-    <Routes>
-      <Route path="/reset-password/:token" element={<ResetPassword />} />
-      {/* Public routes */}
-      {/* Redirect to dashboard if on login and session is active */}
-      <Route element={<PublicRoute />}>
-        <Route path="/login/*" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterWithOrganization />} />
-      </Route>
-      {/* Private routes */}
-      {/* Redirect to login if session is not active */}
-      <Route element={<PrivateRoute />}>
-        <Route path="/" element={<Navigate to="/dashboard" />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/myprojects" element={<MyProjects />} />
-        <Route path="/project-details/:id" element={<ProjectDetails />} />
-        <Route path="/assign-personnel/:id" element={<AssignPersonnel />} />
-        <Route path="/mytickets" element={<MyTickets />} />
-        <Route path="/ticket-details/:id" element={<TicketDetails />} />
-        <Route path="/userprofile" element={<UserProfile />} />
-        <Route path="/myorganization" element={<MyOrganization />} />
-      </Route>
-      <Route element={<AdminRoute />}>
-        <Route path="/manage-roles" element={<ManageRoles />} />
-      </Route>
-    </Routes>
+    <>
+      <Routes>
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
+        {/* Public routes */}
+        {/* Redirect to dashboard if on login and session is active */}
+        <Route element={<PublicRoute />}>
+          <Route path="/login/*" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterWithOrganization />} />
+        </Route>
+        {/* Private routes */}
+        {/* Redirect to login if session is not active */}
+        <Route element={<PrivateRoute />}>
+          <Route path="/" element={<Navigate to="/dashboard" />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/myprojects" element={<MyProjects />} />
+          <Route path="/project-details/:id" element={<ProjectDetails />} />
+          <Route path="/assign-personnel/:id" element={<AssignPersonnel />} />
+          <Route path="/mytickets" element={<MyTickets />} />
+          <Route path="/ticket-details/:id" element={<TicketDetails />} />
+          <Route path="/userprofile" element={<UserProfile />} />
+          <Route path="/myorganization" element={<MyOrganization />} />
+        </Route>
+        <Route element={<AdminRoute />}>
+          <Route path="/manage-roles" element={<ManageRoles />} />
+        </Route>
+      </Routes>
+      <ToastContainer
+        position="top-center"
+        className="p-3"
+        style={{ top: '20px' }}
+      />
+    </>
   );
 };
 

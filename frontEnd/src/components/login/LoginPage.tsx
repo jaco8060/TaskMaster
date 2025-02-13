@@ -1,11 +1,12 @@
 import axios from "axios";
 import React, { useContext, useState } from "react";
-import { Button, Col, Container, Form, Row } from "react-bootstrap";
+import { Button, Col, Container, Form, Row, Toast } from "react-bootstrap";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../contexts/AuthProvider";
 import ForgotPassword from "./ForgotPassword";
 import RegisterWithOrganization from "./RegisterWithOrganization";
 import ResetPassword from "./ResetPassword.tsx";
+
 
 // Custom hook for form handling
 const useForm = <T extends Object>(initialState: T) => {
@@ -180,6 +181,7 @@ const Register: React.FC = () => {
     email: "",
   });
   const navigate = useNavigate();
+  const [showErrorToast, setShowErrorToast] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -197,7 +199,7 @@ const Register: React.FC = () => {
       navigate("/login");
     } catch (error) {
       console.error("Registration error:", error);
-      alert("Registration failed");
+      setShowErrorToast(true);
     }
   };
 
@@ -239,6 +241,23 @@ const Register: React.FC = () => {
       <Button variant="success" type="submit">
         Register
       </Button>
+      {showErrorToast && (
+        <Toast 
+          onClose={() => setShowErrorToast(false)} 
+          show={showErrorToast} 
+          delay={5000} 
+          autohide
+          bg="danger"
+          className="position-fixed top-0 start-50 translate-middle-x mt-3"
+        >
+          <Toast.Header>
+            <strong className="me-auto">Error</strong>
+          </Toast.Header>
+          <Toast.Body className="text-white">
+            Registration failed. Please try again.
+          </Toast.Body>
+        </Toast>
+      )}
     </FormComponent>
   );
 };
