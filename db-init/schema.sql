@@ -105,7 +105,8 @@ CREATE TABLE IF NOT EXISTS notifications (
     message TEXT NOT NULL,
     is_read BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    ticket_id INT REFERENCES tickets(id) ON DELETE SET NULL
+    ticket_id INT REFERENCES tickets(id) ON DELETE SET NULL,
+    project_id INT REFERENCES projects(id) ON DELETE SET NULL
 );
 
 -- For tickets, add a new join table 'assigned_ticket_users' to store multiple users per ticket:

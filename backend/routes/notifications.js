@@ -3,6 +3,7 @@ import {
   handleGetNotifications,
   handleMarkAllNotificationsAsRead,
   handleMarkNotificationAsRead,
+  handleClearAllNotifications,
 } from "../controllers/notificationController.js";
 import { ensureAuthenticated } from "../middleware/authMiddleware.js";
 
@@ -19,5 +20,6 @@ notificationRouter.put(
   ensureAuthenticated,
   handleMarkAllNotificationsAsRead
 );
+notificationRouter.delete("/clear-all", ensureAuthenticated, handleClearAllNotifications);
 
 export default notificationRouter;

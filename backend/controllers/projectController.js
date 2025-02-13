@@ -81,11 +81,15 @@ export const handleAssignPersonnel = async (req, res) => {
   const { userId, role } = req.body;
   try {
     const assignment = await assignPersonnel(projectId, userId, role);
+    
+    // Get project name first
+    const project = await getProjectById(projectId);
 
-    // notify user assigned
     await createNotification(
       userId,
-      `You have been assigned to project (ID: ${projectId})`
+      `You've been assigned to project: ${project.name}`,
+      null, // ticket_id
+      projectId // project_id for linking
     );
 
     res.status(201).json(assignment);
@@ -128,17 +132,19 @@ export const handleRemovePersonnel = async (req, res) => {
 
 export const handleAssignMultiplePersonnel = async (req, res) => {
   const projectId = req.params.id;
-  // Expect an array of user IDs
   const { userIds, role } = req.body;
   try {
-    // Assign each user in a loop
     const assignments = await assignMultiplePersonnel(projectId, userIds, role);
+    
+    // Get project name once
+    const project = await getProjectById(projectId);
 
-    // Example: notify them
     for (const assignment of assignments) {
       await createNotification(
         assignment.user_id,
-        `You have been assigned to project (ID: ${projectId}).`
+        `You've been assigned to project: ${project.name}`,
+        null,
+        projectId
       );
     }
 
