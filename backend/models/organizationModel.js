@@ -67,3 +67,10 @@ export const getOrganizationMembers = async (organization_id) => {
     throw error;
   }
 };
+
+export const getOrganizationByCode = async (orgCode) => {
+  const result = await pool.query("SELECT * FROM organizations WHERE org_code = $1", [
+    orgCode,
+  ]);
+  return result.rows[0];
+};

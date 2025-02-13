@@ -23,7 +23,6 @@ organizationRouter.post(
 );
 organizationRouter.get(
   "/search",
-  ensureAuthenticated,
   handleSearchOrganizations
 );
 organizationRouter.post(

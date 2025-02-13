@@ -24,7 +24,7 @@ interface BasicInfo {
 const RegisterWithOrganization: React.FC = () => {
   const navigate = useNavigate();
 
-  // Step state controls which “page” of questions is shown.
+  // Step state controls which "page" of questions is shown.
   const [step, setStep] = useState<number>(1);
 
   // Basic registration info state.
@@ -177,12 +177,11 @@ const RegisterWithOrganization: React.FC = () => {
       username: basicInfo.username,
       email: basicInfo.email,
       password: basicInfo.password,
-      role: "user",
+      role: "submitter",
     };
 
     // If joining with code...
     if (orgChoice === "join" && joinMethod === "code") {
-      registrationData.organization_id = orgJoinInfo.organization_id;
       registrationData.org_code = orgJoinInfo.org_code;
     }
     // If creating an organization, include the organization name.
@@ -380,16 +379,6 @@ const RegisterWithOrganization: React.FC = () => {
         return (
           <div className="step-content">
             <h3>Join with Organization Code</h3>
-            <Form.Group controlId="organization_id" className="mb-3">
-              <Form.Label>Organization ID</Form.Label>
-              <Form.Control
-                type="text"
-                name="organization_id"
-                value={orgJoinInfo.organization_id}
-                onChange={handleOrgJoinChange}
-                required
-              />
-            </Form.Group>
             <Form.Group controlId="org_code" className="mb-3">
               <Form.Label>Organization Code</Form.Label>
               <Form.Control
