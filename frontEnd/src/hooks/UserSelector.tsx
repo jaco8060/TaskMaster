@@ -1,3 +1,4 @@
+// frontEnd/src/hooks/UserSelector.tsx
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import {
@@ -15,6 +16,8 @@ interface UserSelectorProps {
   endpoint: string;
   onAssign: (userIds: number[], role?: string) => void;
   roleSelection?: boolean;
+  // New prop: list of usernames that cannot be selected.
+  disabledUsernames?: string[];
 }
 
 interface User {
@@ -27,6 +30,7 @@ const UserSelector: React.FC<UserSelectorProps> = ({
   endpoint,
   onAssign,
   roleSelection = false,
+  disabledUsernames = [],
 }) => {
   const [users, setUsers] = useState<User[]>([]);
   const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
@@ -49,7 +53,9 @@ const UserSelector: React.FC<UserSelectorProps> = ({
     fetchUsers();
   }, [endpoint]);
 
-  const handleSelectUser = (userId: number) => {
+  const handleSelectUser = (userId: number, username: string) => {
+    // If this user is in the disabled list, do nothing.
+    if (disabledUsernames.includes(username)) return;
     setSelectedUsers((prevSelected) =>
       prevSelected.includes(userId)
         ? prevSelected.filter((id) => id !== userId)
@@ -127,18 +133,22 @@ const UserSelector: React.FC<UserSelectorProps> = ({
               </tr>
             </thead>
             <tbody>
-              {filteredUsers.map((user) => (
-                <tr
-                  key={user.id}
-                  onClick={() => handleSelectUser(user.id)}
-                  className={`user-list-table-row ${
-                    selectedUsers.includes(user.id) ? "selected" : ""
-                  }`}
-                >
-                  <td>{user.username}</td>
-                  <td>{user.email}</td>
-                </tr>
-              ))}
+              {filteredUsers.map((user) => {
+                const isDisabled = disabledUsernames.includes(user.username);
+                return (
+                  <tr
+                    key={user.id}
+                    onClick={() => handleSelectUser(user.id, user.username)}
+                    className={`user-list-table-row ${
+                      selectedUsers.includes(user.id) ? "selected" : ""
+                    } ${isDisabled ? "disabled" : ""}`}
+                    style={{ cursor: isDisabled ? "not-allowed" : "pointer" }}
+                  >
+                    <td>{user.username}</td>
+                    <td>{user.email}</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </Table>
         </div>
