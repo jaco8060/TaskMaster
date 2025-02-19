@@ -1,7 +1,7 @@
 import { useContext } from "react";
+import { Toast } from "react-bootstrap";
 import { Navigate, Outlet } from "react-router-dom";
 import { AuthContext, AuthContextType } from "../../contexts/AuthProvider"; // Make sure AuthContextType is imported
-import { Toast } from "react-bootstrap";
 
 const AdminRoute: React.FC = () => {
   const { user, loading } = useContext(AuthContext) as AuthContextType; // Cast the context with proper type

@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  handleCheckEmail,
   handleCheckUsername,
   handleForgotPassword,
   handleGetUser,
@@ -7,7 +8,6 @@ import {
   handleLogout,
   handleRegister,
   handleResetPassword,
-  handleCheckEmail,
 } from "../controllers/authController.js";
 
 const authRouter = express.Router();

@@ -9,6 +9,7 @@ import Modal from "react-bootstrap/Modal";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import Offcanvas from "react-bootstrap/Offcanvas";
+import Toast from "react-bootstrap/Toast";
 import {
   FaBell,
   FaEnvelope,
@@ -23,7 +24,6 @@ import { AuthContext, AuthContextType } from "../../contexts/AuthProvider";
 import "../../styles/dashboard/NavBars.scss";
 import Notifications from "./Notifications";
 import UserTabs from "./UserTabs";
-import Toast from "react-bootstrap/Toast";
 
 interface TopNavBarProps {
   children: React.ReactNode;
@@ -81,7 +81,7 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ children }) => {
 
   return (
     <>
-      <Toast 
+      <Toast
         onClose={() => setShowToast(false)}
         show={showToast}
         delay={3000}

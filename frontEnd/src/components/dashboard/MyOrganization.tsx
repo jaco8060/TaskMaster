@@ -1,8 +1,9 @@
 // frontEnd/src/components/dashboard/MyOrganization.tsx
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Alert, Button, Container, Spinner, Toast } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { AuthContext, AuthContextType } from "../../contexts/AuthProvider";
 import DataTable from "../../hooks/DataTable";
 import { MainNav } from "./NavBars";
 
@@ -13,6 +14,13 @@ const MyOrganization: React.FC = () => {
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
   const [showToast, setShowToast] = useState(false);
+  const [pendingRequests, setPendingRequests] = useState<any[]>([]);
+  const [showRequestToast, setShowRequestToast] = useState(false);
+  const [requestToastMessage, setRequestToastMessage] = useState("");
+  const [requestToastVariant, setRequestToastVariant] = useState<
+    "success" | "danger"
+  >("success");
+  const { user } = useContext(AuthContext) as AuthContextType;
 
   // Fetch organization data for the logged-in user.
   const fetchOrganization = async () => {
@@ -36,11 +44,59 @@ const MyOrganization: React.FC = () => {
     fetchOrganization();
   }, []);
 
+  useEffect(() => {
+    const fetchPendingRequests = async () => {
+      if (organization && user?.role === "admin") {
+        try {
+          const response = await axios.get(
+            `${import.meta.env.VITE_URL}/organizations/${
+              organization.id
+            }/pending-requests`,
+            { withCredentials: true }
+          );
+          setPendingRequests(response.data);
+        } catch (error) {
+          console.error("Error fetching pending requests:", error);
+        }
+      }
+    };
+    fetchPendingRequests();
+  }, [organization, user?.role]);
+
   // Function to copy the invite code to clipboard
   const handleCopyCode = () => {
     if (organization && organization.org_code) {
       navigator.clipboard.writeText(organization.org_code);
       setShowToast(true);
+    }
+  };
+
+  const handleProcessRequest = async (
+    userId: string,
+    action: "approve" | "reject"
+  ) => {
+    try {
+      await axios.post(
+        `${import.meta.env.VITE_URL}/organizations/process-request`,
+        {
+          user_id: userId,
+          organization_id: organization?.id,
+          action,
+        },
+        { withCredentials: true }
+      );
+
+      setPendingRequests((prev) =>
+        prev.filter((request) => request.user_id !== userId)
+      );
+      setRequestToastVariant("success");
+      setRequestToastMessage(`Request ${action}d successfully`);
+      setShowRequestToast(true);
+    } catch (error) {
+      console.error("Error processing request:", error);
+      setRequestToastVariant("danger");
+      setRequestToastMessage("Failed to process request");
+      setShowRequestToast(true);
     }
   };
 
@@ -83,6 +139,49 @@ const MyOrganization: React.FC = () => {
               ]}
               searchFields={["username", "email", "role"]}
             />
+            {user?.role === "admin" && pendingRequests.length > 0 && (
+              <>
+                <hr />
+                <h5>Pending Join Requests</h5>
+                <DataTable
+                  staticData={pendingRequests}
+                  columns={[
+                    { header: "Username", accessor: "username" },
+                    { header: "Email", accessor: "email" },
+                    { header: "Requested At", accessor: "requested_at" },
+                    { header: "Actions", accessor: "actions", sortable: false },
+                  ]}
+                  searchFields={["username", "email"]}
+                  renderCell={(item: any, accessor: string) => {
+                    if (accessor === "actions") {
+                      return (
+                        <div className="d-flex gap-2">
+                          <Button
+                            variant="success"
+                            size="sm"
+                            onClick={() =>
+                              handleProcessRequest(item.user_id, "approve")
+                            }
+                          >
+                            Approve
+                          </Button>
+                          <Button
+                            variant="danger"
+                            size="sm"
+                            onClick={() =>
+                              handleProcessRequest(item.user_id, "reject")
+                            }
+                          >
+                            Reject
+                          </Button>
+                        </div>
+                      );
+                    }
+                    return item[accessor];
+                  }}
+                />
+              </>
+            )}
           </>
         ) : (
           <>
@@ -95,10 +194,10 @@ const MyOrganization: React.FC = () => {
           </>
         )}
         {showToast && (
-          <Toast 
-            onClose={() => setShowToast(false)} 
-            show={showToast} 
-            delay={3000} 
+          <Toast
+            onClose={() => setShowToast(false)}
+            show={showToast}
+            delay={3000}
             autohide
             bg="success"
             className="position-fixed start-50 translate-middle-x"
@@ -112,6 +211,22 @@ const MyOrganization: React.FC = () => {
             </Toast.Body>
           </Toast>
         )}
+        <Toast
+          onClose={() => setShowRequestToast(false)}
+          show={showRequestToast}
+          delay={3000}
+          autohide
+          bg={requestToastVariant}
+          className="position-fixed start-50 translate-middle-x"
+          style={{ top: "100px" }}
+        >
+          <Toast.Header>
+            <strong className="me-auto">
+              {requestToastVariant === "success" ? "Success" : "Error"}
+            </strong>
+          </Toast.Header>
+          <Toast.Body className="text-white">{requestToastMessage}</Toast.Body>
+        </Toast>
       </Container>
     </MainNav>
   );

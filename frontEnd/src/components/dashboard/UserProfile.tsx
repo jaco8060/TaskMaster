@@ -10,9 +10,9 @@ import {
   Image,
   Row,
 } from "react-bootstrap";
+import Toast from "react-bootstrap/Toast";
 import { AuthContext, AuthContextType } from "../../contexts/AuthProvider";
 import { MainNav } from "./NavBars";
-import Toast from "react-bootstrap/Toast";
 
 const UserProfile: React.FC = () => {
   const { user, setUser } = useContext(AuthContext) as AuthContextType;
@@ -31,7 +31,9 @@ const UserProfile: React.FC = () => {
   const [roleRequestMessage, setRoleRequestMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
-  const [toastVariant, setToastVariant] = useState<"success"|"danger">("success");
+  const [toastVariant, setToastVariant] = useState<"success" | "danger">(
+    "success"
+  );
 
   // Generate a preview of the selected profile picture file
   useEffect(() => {
@@ -129,7 +131,9 @@ const UserProfile: React.FC = () => {
         style={{ top: "70px" }}
       >
         <Toast.Header>
-          <strong className="me-auto">{toastVariant === "success" ? "Success" : "Error"}</strong>
+          <strong className="me-auto">
+            {toastVariant === "success" ? "Success" : "Error"}
+          </strong>
         </Toast.Header>
         <Toast.Body className="text-white">{toastMessage}</Toast.Body>
       </Toast>

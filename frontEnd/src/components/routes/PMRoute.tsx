@@ -1,7 +1,7 @@
 import { useContext } from "react";
+import { Toast } from "react-bootstrap";
 import { Navigate, Outlet } from "react-router-dom";
 import { AuthContext, AuthContextType } from "../../contexts/AuthProvider"; // Ensure AuthContextType is imported
-import { Toast } from "react-bootstrap";
 
 const PMRoute: React.FC = () => {
   const { user, loading } = useContext(AuthContext) as AuthContextType; // Cast the context with proper type
@@ -22,7 +22,9 @@ const PMRoute: React.FC = () => {
           bg="danger"
           className="position-fixed top-0 start-50 translate-middle-x mt-3"
         >
-          <Toast.Body className="text-white">Permission is not allowed</Toast.Body>
+          <Toast.Body className="text-white">
+            Permission is not allowed
+          </Toast.Body>
         </Toast>
         <Navigate to="/dashboard" />
       </>

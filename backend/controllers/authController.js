@@ -4,6 +4,7 @@ import {
   forgotPassword,
   resetPassword,
 } from "../controllers/forgotAuthController.js";
+import { pool } from "../database.js";
 import {
   createUser,
   findUserById,
@@ -16,7 +17,6 @@ import {
   getOrganizationById,
   requestOrganizationJoin,
 } from "../models/organizationModel.js";
-import { pool } from "../database.js";
 
 import passport from "../passport-config.js";
 
@@ -28,7 +28,7 @@ export const handleRegister = async (req, res) => {
     organization_id,
     org_code,
     organization_name,
-    requestJoin
+    requestJoin,
   } = req.body;
 
   if (!username || !email || !password) {
@@ -39,7 +39,7 @@ export const handleRegister = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     const userRole = organization_name ? "admin" : "submitter";
     const user = await createUser(username, email, hashedPassword, userRole);
-    
+
     if (user.error) return res.status(400).json({ error: user.error });
 
     // 1. Organization Creation Flow
@@ -47,17 +47,23 @@ export const handleRegister = async (req, res) => {
       const organization = await createOrganization(organization_name, user.id);
       await addOrganizationMember(user.id, organization.id, "approved");
       user.organization_id = organization.id;
-    } 
+    }
     // 2. Join with Code Flow
     else if (organization_id && org_code) {
       const organization = await getOrganizationById(organization_id);
-      if (!organization || organization.org_code !== org_code || new Date(organization.code_expiration) < new Date()) {
-        return res.status(400).json({ error: "Invalid or expired organization code" });
+      if (
+        !organization ||
+        organization.org_code !== org_code ||
+        new Date(organization.code_expiration) < new Date()
+      ) {
+        return res
+          .status(400)
+          .json({ error: "Invalid or expired organization code" });
       }
       await addOrganizationMember(user.id, organization_id, "approved");
       user.organization_id = organization_id;
     }
-    // 3. Request to Join Flow 
+    // 3. Request to Join Flow
     else if (organization_id && requestJoin) {
       const organization = await getOrganizationById(organization_id);
       if (!organization) {
@@ -68,9 +74,9 @@ export const handleRegister = async (req, res) => {
         organization.admin_id,
         `New join request from ${user.username}`
       );
-      return res.status(201).json({ 
+      return res.status(201).json({
         message: "Registration successful. Awaiting approval.",
-        user 
+        user,
       });
     }
 
@@ -148,10 +154,14 @@ export const handleCheckUsername = async (req, res) => {
 export const handleCheckEmail = async (req, res) => {
   const { email } = req.query;
   if (!email) {
-    return res.status(400).json({ error: "Email query parameter is required." });
+    return res
+      .status(400)
+      .json({ error: "Email query parameter is required." });
   }
   try {
-    const { rows } = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
+    const { rows } = await pool.query("SELECT * FROM users WHERE email = $1", [
+      email,
+    ]);
     return res.json({ exists: !!rows[0] });
   } catch (error) {
     console.error("Error checking email:", error);

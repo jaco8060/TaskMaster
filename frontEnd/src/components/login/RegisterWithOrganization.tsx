@@ -5,6 +5,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import {
   Alert,
+  Badge,
   Button,
   Col,
   Container,
@@ -12,7 +13,6 @@ import {
   Row,
   Spinner,
   Toast,
-  Badge,
 } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
@@ -110,7 +110,9 @@ const RegisterWithOrganization: React.FC = () => {
   const checkEmailAvailability = async (email: string): Promise<boolean> => {
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_URL}/auth/check-email?email=${encodeURIComponent(email)}`,
+        `${
+          import.meta.env.VITE_URL
+        }/auth/check-email?email=${encodeURIComponent(email)}`,
         { withCredentials: true }
       );
       return !response.data.exists;
@@ -259,8 +261,8 @@ const RegisterWithOrganization: React.FC = () => {
       // Handle error display
       if (axios.isAxiosError(error) && error.response) {
         setMessage({
-          type: "error", 
-          content: error.response.data.error || "Registration failed"
+          type: "error",
+          content: error.response.data.error || "Registration failed",
         });
       } else {
         setMessage({ type: "error", content: "Registration failed" });
@@ -487,17 +489,17 @@ const RegisterWithOrganization: React.FC = () => {
             ) : searchResults.length > 0 ? (
               <div className="organization-list">
                 {searchResults.map((org) => (
-                  <div 
+                  <div
                     key={org.id}
                     className={`organization-card p-3 mb-2 ${
-                      selectedOrg?.id === org.id 
-                        ? "border-primary bg-light" 
+                      selectedOrg?.id === org.id
+                        ? "border-primary bg-light"
                         : "border-light"
                     }`}
                     style={{
                       cursor: "pointer",
                       border: "2px solid",
-                      borderRadius: "8px"
+                      borderRadius: "8px",
                     }}
                     onClick={() => handleOrgSelection(org)}
                   >
@@ -524,8 +526,8 @@ const RegisterWithOrganization: React.FC = () => {
                 Back
               </Button>
               <div>
-                <Button 
-                  variant="primary" 
+                <Button
+                  variant="primary"
                   onClick={() => {
                     if (selectedOrg) {
                       setStep(7); // Proceed to submission

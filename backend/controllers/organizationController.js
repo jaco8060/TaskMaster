@@ -6,6 +6,7 @@ import {
   createOrganization,
   getOrganizationById,
   getOrganizationMembers,
+  getPendingJoinRequests,
   requestOrganizationJoin,
   searchOrganizations,
 } from "../models/organizationModel.js";
@@ -112,17 +113,17 @@ export const handlePostRegisterJoinRequest = async (req, res) => {
   try {
     const membership = await requestOrganizationJoin(user_id, organization_id);
     const organization = await getOrganizationById(organization_id);
-    
+
     if (organization) {
       await createNotification(
         organization.admin_id,
         `New user requested to join your organization`
       );
     }
-    
-    res.status(200).json({ 
-      message: "Join request submitted", 
-      membership 
+
+    res.status(200).json({
+      message: "Join request submitted",
+      membership,
     });
   } catch (error) {
     console.error("Error submitting post-registration request:", error);
@@ -133,7 +134,7 @@ export const handlePostRegisterJoinRequest = async (req, res) => {
 export const handleProcessJoinRequest = async (req, res) => {
   const { user_id, organization_id, action } = req.body;
   const admin_id = req.user.id;
-  
+
   try {
     // Verify admin is organization admin
     const organization = await getOrganizationById(organization_id);
@@ -141,7 +142,7 @@ export const handleProcessJoinRequest = async (req, res) => {
       return res.status(403).json({ error: "Unauthorized" });
     }
 
-    const newStatus = action === 'approve' ? 'approved' : 'rejected';
+    const newStatus = action === "approve" ? "approved" : "rejected";
     await pool.query(
       `UPDATE organization_members 
        SET status = $1 
@@ -161,5 +162,21 @@ export const handleProcessJoinRequest = async (req, res) => {
   } catch (error) {
     console.error("Error processing request:", error);
     res.status(500).json({ error: "Failed to process request" });
+  }
+};
+
+export const handleGetPendingRequests = async (req, res) => {
+  try {
+    const organization = await getOrganizationById(req.params.id);
+
+    if (!organization || organization.admin_id !== req.user.id) {
+      return res.status(403).json({ error: "Unauthorized" });
+    }
+
+    const requests = await getPendingJoinRequests(req.params.id);
+    res.status(200).json(requests);
+  } catch (error) {
+    console.error("Error fetching pending requests:", error);
+    res.status(500).json({ error: "Failed to fetch pending requests" });
   }
 };

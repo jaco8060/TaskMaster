@@ -42,7 +42,7 @@ export const handleCreateTicket = async (req, res) => {
       reported_by,
       assigned_to
     );
-    
+
     // Only create ticket-related notification
     if (assigned_to) {
       await createNotification(
@@ -51,7 +51,7 @@ export const handleCreateTicket = async (req, res) => {
         ticket.id // ticket_id
       );
     }
-    
+
     res.status(201).json(ticket);
   } catch (error) {
     console.error("Error creating ticket:", error);
@@ -103,7 +103,10 @@ export const handleUpdateTicket = async (req, res) => {
     );
 
     // Only handle ticket assignment changes
-    if (updatedTicket.assigned_to && updatedTicket.assigned_to !== oldAssignedTo) {
+    if (
+      updatedTicket.assigned_to &&
+      updatedTicket.assigned_to !== oldAssignedTo
+    ) {
       await createNotification(
         updatedTicket.assigned_to,
         `You've been assigned to ticket: "${updatedTicket.title}"`,

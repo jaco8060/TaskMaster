@@ -7,7 +7,6 @@ import ForgotPassword from "./ForgotPassword";
 import RegisterWithOrganization from "./RegisterWithOrganization";
 import ResetPassword from "./ResetPassword.tsx";
 
-
 // Custom hook for form handling
 const useForm = <T extends Object>(initialState: T) => {
   const [formData, setFormData] = useState<T>(initialState);
@@ -258,10 +257,10 @@ const Register: React.FC = () => {
         Register
       </Button>
       {showErrorToast && (
-        <Toast 
-          onClose={() => setShowErrorToast(false)} 
-          show={showErrorToast} 
-          delay={5000} 
+        <Toast
+          onClose={() => setShowErrorToast(false)}
+          show={showErrorToast}
+          delay={5000}
           autohide
           bg="danger"
           className="position-fixed top-0 start-50 translate-middle-x mt-3"

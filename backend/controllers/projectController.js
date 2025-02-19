@@ -81,7 +81,7 @@ export const handleAssignPersonnel = async (req, res) => {
   const { userId, role } = req.body;
   try {
     const assignment = await assignPersonnel(projectId, userId, role);
-    
+
     // Get project name first
     const project = await getProjectById(projectId);
 
@@ -135,7 +135,7 @@ export const handleAssignMultiplePersonnel = async (req, res) => {
   const { userIds, role } = req.body;
   try {
     const assignments = await assignMultiplePersonnel(projectId, userIds, role);
-    
+
     // Get project name once
     const project = await getProjectById(projectId);
 

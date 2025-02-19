@@ -3,7 +3,9 @@ import express from "express";
 import {
   handleCreateOrganization,
   handleGetMyOrganization,
+  handleGetPendingRequests,
   handleJoinOrganizationWithCode,
+  handleProcessJoinRequest,
   handleRequestJoinOrganization,
   handleSearchOrganizations,
 } from "../controllers/organizationController.js";
@@ -21,10 +23,7 @@ organizationRouter.post(
   ensureAuthenticated,
   handleJoinOrganizationWithCode
 );
-organizationRouter.get(
-  "/search",
-  handleSearchOrganizations
-);
+organizationRouter.get("/search", handleSearchOrganizations);
 organizationRouter.post(
   "/request-join",
   ensureAuthenticated,
@@ -32,5 +31,17 @@ organizationRouter.post(
 );
 
 organizationRouter.get("/my", ensureAuthenticated, handleGetMyOrganization);
+
+organizationRouter.get(
+  "/:id/pending-requests",
+  ensureAuthenticated,
+  handleGetPendingRequests
+);
+
+organizationRouter.post(
+  "/process-request",
+  ensureAuthenticated,
+  handleProcessJoinRequest
+);
 
 export default organizationRouter;
