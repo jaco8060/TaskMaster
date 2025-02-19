@@ -1,5 +1,6 @@
 // frontEnd/src/App.tsx
 import React from "react";
+import { ToastContainer } from "react-bootstrap";
 import { Navigate, Route, Routes } from "react-router-dom";
 import "./color-theme.scss";
 import Dashboard from "./components/dashboard/Dashboard";
@@ -17,7 +18,6 @@ import ResetPassword from "./components/login/ResetPassword";
 import AdminRoute from "./components/routes/AdminRoute";
 import PrivateRoute from "./components/routes/PrivateRoute";
 import PublicRoute from "./components/routes/PublicRoute";
-import { ToastContainer } from "react-bootstrap";
 
 const App: React.FC = () => {
   return (
@@ -50,7 +50,7 @@ const App: React.FC = () => {
       <ToastContainer
         position="top-center"
         className="p-3"
-        style={{ top: '20px' }}
+        style={{ top: "20px" }}
       />
     </>
   );

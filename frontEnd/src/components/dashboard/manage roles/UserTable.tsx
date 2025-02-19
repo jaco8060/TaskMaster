@@ -3,6 +3,7 @@ import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../../contexts/AuthProvider";
 import DataTable from "../../../hooks/DataTable";
+import Toast from "react-bootstrap/Toast";
 
 interface UserTableProps {
   refresh: boolean;
@@ -29,6 +30,8 @@ const UserTable: React.FC<UserTableProps> = ({ refresh, onRoleChanged }) => {
 
   const searchFields = ["username", "email", "role"];
   const [key, setKey] = useState<number>(0);
+  const [showErrorToast, setShowErrorToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
 
   // Refresh the DataTable when refresh prop changes
   useEffect(() => {
@@ -45,7 +48,8 @@ const UserTable: React.FC<UserTableProps> = ({ refresh, onRoleChanged }) => {
       onRoleChanged();
     } catch (error) {
       console.error("Error removing role:", error);
-      alert("Failed to remove role assignment.");
+      setToastMessage("Failed to remove role assignment.");
+      setShowErrorToast(true);
     }
   };
 
@@ -68,6 +72,19 @@ const UserTable: React.FC<UserTableProps> = ({ refresh, onRoleChanged }) => {
 
   return (
     <div>
+      <Toast
+        onClose={() => setShowErrorToast(false)}
+        show={showErrorToast}
+        delay={3000}
+        autohide
+        bg="danger"
+        className="position-fixed top-0 start-50 translate-middle-x mt-3"
+      >
+        <Toast.Header>
+          <strong className="me-auto">Error</strong>
+        </Toast.Header>
+        <Toast.Body className="text-white">{toastMessage}</Toast.Body>
+      </Toast>
       <h3>Your Personnel</h3>
       <DataTable
         key={key}

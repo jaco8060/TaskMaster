@@ -3,7 +3,7 @@
 import axios from "axios";
 import { format } from "date-fns";
 import React, { ChangeEvent, useContext, useEffect, useState } from "react";
-import { Button, Container, Form, Modal } from "react-bootstrap";
+import { Button, Container, Form, Modal, Toast } from "react-bootstrap";
 import { useNavigate } from "react-router-dom"; // Import useNavigate if not already imported
 import { AuthContext, AuthContextType } from "../../../contexts/AuthProvider";
 import DataTable from "../../../hooks/DataTable";
@@ -39,6 +39,9 @@ const MyTickets: React.FC = () => {
   });
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
   const [refresh, setRefresh] = useState<boolean>(false);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastVariant, setToastVariant] = useState<"success"|"danger">("success");
   const navigate = useNavigate(); // Hook to navigate between routes
 
   const fetchProjects = async () => {
@@ -50,7 +53,9 @@ const MyTickets: React.FC = () => {
       setProjects(response.data);
     } catch (error) {
       console.error("Error fetching projects:", error);
-      alert("Failed to fetch projects.");
+      setToastVariant("danger");
+      setToastMessage("Failed to fetch projects");
+      setShowToast(true);
     }
   };
 
@@ -103,9 +108,14 @@ const MyTickets: React.FC = () => {
       );
       handleCloseModal();
       setRefresh(!refresh);
+      setToastVariant("success");
+      setToastMessage("Ticket created successfully");
+      setShowToast(true);
     } catch (error) {
       console.error("Error creating ticket:", error);
-      alert("Failed to create ticket.");
+      setToastVariant("danger");
+      setToastMessage("Failed to create ticket");
+      setShowToast(true);
     }
   };
 
@@ -129,7 +139,9 @@ const MyTickets: React.FC = () => {
       setRefresh(!refresh);
     } catch (error) {
       console.error("Error updating ticket:", error);
-      alert("Failed to update ticket.");
+      setToastVariant("danger");
+      setToastMessage("Failed to update ticket.");
+      setShowToast(true);
     }
   };
 
@@ -212,6 +224,22 @@ const MyTickets: React.FC = () => {
 
   return (
     <MainNav>
+      <Toast
+        onClose={() => setShowToast(false)}
+        show={showToast}
+        delay={3000}
+        autohide
+        bg={toastVariant}
+        className="position-fixed start-50 translate-middle-x"
+        style={{ top: "70px" }}
+      >
+        <Toast.Header>
+          <strong className="me-auto">
+            {toastVariant === "success" ? "Success" : "Error"}
+          </strong>
+        </Toast.Header>
+        <Toast.Body className="text-white">{toastMessage}</Toast.Body>
+      </Toast>
       <div className="my-tickets-container">
         <Container fluid className=" section-container">
           <h1 className="mb-3">My Tickets</h1>

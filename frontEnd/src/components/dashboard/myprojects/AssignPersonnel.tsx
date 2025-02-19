@@ -1,7 +1,7 @@
 import axios from "axios";
 import { format } from "date-fns";
 import React, { useContext, useEffect, useState } from "react";
-import { Button, Col, Container, Modal, Row, Spinner } from "react-bootstrap";
+import { Button, Col, Container, Modal, Row, Spinner, Toast } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import { AuthContext, AuthContextType } from "../../../contexts/AuthProvider";
 import DataTable from "../../../hooks/DataTable";
@@ -41,6 +41,8 @@ const AssignPersonnel: React.FC = () => {
   const [refresh, setRefresh] = useState<boolean>(false); // State to trigger DataTable refresh
   const [showModal, setShowModal] = useState<boolean>(false); // State to handle modal visibility
   const [selectedUser, setSelectedUser] = useState<User | null>(null); // State to track the user being deleted
+  const [showErrorToast, setShowErrorToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
 
   useEffect(() => {
     const fetchProjectDetails = async () => {
@@ -54,7 +56,8 @@ const AssignPersonnel: React.FC = () => {
         setProject(response.data);
       } catch (error) {
         console.error("Error fetching project details:", error);
-        alert("Failed to fetch project details.");
+        setToastMessage("Failed to fetch project details.");
+        setShowErrorToast(true);
       }
       setLoadingProject(false);
     };
@@ -79,7 +82,8 @@ const AssignPersonnel: React.FC = () => {
       setRefresh(!refresh); // Trigger DataTable refresh
     } catch (error) {
       console.error("Error assigning personnel:", error);
-      alert("Failed to assign personnel.");
+      setToastMessage("Failed to assign personnel");
+      setShowErrorToast(true);
     }
   };
 
@@ -102,7 +106,8 @@ const AssignPersonnel: React.FC = () => {
       setSelectedUser(null); // Reset the selected user
     } catch (error) {
       console.error("Error removing personnel:", error);
-      alert("Failed to remove personnel.");
+      setToastMessage("Failed to remove personnel");
+      setShowErrorToast(true);
     }
   };
 
@@ -172,6 +177,19 @@ const AssignPersonnel: React.FC = () => {
 
   return (
     <MainNav>
+      <Toast
+        onClose={() => setShowErrorToast(false)}
+        show={showErrorToast}
+        delay={3000}
+        autohide
+        bg="danger"
+        className="position-fixed top-0 start-50 translate-middle-x mt-3"
+      >
+        <Toast.Header>
+          <strong className="me-auto">Error</strong>
+        </Toast.Header>
+        <Toast.Body className="text-white">{toastMessage}</Toast.Body>
+      </Toast>
       <div className="d-flex flex-column">
         <Row>
           <Col>

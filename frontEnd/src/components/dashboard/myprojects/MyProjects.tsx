@@ -1,7 +1,7 @@
 import axios from "axios";
 import { format } from "date-fns";
 import React, { useContext, useState } from "react";
-import { Button, Col, Container, Form, Modal, Row } from "react-bootstrap";
+import { Button, Col, Container, Form, Modal, Row, Toast } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../../contexts/AuthProvider";
 import DataTable from "../../../hooks/DataTable";
@@ -57,6 +57,9 @@ const MyProjects: React.FC = () => {
   const [projectName, setProjectName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [refresh, setRefresh] = useState<boolean>(false); // State to handle refresh
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastVariant, setToastVariant] = useState<"success"|"danger">("success");
 
   const handleShowModal = () => setShowModal(true);
   const handleCloseModal = () => setShowModal(false);
@@ -79,9 +82,14 @@ const MyProjects: React.FC = () => {
       );
       handleCloseModal();
       setRefresh((prev) => !prev); // Trigger refresh
+      setToastVariant("success");
+      setToastMessage("Project created successfully");
+      setShowToast(true);
     } catch (error) {
       console.error("Error creating project:", error);
-      alert("Failed to create project.");
+      setToastVariant("danger");
+      setToastMessage("Failed to create project");
+      setShowToast(true);
     }
   };
 
@@ -91,6 +99,21 @@ const MyProjects: React.FC = () => {
 
   return (
     <MainNav>
+      <Toast
+        onClose={() => setShowToast(false)}
+        show={showToast}
+        delay={3000}
+        autohide
+        bg={toastVariant}
+        className="position-fixed top-0 start-50 translate-middle-x mt-3"
+      >
+        <Toast.Header>
+          <strong className="me-auto">
+            {toastVariant === "success" ? "Success" : "Error"}
+          </strong>
+        </Toast.Header>
+        <Toast.Body className="text-white">{toastMessage}</Toast.Body>
+      </Toast>
       <div className="d-flex flex-column section-container">
         <Row>
           <Col>

@@ -92,6 +92,7 @@ const Login: React.FC = () => {
   const [formData, handleChange] = useForm({ username: "", password: "" });
   const navigate = useNavigate();
   const { setUser } = useContext(AuthContext) as AuthContextType;
+  const [showToast, setShowToast] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -110,7 +111,7 @@ const Login: React.FC = () => {
       navigate("/dashboard");
     } catch (error) {
       console.error("Login error:", error);
-      alert("Login failed");
+      setShowToast(true);
     }
   };
 
@@ -169,6 +170,21 @@ const Login: React.FC = () => {
           </p>
         </div>
       </div>
+      {showToast && (
+        <Toast
+          onClose={() => setShowToast(false)}
+          show={showToast}
+          delay={3000}
+          autohide
+          bg="danger"
+          className="position-fixed top-0 start-50 translate-middle-x mt-3"
+        >
+          <Toast.Header>
+            <strong className="me-auto">Error</strong>
+          </Toast.Header>
+          <Toast.Body className="text-white">Login failed</Toast.Body>
+        </Toast>
+      )}
     </FormComponent>
   );
 };
@@ -266,6 +282,7 @@ const Register: React.FC = () => {
 const DemoUser: React.FC = () => {
   const navigate = useNavigate();
   const { setUser } = useContext(AuthContext) as AuthContextType;
+  const [showToast, setShowToast] = useState(false);
 
   const demoUsers = [
     { role: "admin", username: "demo_admin", password: "demo123" },
@@ -297,7 +314,7 @@ const DemoUser: React.FC = () => {
       navigate("/dashboard");
     } catch (error) {
       console.error("Login error:", error);
-      alert("Demo login failed");
+      setShowToast(true);
     }
   };
 
@@ -323,6 +340,21 @@ const DemoUser: React.FC = () => {
           </div>
         </Col>
       </Row>
+      {showToast && (
+        <Toast
+          onClose={() => setShowToast(false)}
+          show={showToast}
+          delay={3000}
+          autohide
+          bg="danger"
+          className="position-fixed top-0 start-50 translate-middle-x mt-3"
+        >
+          <Toast.Header>
+            <strong className="me-auto">Error</strong>
+          </Toast.Header>
+          <Toast.Body className="text-white">Demo login failed</Toast.Body>
+        </Toast>
+      )}
     </Container>
   );
 };

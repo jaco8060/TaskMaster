@@ -9,6 +9,7 @@ import {
   Row,
   Spinner,
   Table,
+  Toast,
 } from "react-bootstrap";
 import "../styles/hooks/UserSelector.scss";
 
@@ -37,6 +38,7 @@ const UserSelector: React.FC<UserSelectorProps> = ({
   const [role, setRole] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [showToast, setShowToast] = useState(false);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -75,7 +77,7 @@ const UserSelector: React.FC<UserSelectorProps> = ({
         onAssign(selectedUsers);
       }
     } else {
-      alert("Please select at least one user.");
+      setShowToast(true);
     }
   };
 
@@ -99,6 +101,21 @@ const UserSelector: React.FC<UserSelectorProps> = ({
 
   return (
     <div className="user-selector">
+      <Toast
+        onClose={() => setShowToast(false)}
+        show={showToast}
+        delay={3000}
+        autohide
+        bg="danger"
+        className="position-fixed top-0 start-50 translate-middle-x mt-3"
+      >
+        <Toast.Header>
+          <strong className="me-auto">Error</strong>
+        </Toast.Header>
+        <Toast.Body className="text-white">
+          Please select at least one user
+        </Toast.Body>
+      </Toast>
       <Row className="search-container mb-3">
         <Col xs={12} md={6} className="d-flex align-items-center">
           <InputGroup>

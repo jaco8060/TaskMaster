@@ -100,12 +100,16 @@ const MyOrganization: React.FC = () => {
             show={showToast} 
             delay={3000} 
             autohide
-            className="position-fixed top-0 start-50 translate-middle-x mt-3"
+            bg="success"
+            className="position-fixed start-50 translate-middle-x"
+            style={{ top: "70px" }}
           >
             <Toast.Header>
               <strong className="me-auto">Success</strong>
             </Toast.Header>
-            <Toast.Body>Invite code copied to clipboard!</Toast.Body>
+            <Toast.Body className="text-white">
+              Invite code copied to clipboard!
+            </Toast.Body>
           </Toast>
         )}
       </Container>

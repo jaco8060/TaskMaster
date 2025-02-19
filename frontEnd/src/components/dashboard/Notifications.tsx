@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Button, ListGroup, Spinner, Modal } from "react-bootstrap";
+import { Button, ListGroup, Modal, Spinner } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
 interface Notification {
@@ -86,10 +86,19 @@ const Notifications: React.FC = () => {
       </div>
       <div className="d-flex justify-content-between mb-2 gap-2">
         <div>
-          <Button variant="primary" size="sm" onClick={markAllAsRead} className="me-2">
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={markAllAsRead}
+            className="me-2"
+          >
             Mark All as Read
           </Button>
-          <Button variant="danger" size="sm" onClick={() => setShowClearConfirmation(true)}>
+          <Button
+            variant="danger"
+            size="sm"
+            onClick={() => setShowClearConfirmation(true)}
+          >
             Clear All
           </Button>
         </div>
@@ -110,16 +119,20 @@ const Notifications: React.FC = () => {
                 {(notif.ticket_id || notif.project_id) && (
                   <div className="mt-1">
                     <a
-                      href={notif.ticket_id ? `/ticket-details/${notif.ticket_id}` : `/project-details/${notif.project_id}`}
+                      href={
+                        notif.ticket_id
+                          ? `/ticket-details/${notif.ticket_id}`
+                          : `/project-details/${notif.project_id}`
+                      }
                       onClick={(e) => {
                         e.preventDefault();
                         navigate(
-                          notif.ticket_id 
+                          notif.ticket_id
                             ? `/ticket-details/${notif.ticket_id}`
                             : `/project-details/${notif.project_id}`
                         );
                       }}
-                      style={{ textDecoration: 'none' }}
+                      style={{ textDecoration: "none" }}
                     >
                       {notif.ticket_id
                         ? `View Ticket: ${notif.ticket_title} (Project: ${notif.project_name})`
@@ -156,14 +169,14 @@ const Notifications: React.FC = () => {
           Are you sure you want to delete all notifications?
         </Modal.Body>
         <Modal.Footer>
-          <Button 
-            variant="secondary" 
+          <Button
+            variant="secondary"
             onClick={() => handleClearConfirmation(false)}
           >
             Cancel
           </Button>
-          <Button 
-            variant="danger" 
+          <Button
+            variant="danger"
             onClick={() => handleClearConfirmation(true)}
           >
             Clear All

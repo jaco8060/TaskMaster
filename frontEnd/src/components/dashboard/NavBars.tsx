@@ -23,6 +23,7 @@ import { AuthContext, AuthContextType } from "../../contexts/AuthProvider";
 import "../../styles/dashboard/NavBars.scss";
 import Notifications from "./Notifications";
 import UserTabs from "./UserTabs";
+import Toast from "react-bootstrap/Toast";
 
 interface TopNavBarProps {
   children: React.ReactNode;
@@ -45,6 +46,8 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ children }) => {
   const { user, setUser } = useContext(AuthContext) as AuthContextType;
   const [showMobileNotifModal, setShowMobileNotifModal] = useState(false);
   const [notificationsCount, setNotificationsCount] = useState<number>(0);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
 
   const handleLogout = async () => {
     try {
@@ -55,7 +58,8 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ children }) => {
       navigate("/login");
     } catch (error) {
       console.error("Logout error:", error);
-      alert("Logout failed");
+      setToastMessage("Logout failed");
+      setShowToast(true);
     }
   };
 
@@ -77,6 +81,20 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ children }) => {
 
   return (
     <>
+      <Toast 
+        onClose={() => setShowToast(false)}
+        show={showToast}
+        delay={3000}
+        autohide
+        bg="danger"
+        className="position-fixed start-50 translate-middle-x"
+        style={{ top: "70px" }}
+      >
+        <Toast.Header>
+          <strong className="me-auto">Error</strong>
+        </Toast.Header>
+        <Toast.Body className="text-white">{toastMessage}</Toast.Body>
+      </Toast>
       <Navbar
         expand="lg"
         className="bg-secondary border-bottom border-primary-subtle"

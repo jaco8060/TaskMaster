@@ -12,6 +12,7 @@ import {
 } from "react-bootstrap";
 import { AuthContext, AuthContextType } from "../../contexts/AuthProvider";
 import { MainNav } from "./NavBars";
+import Toast from "react-bootstrap/Toast";
 
 const UserProfile: React.FC = () => {
   const { user, setUser } = useContext(AuthContext) as AuthContextType;
@@ -28,6 +29,9 @@ const UserProfile: React.FC = () => {
   const [preview, setPreview] = useState<string>("");
   const [message, setMessage] = useState("");
   const [roleRequestMessage, setRoleRequestMessage] = useState("");
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastVariant, setToastVariant] = useState<"success"|"danger">("success");
 
   // Generate a preview of the selected profile picture file
   useEffect(() => {
@@ -73,10 +77,14 @@ const UserProfile: React.FC = () => {
         }
       );
       setUser(response.data);
-      setMessage("Profile updated successfully");
+      setToastVariant("success");
+      setToastMessage("Profile updated successfully");
+      setShowToast(true);
     } catch (error) {
       console.error("Error updating profile", error);
-      setMessage("Failed to update profile");
+      setToastVariant("danger");
+      setToastMessage("Failed to update profile");
+      setShowToast(true);
     }
   };
 
@@ -98,14 +106,33 @@ const UserProfile: React.FC = () => {
       );
       setMessage(response.data.message);
       setRoleRequestMessage("");
+      setToastVariant("success");
+      setToastMessage("Role change request sent successfully");
+      setShowToast(true);
     } catch (error) {
       console.error("Error requesting role change", error);
-      setMessage("Failed to send role change request");
+      setToastVariant("danger");
+      setToastMessage("Failed to send role change request");
+      setShowToast(true);
     }
   };
 
   return (
     <MainNav>
+      <Toast
+        onClose={() => setShowToast(false)}
+        show={showToast}
+        delay={3000}
+        autohide
+        bg={toastVariant}
+        className="position-fixed start-50 translate-middle-x"
+        style={{ top: "70px" }}
+      >
+        <Toast.Header>
+          <strong className="me-auto">{toastVariant === "success" ? "Success" : "Error"}</strong>
+        </Toast.Header>
+        <Toast.Body className="text-white">{toastMessage}</Toast.Body>
+      </Toast>
       <div className="d-flex flex-column">
         <Container className="section-container">
           <h2>User Profile</h2>

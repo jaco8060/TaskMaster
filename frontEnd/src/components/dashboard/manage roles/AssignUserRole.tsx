@@ -1,7 +1,7 @@
 // frontEnd/src/components/dashboard/manage roles/AssignUserRole.tsx
 import axios from "axios";
-import React, { useContext } from "react";
-import { Container } from "react-bootstrap";
+import React, { useContext, useState } from "react";
+import { Container, Toast } from "react-bootstrap";
 import { AuthContext } from "../../../contexts/AuthProvider";
 import UserSelector from "../../../hooks/UserSelector";
 
@@ -13,6 +13,9 @@ const AssignUserRole: React.FC<AssignUserRoleProps> = ({ onRoleAssigned }) => {
   const { user } = useContext(AuthContext)!;
   // Only for the demo_admin user, we want to disable changes to any demo accounts.
   const demoUsernames = ["demo_admin", "demo_sub", "demo_dev", "demo_pm"];
+
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
 
   const handleAssignRole = async (
     userIds: number[],
@@ -30,7 +33,8 @@ const AssignUserRole: React.FC<AssignUserRoleProps> = ({ onRoleAssigned }) => {
       onRoleAssigned();
     } catch (error) {
       console.error("Error assigning role:", error);
-      alert("Failed to assign role.");
+      setToastMessage("Failed to assign role.");
+      setShowToast(true);
     }
   };
 
@@ -44,6 +48,20 @@ const AssignUserRole: React.FC<AssignUserRoleProps> = ({ onRoleAssigned }) => {
         roleSelection={true}
         disabledUsernames={user?.username === "demo_admin" ? demoUsernames : []}
       />
+      <Toast 
+        onClose={() => setShowToast(false)}
+        show={showToast}
+        delay={3000}
+        autohide
+        bg="danger"
+        className="position-fixed start-50 translate-middle-x"
+        style={{ top: "70px" }}
+      >
+        <Toast.Header>
+          <strong className="me-auto">Error</strong>
+        </Toast.Header>
+        <Toast.Body className="text-white">{toastMessage}</Toast.Body>
+      </Toast>
     </Container>
   );
 };
