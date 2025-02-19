@@ -69,8 +69,20 @@ export const getOrganizationMembers = async (organization_id) => {
 };
 
 export const getOrganizationByCode = async (orgCode) => {
-  const result = await pool.query("SELECT * FROM organizations WHERE org_code = $1", [
-    orgCode,
-  ]);
+  const result = await pool.query(
+    "SELECT * FROM organizations WHERE org_code = $1",
+    [orgCode]
+  );
   return result.rows[0];
+};
+
+export const getPendingJoinRequests = async (organization_id) => {
+  const result = await pool.query(
+    `SELECT om.*, u.username, u.email 
+     FROM organization_members om
+     JOIN users u ON om.user_id = u.id
+     WHERE om.organization_id = $1 AND om.status = 'pending'`,
+    [organization_id]
+  );
+  return result.rows;
 };

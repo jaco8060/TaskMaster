@@ -7,6 +7,7 @@ import {
   handleLogout,
   handleRegister,
   handleResetPassword,
+  handleCheckEmail,
 } from "../controllers/authController.js";
 
 const authRouter = express.Router();
@@ -29,5 +30,8 @@ authRouter.get("/check-username", handleCheckUsername);
 // Password Reset Routes
 authRouter.post("/forgot-password", handleForgotPassword);
 authRouter.post("/reset-password", handleResetPassword);
+
+// Check Email Route
+authRouter.get("/check-email", handleCheckEmail);
 
 export default authRouter;

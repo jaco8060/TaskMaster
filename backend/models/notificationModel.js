@@ -1,6 +1,11 @@
 import { pool } from "../database.js";
 
-export const createNotification = async (user_id, message, ticketId = null, projectId = null) => {
+export const createNotification = async (
+  user_id,
+  message,
+  ticketId = null,
+  projectId = null
+) => {
   try {
     const { rows } = await pool.query(
       `INSERT INTO notifications (user_id, message, ticket_id, project_id) 
@@ -24,7 +29,7 @@ export const getNotificationsForUser = async (userId, onlyUnread = false) => {
        LEFT JOIN tickets t ON n.ticket_id = t.id
        LEFT JOIN projects p ON t.project_id = p.id
        LEFT JOIN projects p2 ON n.project_id = p2.id
-       WHERE n.user_id = $1 ${onlyUnread ? 'AND is_read = false' : ''}
+       WHERE n.user_id = $1 ${onlyUnread ? "AND is_read = false" : ""}
        ORDER BY created_at DESC`,
       [userId]
     );

@@ -1,8 +1,8 @@
 import {
+  deleteAllNotificationsForUser,
   getNotificationsForUser,
   markAllNotificationsAsRead,
   markNotificationAsRead,
-  deleteAllNotificationsForUser,
 } from "../models/notificationModel.js";
 
 export const handleGetNotifications = async (req, res) => {

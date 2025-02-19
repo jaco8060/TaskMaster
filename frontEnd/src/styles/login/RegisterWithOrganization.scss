@@ -17,3 +17,13 @@
 .step-content {
   padding: 1rem;
 }
+
+.organization-card:hover {
+  background-color: #f8f9fa;
+  transition: background-color 0.2s ease;
+}
+
+.organization-card.selected {
+  border-color: #0d6efd !important;
+  background-color: rgba(13, 110, 253, 0.05);
+}

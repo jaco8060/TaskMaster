@@ -1,3 +1,5 @@
+// RegisterWithOrganization.tsx
+
 // frontEnd/src/components/login/RegisterWithOrganization.tsx
 import axios from "axios";
 import React, { useEffect, useState } from "react";
@@ -10,6 +12,7 @@ import {
   Row,
   Spinner,
   Toast,
+  Badge,
 } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
@@ -42,6 +45,9 @@ const RegisterWithOrganization: React.FC = () => {
     null
   );
 
+  // Add new state for email availability
+  const [emailAvailable, setEmailAvailable] = useState<boolean | null>(null);
+
   // Organization-related states.
   const [orgChoice, setOrgChoice] = useState<"join" | "create" | null>(null);
   const [joinMethod, setJoinMethod] = useState<"code" | "search" | null>(null);
@@ -58,7 +64,10 @@ const RegisterWithOrganization: React.FC = () => {
   const [organizationName, setOrganizationName] = useState<string>("");
 
   // Global message for final errors.
-  const [message, setMessage] = useState<{ type: string, content: string } | null>(null);
+  const [message, setMessage] = useState<{
+    type: string;
+    content: string;
+  } | null>(null);
 
   // State for error toast
   const [showErrorToast, setShowErrorToast] = useState(false);
@@ -97,6 +106,34 @@ const RegisterWithOrganization: React.FC = () => {
     }
   }, [basicInfo.username]);
 
+  // Add email check function similar to username check
+  const checkEmailAvailability = async (email: string): Promise<boolean> => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_URL}/auth/check-email?email=${encodeURIComponent(email)}`,
+        { withCredentials: true }
+      );
+      return !response.data.exists;
+    } catch (error) {
+      console.error("Error checking email:", error);
+      return false;
+    }
+  };
+
+  // Add useEffect for email availability debounce
+  useEffect(() => {
+    if (basicInfo.email.trim() !== "" && emailRegex.test(basicInfo.email)) {
+      const timer = setTimeout(() => {
+        checkEmailAvailability(basicInfo.email).then((available) => {
+          setEmailAvailable(available);
+        });
+      }, 500);
+      return () => clearTimeout(timer);
+    } else {
+      setEmailAvailable(null);
+    }
+  }, [basicInfo.email]);
+
   // --- Handlers for Basic Information Step ---
   const handleBasicChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setBasicInfo({ ...basicInfo, [e.target.name]: e.target.value });
@@ -104,6 +141,7 @@ const RegisterWithOrganization: React.FC = () => {
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+  // Update isStep1Valid check
   const isStep1Valid =
     basicInfo.username.trim() !== "" &&
     basicInfo.email.trim() !== "" &&
@@ -111,8 +149,10 @@ const RegisterWithOrganization: React.FC = () => {
     basicInfo.confirmPassword.trim() !== "" &&
     emailRegex.test(basicInfo.email) &&
     basicInfo.password === basicInfo.confirmPassword &&
-    usernameAvailable === true;
+    usernameAvailable === true &&
+    emailAvailable === true;
 
+  // Update handleBasicInfoNext validation
   const handleBasicInfoNext = () => {
     if (
       !basicInfo.username ||
@@ -133,6 +173,10 @@ const RegisterWithOrganization: React.FC = () => {
     }
     if (usernameAvailable === false) {
       setBasicInfoError("Username is already taken.");
+      return;
+    }
+    if (emailAvailable === false) {
+      setBasicInfoError("Email is already registered.");
       return;
     }
     setBasicInfoError("");
@@ -171,30 +215,30 @@ const RegisterWithOrganization: React.FC = () => {
     return () => clearTimeout(delayDebounceFn);
   }, [searchTerm]);
 
+  // Update search results handling
+  const handleOrgSelection = (org: any) => {
+    setSelectedOrg(org);
+  };
+
   // --- Final Submission Handler using Axios ---
   const handleSubmit = async () => {
-    if (basicInfo.password !== basicInfo.confirmPassword) {
-      setMessage({ type: 'error', content: "Passwords do not match." });
-      setShowErrorToast(true);
-      return;
-    }
-    const registrationData: any = {
-      username: basicInfo.username,
-      email: basicInfo.email,
-      password: basicInfo.password,
-      role: "submitter",
-    };
-
-    // If joining with code...
-    if (orgChoice === "join" && joinMethod === "code") {
-      registrationData.org_code = orgJoinInfo.org_code;
-    }
-    // If creating an organization, include the organization name.
-    else if (orgChoice === "create") {
-      registrationData.organization_name = organizationName;
-    }
-
     try {
+      const registrationData: any = {
+        username: basicInfo.username,
+        email: basicInfo.email,
+        password: basicInfo.password,
+        role: "submitter",
+      };
+
+      // Set organization parameters based on join method
+      if (joinMethod === "code") {
+        registrationData.organization_id = orgJoinInfo.organization_id;
+        registrationData.org_code = orgJoinInfo.org_code;
+      } else if (joinMethod === "search" && selectedOrg) {
+        registrationData.organization_id = selectedOrg.id;
+        registrationData.requestJoin = true;
+      }
+
       const response = await axios.post(
         `${import.meta.env.VITE_URL}/auth/register`,
         registrationData,
@@ -203,16 +247,26 @@ const RegisterWithOrganization: React.FC = () => {
           withCredentials: true,
         }
       );
-      // Registration successful, navigate to login.
-      navigate("/login");
-    } catch (error) {
-      console.error("Registration error", error);
-      if (axios.isAxiosError(error) && error.response) {
-        setMessage({ type: 'error', content: error.response.data.error || "Registration failed." });
+
+      // Handle different success cases
+      if (response.data.message?.includes("Awaiting approval")) {
+        setMessage({ type: "success", content: response.data.message });
+        setStep(8);
       } else {
-        setMessage({ type: 'error', content: "Registration failed." });
+        navigate("/login");
+      }
+    } catch (error) {
+      // Handle error display
+      if (axios.isAxiosError(error) && error.response) {
+        setMessage({
+          type: "error", 
+          content: error.response.data.error || "Registration failed"
+        });
+      } else {
+        setMessage({ type: "error", content: "Registration failed" });
       }
       setShowErrorToast(true);
+      setStep(2); // Return to organization selection
     }
   };
 
@@ -263,6 +317,16 @@ const RegisterWithOrganization: React.FC = () => {
                 onChange={handleBasicChange}
                 required
               />
+              {basicInfo.email.trim() !== "" && emailAvailable === false && (
+                <Form.Text className="text-danger">
+                  Email is already registered.
+                </Form.Text>
+              )}
+              {basicInfo.email.trim() !== "" && emailAvailable === true && (
+                <Form.Text className="text-success">
+                  Email is available.
+                </Form.Text>
+              )}
             </Form.Group>
             <Form.Group controlId="password" className="mb-3">
               <Form.Label>Password</Form.Label>
@@ -407,47 +471,72 @@ const RegisterWithOrganization: React.FC = () => {
         // Search and request to join with dynamic search.
         return (
           <div className="step-content">
-            <h3>Search Organization</h3>
-            <Form.Group controlId="searchTerm" className="mb-3">
-              <Form.Label>Search Organization</Form.Label>
+            <h3>Search Organizations</h3>
+            <Form.Group controlId="searchOrganizations" className="mb-3">
+              <Form.Label>Search Organizations</Form.Label>
               <Form.Control
                 type="text"
+                placeholder="Start typing to search..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Type to search..."
               />
             </Form.Group>
-            {loadingSearch && <Spinner animation="border" className="mt-2" />}
-            <div className="mt-3">
-              {searchResults.length > 0 ? (
-                searchResults.map((org) => (
-                  <div
+
+            {loadingSearch ? (
+              <Spinner animation="border" />
+            ) : searchResults.length > 0 ? (
+              <div className="organization-list">
+                {searchResults.map((org) => (
+                  <div 
                     key={org.id}
-                    className="org-result"
+                    className={`organization-card p-3 mb-2 ${
+                      selectedOrg?.id === org.id 
+                        ? "border-primary bg-light" 
+                        : "border-light"
+                    }`}
                     style={{
-                      border: "1px solid #ccc",
-                      padding: "10px",
-                      margin: "10px 0",
                       cursor: "pointer",
+                      border: "2px solid",
+                      borderRadius: "8px"
                     }}
-                    onClick={() => {
-                      setSelectedOrg(org);
-                      setStep(8);
-                    }}
+                    onClick={() => handleOrgSelection(org)}
                   >
-                    <p>
-                      <strong>{org.name}</strong>
-                    </p>
-                    <p>Organization ID: {org.id}</p>
+                    <div className="d-flex justify-content-between align-items-center">
+                      <div>
+                        <h5>{org.name}</h5>
+                        <small className="text-muted">
+                          Members: {org.member_count}
+                        </small>
+                      </div>
+                      {selectedOrg?.id === org.id && (
+                        <Badge bg="success">Selected</Badge>
+                      )}
+                    </div>
                   </div>
-                ))
-              ) : (
-                <p>No organizations found.</p>
-              )}
+                ))}
+              </div>
+            ) : (
+              searchTerm.trim() !== "" && <div>No organizations found</div>
+            )}
+
+            <div className="d-flex justify-content-between mt-4">
+              <Button variant="secondary" onClick={() => setStep(3)}>
+                Back
+              </Button>
+              <div>
+                <Button 
+                  variant="primary" 
+                  onClick={() => {
+                    if (selectedOrg) {
+                      setStep(7); // Proceed to submission
+                    }
+                  }}
+                  disabled={!selectedOrg}
+                >
+                  Request to Join Selected Organization
+                </Button>
+              </div>
             </div>
-            <Button variant="link" onClick={() => setStep(3)}>
-              Back
-            </Button>
           </div>
         );
       case 6:
@@ -502,20 +591,20 @@ const RegisterWithOrganization: React.FC = () => {
   return (
     <Container className="mt-5">
       {message && (
-        <Toast 
-          onClose={() => setMessage(null)} 
-          show={!!message} 
-          delay={5000} 
+        <Toast
+          onClose={() => setMessage(null)}
+          show={!!message}
+          delay={5000}
           autohide
-          bg={message.type === 'error' ? 'danger' : 'success'}
+          bg={message.type === "error" ? "danger" : "success"}
           className="position-fixed top-0 start-50 translate-middle-x mt-3"
         >
           <Toast.Header>
-            <strong className="me-auto">{message.type === 'error' ? 'Error' : 'Success'}</strong>
+            <strong className="me-auto">
+              {message.type === "error" ? "Error" : "Success"}
+            </strong>
           </Toast.Header>
-          <Toast.Body className="text-white">
-            {message.content}
-          </Toast.Body>
+          <Toast.Body className="text-white">{message.content}</Toast.Body>
         </Toast>
       )}
       <TransitionGroup>

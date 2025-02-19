@@ -106,3 +106,60 @@ export const handleRequestJoinOrganization = async (req, res) => {
     res.status(500).json({ error: "Failed to request joining organization" });
   }
 };
+
+export const handlePostRegisterJoinRequest = async (req, res) => {
+  const { user_id, organization_id } = req.body;
+  try {
+    const membership = await requestOrganizationJoin(user_id, organization_id);
+    const organization = await getOrganizationById(organization_id);
+    
+    if (organization) {
+      await createNotification(
+        organization.admin_id,
+        `New user requested to join your organization`
+      );
+    }
+    
+    res.status(200).json({ 
+      message: "Join request submitted", 
+      membership 
+    });
+  } catch (error) {
+    console.error("Error submitting post-registration request:", error);
+    res.status(500).json({ error: "Failed to submit request" });
+  }
+};
+
+export const handleProcessJoinRequest = async (req, res) => {
+  const { user_id, organization_id, action } = req.body;
+  const admin_id = req.user.id;
+  
+  try {
+    // Verify admin is organization admin
+    const organization = await getOrganizationById(organization_id);
+    if (organization.admin_id !== admin_id) {
+      return res.status(403).json({ error: "Unauthorized" });
+    }
+
+    const newStatus = action === 'approve' ? 'approved' : 'rejected';
+    await pool.query(
+      `UPDATE organization_members 
+       SET status = $1 
+       WHERE user_id = $2 AND organization_id = $3`,
+      [newStatus, user_id, organization_id]
+    );
+
+    // Send notification to user
+    await createNotification(
+      user_id,
+      `Your request to join ${organization.name} was ${newStatus}`,
+      null,
+      organization_id
+    );
+
+    res.status(200).json({ message: `Request ${newStatus}` });
+  } catch (error) {
+    console.error("Error processing request:", error);
+    res.status(500).json({ error: "Failed to process request" });
+  }
+};
