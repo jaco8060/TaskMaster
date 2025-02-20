@@ -40,26 +40,26 @@ const MyOrganization: React.FC = () => {
     }
   };
 
+  // Add this before the useEffect that calls it
+  const fetchPendingRequests = async () => {
+    if (organization && user?.role === "admin") {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_URL}/organizations/${organization.id}/pending-requests`,
+          { withCredentials: true }
+        );
+        setPendingRequests(response.data);
+      } catch (error) {
+        console.error("Error fetching pending requests:", error);
+      }
+    }
+  };
+
   useEffect(() => {
     fetchOrganization();
   }, []);
 
   useEffect(() => {
-    const fetchPendingRequests = async () => {
-      if (organization && user?.role === "admin") {
-        try {
-          const response = await axios.get(
-            `${import.meta.env.VITE_URL}/organizations/${
-              organization.id
-            }/pending-requests`,
-            { withCredentials: true }
-          );
-          setPendingRequests(response.data);
-        } catch (error) {
-          console.error("Error fetching pending requests:", error);
-        }
-      }
-    };
     fetchPendingRequests();
   }, [organization, user?.role]);
 
@@ -81,14 +81,15 @@ const MyOrganization: React.FC = () => {
         {
           user_id: userId,
           organization_id: organization?.id,
-          action,
+          status: action === "approve" ? "approved" : "rejected"
         },
         { withCredentials: true }
       );
 
-      setPendingRequests((prev) =>
-        prev.filter((request) => request.user_id !== userId)
-      );
+      // Refresh both organization data and pending requests
+      await fetchOrganization();
+      await fetchPendingRequests();
+
       setRequestToastVariant("success");
       setRequestToastMessage(`Request ${action}d successfully`);
       setShowRequestToast(true);

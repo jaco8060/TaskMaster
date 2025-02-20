@@ -14,7 +14,8 @@ CREATE TABLE IF NOT EXISTS users (
     is_active BOOLEAN DEFAULT TRUE,
     reset_password_token VARCHAR(255),
     reset_password_expires BIGINT,
-    assigned_by INT REFERENCES users(id)
+    assigned_by INT REFERENCES users(id),
+    organization_id INT REFERENCES organizations(id) ON DELETE SET NULL
 );
 
 -- Projects Table
@@ -131,7 +132,7 @@ CREATE TABLE IF NOT EXISTS organization_members (
     id SERIAL PRIMARY KEY,
     organization_id INT REFERENCES organizations(id) ON DELETE CASCADE,
     user_id INT REFERENCES users(id) ON DELETE CASCADE,
-    status VARCHAR(20) DEFAULT 'pending', -- values: 'pending', 'approved'
+    status VARCHAR(20) DEFAULT 'pending', -- values: 'pending', 'approved', 'rejected'
     requested_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     approved_at TIMESTAMP WITH TIME ZONE
 );

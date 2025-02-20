@@ -58,7 +58,7 @@ export const getOrganizationMembers = async (organization_id) => {
       `SELECT u.id, u.username, u.email, u.role, om.status, om.requested_at, om.approved_at
        FROM organization_members om
        JOIN users u ON om.user_id = u.id
-       WHERE om.organization_id = $1`,
+       WHERE om.organization_id = $1 AND om.status = 'approved'`,
       [organization_id]
     );
     return result.rows;
