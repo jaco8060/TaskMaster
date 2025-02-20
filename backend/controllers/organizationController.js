@@ -248,3 +248,35 @@ export const handleRemoveOrganizationMember = async (req, res) => {
     res.status(500).json({ error: "Failed to remove member" });
   }
 };
+
+export const handleGetOrganizationStatus = async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT om.status 
+       FROM organization_members om
+       WHERE om.user_id = $1`,
+      [req.user.id]
+    );
+    
+    const status = rows[0]?.status || 'none';
+    res.json({ status });
+  } catch (error) {
+    console.error("Error getting organization status:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const handleCancelJoinRequest = async (req, res) => {
+  try {
+    await pool.query(
+      `DELETE FROM organization_members 
+       WHERE user_id = $1 AND status = 'pending'`,
+      [req.user.id]
+    );
+    res.status(204).end();
+  } catch (error) {
+    console.error("Error canceling join request:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+

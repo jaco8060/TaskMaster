@@ -1,0 +1,28 @@
+.loading-animation {
+  position: relative;
+  width: 100px;
+  height: 100px;
+
+  .spinner {
+    width: 100%;
+    height: 100%;
+    
+    circle {
+      stroke: #0d6efd;
+      stroke-linecap: round;
+      transform-origin: 50% 50%;
+      animation: spin 1.5s linear infinite, color-change 3s ease-in-out infinite;
+    }
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes color-change {
+  0% { stroke: #F3BC43; }
+  50% { stroke: #16253B; }
+  100% { stroke: #F3BC43; }
+} 

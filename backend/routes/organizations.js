@@ -9,6 +9,9 @@ import {
   handleRemoveOrganizationMember,
   handleRequestJoinOrganization,
   handleSearchOrganizations,
+  handleGetOrganizationStatus,
+  handleCancelJoinRequest,
+  handleJoinWithCode,
 } from "../controllers/organizationController.js";
 import { ensureAuthenticated } from "../middleware/authMiddleware.js";
 
@@ -50,5 +53,9 @@ organizationRouter.delete(
   ensureAuthenticated,
   handleRemoveOrganizationMember
 );
+
+organizationRouter.get('/status', ensureAuthenticated, handleGetOrganizationStatus);
+organizationRouter.delete('/cancel-request', ensureAuthenticated, handleCancelJoinRequest);
+
 
 export default organizationRouter;

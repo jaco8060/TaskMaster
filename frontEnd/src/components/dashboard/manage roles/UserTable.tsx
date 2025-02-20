@@ -1,9 +1,9 @@
 // frontEnd/src/components/dashboard/manage roles/UserTable.tsx
 import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
+import Toast from "react-bootstrap/Toast";
 import { AuthContext } from "../../../contexts/AuthProvider";
 import DataTable from "../../../hooks/DataTable";
-import Toast from "react-bootstrap/Toast";
 
 interface UserTableProps {
   refresh: boolean;
@@ -19,7 +19,7 @@ interface User {
 const UserTable: React.FC<UserTableProps> = ({ refresh }) => {
   const { user } = useContext(AuthContext) as { user: User };
   const [members, setMembers] = useState<any[]>([]);
-  
+
   // Simplified columns without actions
   const columns = [
     { header: "Username", accessor: "username" },

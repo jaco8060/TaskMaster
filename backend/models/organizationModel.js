@@ -21,7 +21,13 @@ export const getOrganizationById = async (orgId) => {
 
 export const searchOrganizations = async (searchTerm) => {
   const result = await pool.query(
-    "SELECT * FROM organizations WHERE name ILIKE $1",
+    `SELECT 
+      o.*,
+      COUNT(om.user_id) FILTER (WHERE om.status = 'approved') as member_count
+     FROM organizations o
+     LEFT JOIN organization_members om ON o.id = om.organization_id
+     WHERE o.name ILIKE $1
+     GROUP BY o.id`,
     [`%${searchTerm}%`]
   );
   return result.rows;
