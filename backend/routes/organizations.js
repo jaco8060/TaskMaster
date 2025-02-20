@@ -11,7 +11,6 @@ import {
   handleSearchOrganizations,
   handleGetOrganizationStatus,
   handleCancelJoinRequest,
-  handleJoinWithCode,
 } from "../controllers/organizationController.js";
 import { ensureAuthenticated } from "../middleware/authMiddleware.js";
 

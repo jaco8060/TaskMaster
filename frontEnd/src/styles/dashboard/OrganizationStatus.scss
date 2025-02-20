@@ -6,23 +6,37 @@
   .spinner {
     width: 100%;
     height: 100%;
+    position: relative;
     
-    circle {
-      stroke: #0d6efd;
-      stroke-linecap: round;
-      transform-origin: 50% 50%;
-      animation: spin 1.5s linear infinite, color-change 3s ease-in-out infinite;
+    // Animated background circle (removed rotation)
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      animation: colorChange 3s ease-in-out infinite;
+    }
+
+    // Larger SVG container
+    img {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 75%;
+      height: 75%;
+      z-index: 1;
+      transform: translate(-50%, -50%);
     }
   }
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-@keyframes color-change {
-  0% { stroke: #F3BC43; }
-  50% { stroke: #16253B; }
-  100% { stroke: #F3BC43; }
+// Keep color animation but remove spin animation
+@keyframes colorChange {
+  0% { background: #F3BC43; }
+  33% { background: #FF9F1C; }
+  66% { background: #E85D04; }
+  100% { background: #F3BC43; }
 } 

@@ -4,7 +4,7 @@ import { Button, Card, Container, Spinner, Toast } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import OrganizationSearch from "./OrganizationSearch.tsx";
 import  "../../styles/dashboard/OrganizationStatus.scss";
-
+import TaskmasterLogo from '../../assets/taskmaster-logo-animation.svg';
 interface OrganizationStatusProps {
   userId: number;
 }
@@ -61,9 +61,9 @@ const OrganizationStatus: React.FC<OrganizationStatusProps> = ({ userId }) => {
     return (
       <Container className="d-flex flex-column justify-content-center align-items-center vh-100">
         <div className="loading-animation">
-          <svg viewBox="0 0 100 100" className="spinner">
-            <circle cx="50" cy="50" r="45" strokeWidth="8" fill="none" />
-          </svg>
+          <div className="spinner">
+            <img src={TaskmasterLogo} alt="Loading animation" />
+          </div>
         </div>
         <h3 className="mt-4">Waiting for Organization Approval</h3>
         <p className="text-muted">
