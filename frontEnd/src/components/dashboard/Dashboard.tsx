@@ -285,7 +285,7 @@ const Dashboard: React.FC = () => {
             <Col md={6}>
               <Card>
                 <Card.Body>
-                  <Card.Title>Priority Distribution</Card.Title>
+                  <Card.Title>Ticket Priority Distribution</Card.Title>
                   <ResponsiveContainer width="100%" height={300}>
                     <PieChart>
                       <Pie

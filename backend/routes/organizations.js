@@ -8,6 +8,7 @@ import {
   handleProcessJoinRequest,
   handleRequestJoinOrganization,
   handleSearchOrganizations,
+  handleRemoveOrganizationMember,
 } from "../controllers/organizationController.js";
 import { ensureAuthenticated } from "../middleware/authMiddleware.js";
 
@@ -42,6 +43,12 @@ organizationRouter.post(
   "/process-request",
   ensureAuthenticated,
   handleProcessJoinRequest
+);
+
+organizationRouter.delete(
+  "/:orgId/members/:userId",
+  ensureAuthenticated,
+  handleRemoveOrganizationMember
 );
 
 export default organizationRouter;

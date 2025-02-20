@@ -1,7 +1,7 @@
 // frontEnd/src/components/dashboard/MyOrganization.tsx
 import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
-import { Alert, Button, Container, Spinner, Toast } from "react-bootstrap";
+import { Alert, Button, Container, Spinner, Toast, Modal } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { AuthContext, AuthContextType } from "../../contexts/AuthProvider";
 import DataTable from "../../hooks/DataTable";
@@ -21,6 +21,9 @@ const MyOrganization: React.FC = () => {
     "success" | "danger"
   >("success");
   const { user } = useContext(AuthContext) as AuthContextType;
+  const [showRemoveModal, setShowRemoveModal] = useState(false);
+  const [selectedMember, setSelectedMember] = useState<any>(null);
+  const disabledUsernames = ["demo_admin", "demo_sub", "demo_dev", "demo_pm"];
 
   // Fetch organization data for the logged-in user.
   const fetchOrganization = async () => {
@@ -101,6 +104,36 @@ const MyOrganization: React.FC = () => {
     }
   };
 
+  const handleRemoveMember = async () => {
+    if (!selectedMember || !organization) return;
+    
+    try {
+      // Check against local member data instead of API call
+      if (disabledUsernames.includes(selectedMember.username)) {
+        setRequestToastVariant("danger");
+        setRequestToastMessage("Cannot remove demo/test accounts");
+        setShowRequestToast(true);
+        return;
+      }
+
+      await axios.delete(
+        `${import.meta.env.VITE_URL}/organizations/${organization.id}/members/${selectedMember.id}`,
+        { withCredentials: true }
+      );
+      
+      await fetchOrganization(); // Refresh the list
+      setShowRemoveModal(false);
+      setRequestToastVariant("success");
+      setRequestToastMessage("Member removed successfully");
+      setShowRequestToast(true);
+    } catch (error) {
+      console.error("Error removing member:", error);
+      setRequestToastVariant("danger");
+      setRequestToastMessage("Failed to remove member");
+      setShowRequestToast(true);
+    }
+  };
+
   if (loading) {
     return (
       <MainNav>
@@ -137,8 +170,31 @@ const MyOrganization: React.FC = () => {
                 { header: "Username", accessor: "username" },
                 { header: "Email", accessor: "email" },
                 { header: "Role", accessor: "role" },
+                { header: "", accessor: "actions", sortable: false },
               ]}
               searchFields={["username", "email", "role"]}
+              renderCell={(item: any, accessor: string) => {
+                if (accessor === "actions" && user?.role === "admin") {
+                  const isDisabled = disabledUsernames.includes(item.username);
+                  return (
+                    <div className="d-flex justify-content-end">
+                      {!isDisabled && (
+                        <Button
+                          variant="danger"
+                          size="sm"
+                          onClick={() => {
+                            setSelectedMember(item);
+                            setShowRemoveModal(true);
+                          }}
+                        >
+                          Remove
+                        </Button>
+                      )}
+                    </div>
+                  );
+                }
+                return item[accessor];
+              }}
             />
             {user?.role === "admin" && pendingRequests.length > 0 && (
               <>
@@ -228,6 +284,22 @@ const MyOrganization: React.FC = () => {
           </Toast.Header>
           <Toast.Body className="text-white">{requestToastMessage}</Toast.Body>
         </Toast>
+        <Modal show={showRemoveModal} onHide={() => setShowRemoveModal(false)}>
+          <Modal.Header closeButton>
+            <Modal.Title>Confirm Removal</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            Are you sure you want to remove <strong>{selectedMember?.username}</strong> from the organization?
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => setShowRemoveModal(false)}>
+              Cancel
+            </Button>
+            <Button variant="danger" onClick={handleRemoveMember}>
+              Remove Member
+            </Button>
+          </Modal.Footer>
+        </Modal>
       </Container>
     </MainNav>
   );

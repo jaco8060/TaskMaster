@@ -223,3 +223,24 @@ export const handleGetPendingRequests = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch pending requests" });
   }
 };
+
+export const handleRemoveOrganizationMember = async (req, res) => {
+  const { orgId, userId } = req.params;
+  
+  try {
+    const organization = await getOrganizationById(orgId);
+    if (!organization || organization.admin_id !== req.user.id) {
+      return res.status(403).json({ error: "Unauthorized" });
+    }
+
+    await pool.query(
+      "DELETE FROM organization_members WHERE organization_id = $1 AND user_id = $2",
+      [orgId, userId]
+    );
+
+    res.status(200).json({ message: "Member removed successfully" });
+  } catch (error) {
+    console.error("Error removing member:", error);
+    res.status(500).json({ error: "Failed to remove member" });
+  }
+};
