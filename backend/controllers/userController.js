@@ -54,7 +54,7 @@ export const handleRemoveRoleAssignment = async (req, res) => {
   const userId = req.params.userId;
   try {
     const result = await pool.query(
-      "UPDATE users SET role = 'user', assigned_by = NULL WHERE id = $1 RETURNING *",
+      "UPDATE users SET role = 'submitter', assigned_by = NULL WHERE id = $1 RETURNING *",
       [userId]
     );
     if (result.rowCount === 0) {
