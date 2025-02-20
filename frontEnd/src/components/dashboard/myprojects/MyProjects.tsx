@@ -1,7 +1,15 @@
 import axios from "axios";
 import { format } from "date-fns";
 import React, { useContext, useState } from "react";
-import { Button, Col, Container, Form, Modal, Row, Toast } from "react-bootstrap";
+import {
+  Button,
+  Col,
+  Container,
+  Form,
+  Modal,
+  Row,
+  Toast,
+} from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../../contexts/AuthProvider";
 import DataTable from "../../../hooks/DataTable";
@@ -59,7 +67,9 @@ const MyProjects: React.FC = () => {
   const [refresh, setRefresh] = useState<boolean>(false); // State to handle refresh
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
-  const [toastVariant, setToastVariant] = useState<"success"|"danger">("success");
+  const [toastVariant, setToastVariant] = useState<"success" | "danger">(
+    "success"
+  );
 
   const handleShowModal = () => setShowModal(true);
   const handleCloseModal = () => setShowModal(false);

@@ -48,7 +48,7 @@ const AssignUserRole: React.FC<AssignUserRoleProps> = ({ onRoleAssigned }) => {
         roleSelection={true}
         disabledUsernames={user?.username === "demo_admin" ? demoUsernames : []}
       />
-      <Toast 
+      <Toast
         onClose={() => setShowToast(false)}
         show={showToast}
         delay={3000}

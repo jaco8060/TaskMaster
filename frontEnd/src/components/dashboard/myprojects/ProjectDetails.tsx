@@ -52,7 +52,9 @@ const ProjectDetails: React.FC = () => {
   const [isActive, setIsActive] = useState<boolean>(true);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
-  const [toastVariant, setToastVariant] = useState<"success"|"danger">("success");
+  const [toastVariant, setToastVariant] = useState<"success" | "danger">(
+    "success"
+  );
 
   useEffect(() => {
     const fetchProjectDetails = async () => {

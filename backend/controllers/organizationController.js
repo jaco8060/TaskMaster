@@ -1,5 +1,6 @@
 // backend/controllers/organizationController.js
 
+import { pool } from "../database.js";
 import { createNotification } from "../models/notificationModel.js";
 import {
   addOrganizationMember,
@@ -10,7 +11,6 @@ import {
   requestOrganizationJoin,
   searchOrganizations,
 } from "../models/organizationModel.js";
-import { pool } from "../database.js";
 // Create a new organization; auto–add the creator as approved member
 export const handleCreateOrganization = async (req, res) => {
   const { name } = req.body;
@@ -49,11 +49,15 @@ export const handleJoinOrganizationWithCode = async (req, res) => {
     if (!organization) {
       return res.status(404).json({ error: "Organization not found" });
     }
-    
+
     // Fix the date comparison
-    if (organization.org_code !== org_code || 
-        organization.code_expiration < new Date()) {
-      return res.status(400).json({ error: "Invalid or expired organization code" });
+    if (
+      organization.org_code !== org_code ||
+      organization.code_expiration < new Date()
+    ) {
+      return res
+        .status(400)
+        .json({ error: "Invalid or expired organization code" });
     }
     // Add user as approved member
     const membership = await addOrganizationMember(
@@ -148,20 +152,20 @@ export const handleProcessJoinRequest = async (req, res) => {
 
     const client = await pool.connect();
     try {
-      await client.query('BEGIN');
-      
+      await client.query("BEGIN");
+
       if (status_lower === "approved") {
         // Update member status to approved
         const updateResult = await client.query(
           `UPDATE organization_members 
            SET status = 'approved', approved_at = NOW() 
            WHERE user_id = $1 AND organization_id = $2
-           RETURNING *`,  // Removed status check to handle any state
+           RETURNING *`, // Removed status check to handle any state
           [user_id_int, organization_id_int]
         );
-        
+
         if (updateResult.rowCount === 0) {
-          await client.query('ROLLBACK');
+          await client.query("ROLLBACK");
           return res.status(404).json({ error: "Member record not found" });
         }
 
@@ -179,15 +183,15 @@ export const handleProcessJoinRequest = async (req, res) => {
            RETURNING *`,
           [user_id_int, organization_id_int]
         );
-        
+
         if (updateResult.rowCount === 0) {
-          await client.query('ROLLBACK');
+          await client.query("ROLLBACK");
           return res.status(404).json({ error: "Member record not found" });
         }
       }
 
-      await client.query('COMMIT');
-      
+      await client.query("COMMIT");
+
       // Notify user
       await createNotification(
         user_id_int,
@@ -196,7 +200,7 @@ export const handleProcessJoinRequest = async (req, res) => {
 
       res.status(200).json({ message: `Request ${status_lower}` });
     } catch (error) {
-      await client.query('ROLLBACK');
+      await client.query("ROLLBACK");
       console.error("Transaction error:", error);
       throw error;
     } finally {
@@ -226,7 +230,7 @@ export const handleGetPendingRequests = async (req, res) => {
 
 export const handleRemoveOrganizationMember = async (req, res) => {
   const { orgId, userId } = req.params;
-  
+
   try {
     const organization = await getOrganizationById(orgId);
     if (!organization || organization.admin_id !== req.user.id) {

@@ -41,7 +41,9 @@ const MyTickets: React.FC = () => {
   const [refresh, setRefresh] = useState<boolean>(false);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
-  const [toastVariant, setToastVariant] = useState<"success"|"danger">("success");
+  const [toastVariant, setToastVariant] = useState<"success" | "danger">(
+    "success"
+  );
   const navigate = useNavigate(); // Hook to navigate between routes
 
   const fetchProjects = async () => {

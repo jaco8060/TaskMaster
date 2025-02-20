@@ -6,9 +6,9 @@ import {
   handleGetPendingRequests,
   handleJoinOrganizationWithCode,
   handleProcessJoinRequest,
+  handleRemoveOrganizationMember,
   handleRequestJoinOrganization,
   handleSearchOrganizations,
-  handleRemoveOrganizationMember,
 } from "../controllers/organizationController.js";
 import { ensureAuthenticated } from "../middleware/authMiddleware.js";
 

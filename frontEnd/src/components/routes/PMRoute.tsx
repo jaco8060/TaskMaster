@@ -1,13 +1,14 @@
 import { useContext } from "react";
-import { Toast } from "react-bootstrap";
+import { Container, Spinner, Toast } from "react-bootstrap";
 import { Navigate, Outlet } from "react-router-dom";
 import { AuthContext, AuthContextType } from "../../contexts/AuthProvider"; // Ensure AuthContextType is imported
-
 const PMRoute: React.FC = () => {
   const { user, loading } = useContext(AuthContext) as AuthContextType; // Cast the context with proper type
 
   if (loading) {
-    return <div>Loading...</div>;
+    <Container className="mt-5 text-center">
+      <Spinner animation="border" variant="primary" />
+    </Container>;
   }
 
   if (user && (user.role === "pm" || user.role === "admin")) {

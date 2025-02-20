@@ -1,7 +1,14 @@
 // frontEnd/src/components/dashboard/MyOrganization.tsx
 import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
-import { Alert, Button, Container, Spinner, Toast, Modal } from "react-bootstrap";
+import {
+  Alert,
+  Button,
+  Container,
+  Modal,
+  Spinner,
+  Toast,
+} from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { AuthContext, AuthContextType } from "../../contexts/AuthProvider";
 import DataTable from "../../hooks/DataTable";
@@ -48,7 +55,9 @@ const MyOrganization: React.FC = () => {
     if (organization && user?.role === "admin") {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_URL}/organizations/${organization.id}/pending-requests`,
+          `${import.meta.env.VITE_URL}/organizations/${
+            organization.id
+          }/pending-requests`,
           { withCredentials: true }
         );
         setPendingRequests(response.data);
@@ -84,7 +93,7 @@ const MyOrganization: React.FC = () => {
         {
           user_id: userId,
           organization_id: organization?.id,
-          status: action === "approve" ? "approved" : "rejected"
+          status: action === "approve" ? "approved" : "rejected",
         },
         { withCredentials: true }
       );
@@ -106,7 +115,7 @@ const MyOrganization: React.FC = () => {
 
   const handleRemoveMember = async () => {
     if (!selectedMember || !organization) return;
-    
+
     try {
       // Check against local member data instead of API call
       if (disabledUsernames.includes(selectedMember.username)) {
@@ -117,10 +126,12 @@ const MyOrganization: React.FC = () => {
       }
 
       await axios.delete(
-        `${import.meta.env.VITE_URL}/organizations/${organization.id}/members/${selectedMember.id}`,
+        `${import.meta.env.VITE_URL}/organizations/${organization.id}/members/${
+          selectedMember.id
+        }`,
         { withCredentials: true }
       );
-      
+
       await fetchOrganization(); // Refresh the list
       setShowRemoveModal(false);
       setRequestToastVariant("success");
@@ -289,10 +300,14 @@ const MyOrganization: React.FC = () => {
             <Modal.Title>Confirm Removal</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            Are you sure you want to remove <strong>{selectedMember?.username}</strong> from the organization?
+            Are you sure you want to remove{" "}
+            <strong>{selectedMember?.username}</strong> from the organization?
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="secondary" onClick={() => setShowRemoveModal(false)}>
+            <Button
+              variant="secondary"
+              onClick={() => setShowRemoveModal(false)}
+            >
               Cancel
             </Button>
             <Button variant="danger" onClick={handleRemoveMember}>
