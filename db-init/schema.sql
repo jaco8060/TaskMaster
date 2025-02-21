@@ -1,3 +1,6 @@
+-- Create pg_cron extension if it doesn't already exist
+CREATE EXTENSION IF NOT EXISTS pg_cron;
+
 -- Create organizations table without foreign key
 CREATE TABLE IF NOT EXISTS organizations (
     id SERIAL PRIMARY KEY,
@@ -146,3 +149,10 @@ CREATE TABLE IF NOT EXISTS organization_members (
 -- Create indexes
 CREATE INDEX IF NOT EXISTS idx_organization_members_user ON organization_members(user_id);
 CREATE INDEX IF NOT EXISTS idx_projects_org ON projects(organization_id);
+
+-- Schedule a job to update org_code every minute
+SELECT cron.schedule('update_org_codes', '* * * * *', $$
+  UPDATE organizations
+  SET org_code = substring(gen_random_uuid()::text, 1, 20),
+      code_expiration = NOW() + INTERVAL '1 minute' * (1 + random());
+$$);
