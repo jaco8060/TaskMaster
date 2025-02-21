@@ -11,6 +11,7 @@ import {
   handleSearchOrganizations,
   handleGetOrganizationStatus,
   handleCancelJoinRequest,
+  handleValidateOrgCode,
 } from "../controllers/organizationController.js";
 import { ensureAuthenticated } from "../middleware/authMiddleware.js";
 
@@ -56,5 +57,9 @@ organizationRouter.delete(
 organizationRouter.get('/status', ensureAuthenticated, handleGetOrganizationStatus);
 organizationRouter.delete('/cancel-request', ensureAuthenticated, handleCancelJoinRequest);
 
+organizationRouter.get(
+  "/validate-code/:code",
+  handleValidateOrgCode
+);
 
 export default organizationRouter;

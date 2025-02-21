@@ -279,6 +279,19 @@ const RegisterWithOrganization: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step]);
 
+  const validateOrgCode = async (code: string): Promise<boolean> => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_URL}/organizations/validate-code/${code}`,
+        { withCredentials: true }
+      );
+      return response.data.valid;
+    } catch (error) {
+      console.error("Error validating organization code:", error);
+      return false;
+    }
+  };
+
   // --- Render Step Content ---
   const getStepContent = () => {
     switch (step) {
@@ -464,7 +477,21 @@ const RegisterWithOrganization: React.FC = () => {
               <Button variant="link" onClick={() => setStep(3)}>
                 Back
               </Button>
-              <Button onClick={() => setStep(7)}>Submit Registration</Button>
+              <Button 
+                onClick={async () => {
+                  const isValid = await validateOrgCode(orgJoinInfo.org_code);
+                  if (isValid) {
+                    setStep(7);
+                  } else {
+                    setMessage({
+                      type: "error",
+                      content: "Invalid organization code. Please check and try again.",
+                    });
+                  }
+                }}
+              >
+                Submit Registration
+              </Button>
             </div>
           </div>
         );

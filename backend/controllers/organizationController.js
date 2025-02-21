@@ -289,3 +289,19 @@ export const handleCancelJoinRequest = async (req, res) => {
   }
 };
 
+export const handleValidateOrgCode = async (req, res) => {
+  const { code } = req.params;
+  try {
+    const result = await pool.query(
+      "SELECT * FROM organizations WHERE org_code = $1",
+      [code]
+    );
+    
+    const isValid = result.rows.length > 0;
+    res.json({ valid: isValid });
+  } catch (error) {
+    console.error("Error validating organization code:", error);
+    res.status(500).json({ error: "Failed to validate organization code" });
+  }
+};
+
