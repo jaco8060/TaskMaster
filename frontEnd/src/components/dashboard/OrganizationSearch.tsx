@@ -76,15 +76,28 @@ const OrganizationSearch: React.FC<OrganizationSearchProps> = ({
     return () => clearTimeout(delayDebounceFn);
   }, [searchTerm, joinMethod]);
 
-  const handleJoinWithCode = async () => {
+  const handleJoinWithCode = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
+      // First cancel any existing pending requests
+      await axios.delete(
+        `${import.meta.env.VITE_URL}/organizations/cancel-request`,
+        { withCredentials: true }
+      );
+
+      // Fix the endpoint URL to match the backend route
       const response = await axios.post(
-        `${import.meta.env.VITE_URL}/organizations/join-with-code`,
+        `${import.meta.env.VITE_URL}/organizations/join-code`,
         { org_code: orgJoinInfo.org_code },
         { withCredentials: true }
       );
 
       if (response.data.organization_id) {
+        setToast({
+          show: true,
+          message: "Successfully joined organization",
+          variant: "success",
+        });
         onJoinSuccess();
       }
     } catch (error) {
@@ -103,6 +116,13 @@ const OrganizationSearch: React.FC<OrganizationSearchProps> = ({
     
     setIsSubmitting(true);
     try {
+      // First cancel any existing pending requests
+      await axios.delete(
+        `${import.meta.env.VITE_URL}/organizations/cancel-request`,
+        { withCredentials: true }
+      );
+
+      // Then submit the new join request
       const response = await axios.post(
         `${import.meta.env.VITE_URL}/organizations/request-join`,
         { organization_id: organizationId },
@@ -122,10 +142,12 @@ const OrganizationSearch: React.FC<OrganizationSearchProps> = ({
       );
       setSelectedOrg(null);
 
+      onJoinSuccess();
+
     } catch (error) {
       setToast({
         show: true,
-        message: axios.isAxiosError(error) 
+        message: axios.isAxiosError(error)
           ? error.response?.data?.error || "Error submitting join request"
           : "Error submitting join request",
         variant: "danger",
@@ -163,7 +185,7 @@ const OrganizationSearch: React.FC<OrganizationSearchProps> = ({
         unmountOnExit
       >
         <div className="step-content">
-          <h3>Join with Invite Code</h3>
+          <h3>Join with Code</h3>
           <Form onSubmit={handleJoinWithCode}>
             <Form.Group className="mb-3">
               <Form.Label>Organization Code</Form.Label>
@@ -174,6 +196,7 @@ const OrganizationSearch: React.FC<OrganizationSearchProps> = ({
                 onChange={(e) =>
                   setOrgJoinInfo({ ...orgJoinInfo, org_code: e.target.value })
                 }
+                required
               />
             </Form.Group>
             <div className="d-flex justify-content-between">

@@ -4,7 +4,7 @@ import {
   handleCreateOrganization,
   handleGetMyOrganization,
   handleGetPendingRequests,
-  handleJoinOrganizationWithCode,
+  handleJoinWithCode,
   handleProcessJoinRequest,
   handleRemoveOrganizationMember,
   handleRequestJoinOrganization,
@@ -24,7 +24,7 @@ organizationRouter.post(
 organizationRouter.post(
   "/join-code",
   ensureAuthenticated,
-  handleJoinOrganizationWithCode
+  handleJoinWithCode
 );
 organizationRouter.get("/search", handleSearchOrganizations);
 organizationRouter.post(

@@ -10,6 +10,7 @@ import {
   getPendingJoinRequests,
   requestOrganizationJoin,
   searchOrganizations,
+  getOrganizationByCode,
 } from "../models/organizationModel.js";
 // Create a new organization; auto–add the creator as approved member
 export const handleCreateOrganization = async (req, res) => {
@@ -41,37 +42,39 @@ export const handleGetMyOrganization = async (req, res) => {
   }
 };
 // Join an organization using a code
-export const handleJoinOrganizationWithCode = async (req, res) => {
-  const { organization_id, org_code } = req.body;
+export const handleJoinWithCode = async (req, res) => {
+  const { org_code } = req.body;
   const user_id = req.user.id;
+
   try {
-    const organization = await getOrganizationById(organization_id);
+    // First, verify the code and get organization
+    const organization = await getOrganizationByCode(org_code);
+    
     if (!organization) {
-      return res.status(404).json({ error: "Organization not found" });
+      return res.status(404).json({ error: "Invalid organization code" });
     }
 
-    // Fix the date comparison
-    if (
-      organization.org_code !== org_code ||
-      organization.code_expiration < new Date()
-    ) {
-      return res
-        .status(400)
-        .json({ error: "Invalid or expired organization code" });
+    // Check if code is expired
+    if (new Date() > new Date(organization.code_expiry)) {
+      return res.status(400).json({ error: "Organization code has expired" });
     }
-    // Add user as approved member
-    const membership = await addOrganizationMember(
-      user_id,
-      organization_id,
-      "approved"
-    );
-    await createNotification(
-      organization.admin_id,
-      `User ${req.user.username} joined your organization.`
-    );
-    res
-      .status(200)
-      .json({ message: "Joined organization successfully", membership });
+
+    // Add member to organization with explicit 'approved' status
+    const membership = await addOrganizationMember(user_id, organization.id, 'approved');
+
+    // Create notification for organization admin
+    if (organization.admin_id) {
+      await createNotification(
+        organization.admin_id,
+        `User ${req.user.username} has joined your organization using an invite code.`
+      );
+    }
+
+    res.json({ 
+      message: "Successfully joined organization",
+      organization_id: organization.id 
+    });
+
   } catch (error) {
     console.error("Error joining organization:", error);
     res.status(500).json({ error: "Failed to join organization" });
