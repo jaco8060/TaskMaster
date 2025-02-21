@@ -3,6 +3,7 @@ import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
 import {
   Alert,
+  Badge,
   Button,
   Container,
   Modal,
@@ -167,8 +168,8 @@ const MyOrganization: React.FC = () => {
         {organization ? (
           <>
             <h4>{organization.name}</h4>
-            <p>
-              <strong>Invite Code:</strong> {organization.org_code}
+            <p className="fs-5">
+              <strong>Invite Code:</strong> <Badge bg="success" className="fs-5">{organization.org_code}</Badge>
             </p>
             <Button variant="outline-primary" onClick={handleCopyCode}>
               Copy Invite Code
