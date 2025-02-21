@@ -12,30 +12,67 @@ export const seedUsers = async () => {
   ];
 
   try {
+    // Create Demo Inc. organization FIRST
+    const orgCheck = await pool.query("SELECT * FROM organizations WHERE id = 1");
+    if (orgCheck.rows.length === 0) {
+      await pool.query(
+        `INSERT INTO organizations (id, name) 
+         VALUES (1, 'Demo Inc.')`
+      );
+      console.log("Organization Demo Inc. created");
+    }
+
+    // Seed users with organization_id = 1
     for (const user of users) {
-      // Check if the user already exists
       const res = await pool.query("SELECT * FROM users WHERE username = $1", [
         user.username,
       ]);
 
       if (res.rows.length === 0) {
-        // Hash the password
         const hashedPassword = await bcrypt.hash(user.password, 10);
-
-        // Insert the user into the database
         await pool.query(
-          "INSERT INTO users (username, email, password, role) VALUES ($1, $2, $3, $4)",
+          `INSERT INTO users 
+            (username, email, password, role, organization_id) 
+           VALUES ($1, $2, $3, $4, $5)`,
           [
             user.username,
             `${user.username}@example.com`,
             hashedPassword,
             user.role,
+            1, // Set organization_id to 1 for all seed users
           ]
         );
-
         console.log(`User ${user.username} created.`);
-      } else {
-        console.log(`User ${user.username} already exists.`);
+      }
+    }
+
+    // Now set the admin_id after users are created
+    await pool.query(
+      `UPDATE organizations SET admin_id = 4 WHERE id = 1`
+    );
+    console.log("Set admin_id for Demo Inc.");
+
+    // Add organization members
+    const membersToAdd = [
+      { user_id: 1 },  // demo_sub
+      { user_id: 2 },  // demo_dev
+      { user_id: 3 },  // demo_pm
+      { user_id: 4 },   // demo_admin
+    ];
+
+    for (const member of membersToAdd) {
+      const memberCheck = await pool.query(
+        "SELECT * FROM organization_members WHERE organization_id = 1 AND user_id = $1",
+        [member.user_id]
+      );
+      if (memberCheck.rows.length === 0) {
+        await pool.query(
+          `INSERT INTO organization_members 
+          (organization_id, user_id, status) 
+          VALUES (1, $1, 'approved')`,
+          [member.user_id]
+        );
+        console.log(`Added user ${member.user_id} to organization members`);
       }
     }
 
@@ -43,8 +80,6 @@ export const seedUsers = async () => {
   } catch (error) {
     console.error("Error seeding users:", error);
   }
-  // Do not call pool.end() here
 };
 
-// Export the function if not already exported
 export default seedUsers;
