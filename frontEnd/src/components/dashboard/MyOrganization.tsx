@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext, AuthContextType } from "../../contexts/AuthProvider";
 import DataTable from "../../hooks/DataTable";
 import { MainNav } from "./NavBars";
+import { format } from "date-fns";
 
 const MyOrganization: React.FC = () => {
   const [organization, setOrganization] = useState<any>(null);
@@ -216,14 +217,18 @@ const MyOrganization: React.FC = () => {
                   columns={[
                     { header: "Username", accessor: "username" },
                     { header: "Email", accessor: "email" },
-                    { header: "Requested At", accessor: "requested_at" },
-                    { header: "Actions", accessor: "actions", sortable: false },
+                    { 
+                      header: "Requested At", 
+                      accessor: "requested_at",
+                      type: "date"
+                    },
+                    { header: "", accessor: "actions", sortable: false },
                   ]}
                   searchFields={["username", "email"]}
                   renderCell={(item: any, accessor: string) => {
                     if (accessor === "actions") {
                       return (
-                        <div className="d-flex gap-2">
+                        <div className="d-flex gap-2 justify-content-end">
                           <Button
                             variant="success"
                             size="sm"
@@ -244,6 +249,9 @@ const MyOrganization: React.FC = () => {
                           </Button>
                         </div>
                       );
+                    }
+                    if (accessor === "requested_at") {
+                      return format(new Date(item[accessor]), "MMMM d, yyyy h:mm a");
                     }
                     return item[accessor];
                   }}
