@@ -31,8 +31,10 @@ const OrganizationStatus: React.FC<OrganizationStatusProps> = ({ userId }) => {
         setLoading(false);
       }
     };
+    
+    // Check status whenever userId changes or component mounts
     checkStatus();
-  }, [userId]);
+  }, [userId]); // Add userId to dependency array
 
   const handleCancelRequest = async () => {
     try {

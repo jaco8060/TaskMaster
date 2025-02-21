@@ -40,6 +40,7 @@ const OrganizationSearch: React.FC<OrganizationSearchProps> = ({
     message: "",
     variant: "success",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const searchOrganizations = async () => {
     setLoadingSearch(true);
@@ -98,24 +99,39 @@ const OrganizationSearch: React.FC<OrganizationSearchProps> = ({
   };
 
   const handleRequestJoin = async (organizationId: number) => {
+    if (!selectedOrg || isSubmitting) return;
+    
+    setIsSubmitting(true);
     try {
-      await axios.post(
+      const response = await axios.post(
         `${import.meta.env.VITE_URL}/organizations/request-join`,
         { organization_id: organizationId },
         { withCredentials: true }
       );
+
       setToast({
         show: true,
         message: "Join request submitted successfully",
         variant: "success",
       });
-      setSelectedOrg(organizationId);
+      
+      setSearchResults(results => 
+        results.map(org => 
+          org.id === organizationId ? {...org, hasPendingRequest: true} : org
+        )
+      );
+      setSelectedOrg(null);
+
     } catch (error) {
       setToast({
         show: true,
-        message: "Error submitting join request",
+        message: axios.isAxiosError(error) 
+          ? error.response?.data?.error || "Error submitting join request"
+          : "Error submitting join request",
         variant: "danger",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -211,7 +227,9 @@ const OrganizationSearch: React.FC<OrganizationSearchProps> = ({
                       </small>
                     </div>
                     {selectedOrg === org.id && (
-                      <span className="badge bg-success">Selected</span>
+                      <span className="badge bg-success">
+                        {org.hasPendingRequest ? "Pending Approval" : "Selected"}
+                      </span>
                     )}
                   </Card.Body>
                 </Card>
@@ -226,9 +244,9 @@ const OrganizationSearch: React.FC<OrganizationSearchProps> = ({
             <Button
               variant="primary"
               onClick={() => selectedOrg && handleRequestJoin(selectedOrg)}
-              disabled={!selectedOrg}
+              disabled={!selectedOrg || isSubmitting}
             >
-              Request to Join
+              {isSubmitting ? <Spinner size="sm" /> : "Request to Join"}
             </Button>
           </div>
         </div>

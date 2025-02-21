@@ -49,19 +49,39 @@ export const handleRegister = async (req, res) => {
       user.organization_id = organization.id;
     }
     // 2. Join with Code Flow
-    else if (organization_id && org_code) {
-      const organization = await getOrganizationById(organization_id);
-      if (
-        !organization ||
-        organization.org_code !== org_code ||
-        new Date(organization.code_expiration) < new Date()
-      ) {
-        return res
-          .status(400)
-          .json({ error: "Invalid or expired organization code" });
+    else if (org_code) {
+      try {
+        // First get organization by code to find the ID
+        const orgByCode = await pool.query(
+          "SELECT * FROM organizations WHERE org_code = $1",
+          [org_code]
+        );
+        
+        if (orgByCode.rows.length === 0) {
+          return res.status(400).json({ error: "Invalid organization code" });
+        }
+        
+        const organization = orgByCode.rows[0];
+        const organization_id = organization.id;
+
+        // Then validate using the found ID
+        // if (new Date(organization.code_expiration) < new Date()) {
+        //   return res.status(400).json({ error: "Organization code has expired" });
+        // }
+
+        // Add as approved member using the organization ID
+        await addOrganizationMember(user.id, organization_id, "approved");
+        
+        // Update user's organization reference
+        await pool.query(
+          "UPDATE users SET organization_id = $1 WHERE id = $2",
+          [organization_id, user.id]
+        );
+
+      } catch (error) {
+        console.error("Error processing organization code:", error);
+        return res.status(500).json({ error: "Failed to process organization code" });
       }
-      await addOrganizationMember(user.id, organization_id, "approved");
-      user.organization_id = organization_id;
     }
     // 3. Request to Join Flow
     else if (organization_id && requestJoin) {

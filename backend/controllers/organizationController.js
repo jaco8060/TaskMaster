@@ -94,9 +94,11 @@ export const handleSearchOrganizations = async (req, res) => {
 export const handleRequestJoinOrganization = async (req, res) => {
   const { organization_id } = req.body;
   const user_id = req.user.id;
+  
   try {
     const membership = await requestOrganizationJoin(user_id, organization_id);
     const organization = await getOrganizationById(organization_id);
+    
     if (organization) {
       await createNotification(
         organization.admin_id,
@@ -104,7 +106,11 @@ export const handleRequestJoinOrganization = async (req, res) => {
       );
     }
     res.status(200).json({ message: "Join request submitted", membership });
+    
   } catch (error) {
+    if (error.message.includes('already exists')) {
+      return res.status(409).json({ error: error.message });
+    }
     console.error("Error requesting to join organization:", error);
     res.status(500).json({ error: "Failed to request joining organization" });
   }

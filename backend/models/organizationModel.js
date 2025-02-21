@@ -51,8 +51,21 @@ export const addOrganizationMember = async (
 };
 
 export const requestOrganizationJoin = async (user_id, organization_id) => {
+  // Check for existing pending request
+  const existing = await pool.query(
+    `SELECT id FROM organization_members 
+     WHERE user_id = $1 AND organization_id = $2 AND status = 'pending'`,
+    [user_id, organization_id]
+  );
+
+  if (existing.rows.length > 0) {
+    throw new Error('Join request already exists');
+  }
+
   const result = await pool.query(
-    "INSERT INTO organization_members (user_id, organization_id, status) VALUES ($1, $2, 'pending') RETURNING *",
+    `INSERT INTO organization_members (user_id, organization_id, status) 
+     VALUES ($1, $2, 'pending')
+     RETURNING *`,
     [user_id, organization_id]
   );
   return result.rows[0];

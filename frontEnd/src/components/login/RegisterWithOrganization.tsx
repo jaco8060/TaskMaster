@@ -234,7 +234,6 @@ const RegisterWithOrganization: React.FC = () => {
 
       // Set organization parameters based on join method
       if (joinMethod === "code") {
-        registrationData.organization_id = orgJoinInfo.organization_id;
         registrationData.org_code = orgJoinInfo.org_code;
       } else if (joinMethod === "search" && selectedOrg) {
         registrationData.organization_id = selectedOrg.id;

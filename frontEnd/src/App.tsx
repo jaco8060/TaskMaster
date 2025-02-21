@@ -1,7 +1,7 @@
 // frontEnd/src/App.tsx
 import React, { useContext, useState, useEffect } from "react";
 import { ToastContainer, Spinner } from "react-bootstrap";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import "./color-theme.scss";
 import Dashboard from "./components/dashboard/Dashboard";
 import ManageRoles from "./components/dashboard/manage roles/ManageRoles";
@@ -67,6 +67,7 @@ const OrganizationStatusWrapper: React.FC<{ children: React.ReactNode }> = ({ ch
   const { user } = useContext(AuthContext) as AuthContextType;
   const [orgStatus, setOrgStatus] = useState<'approved' | 'pending' | 'rejected' | 'none'>('none');
   const [loading, setLoading] = useState(true);
+  const location = useLocation();
 
   useEffect(() => {
     const checkStatus = async () => {
@@ -82,13 +83,8 @@ const OrganizationStatusWrapper: React.FC<{ children: React.ReactNode }> = ({ ch
       }
     };
     
-    if (user?.organization_id) {
-      setOrgStatus('approved');
-      setLoading(false);
-    } else {
-      checkStatus();
-    }
-  }, [user]);
+    checkStatus();
+  }, [user?.id, location.key]);
 
   if (loading) return <Spinner animation="border" />;
   if (orgStatus !== 'approved') return <OrganizationStatus userId={user?.id || 0} />;
