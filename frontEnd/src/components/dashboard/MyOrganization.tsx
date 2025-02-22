@@ -14,10 +14,20 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext, AuthContextType } from "../../contexts/AuthProvider";
 import DataTable from "../../hooks/DataTable";
 import { MainNav } from "./NavBars";
-import { format } from "date-fns";
+import { format, differenceInSeconds, parseISO } from "date-fns";
+import "../../styles/dashboard/MyOrganization.scss"
+
+interface OrganizationData {
+  id: number;
+  name: string;
+  org_code: string;
+  code_expiration: string; // ISO timestamp
+  admin_id: number; // ID of the organization admin
+  created_at: string; // ISO timestamp
+}
 
 const MyOrganization: React.FC = () => {
-  const [organization, setOrganization] = useState<any>(null);
+  const [organization, setOrganization] = useState<OrganizationData | null>(null);
   const [members, setMembers] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [message, setMessage] = useState("");
@@ -33,6 +43,24 @@ const MyOrganization: React.FC = () => {
   const [showRemoveModal, setShowRemoveModal] = useState(false);
   const [selectedMember, setSelectedMember] = useState<any>(null);
   const disabledUsernames = ["demo_admin", "demo_sub", "demo_dev", "demo_pm"];
+  const [timeRemaining, setTimeRemaining] = useState<number>(0);
+  const [isBlinking, setIsBlinking] = useState(false);
+  const [serverTimeOffset, setServerTimeOffset] = useState<number>(0);
+
+  // Calculate server-client time offset
+  const calculateTimeOffset = (serverTime: string) => {
+    const serverDate = parseISO(serverTime);
+    const clientDate = new Date();
+    const offset = differenceInSeconds(serverDate, clientDate);
+    setServerTimeOffset(offset);
+    return offset;
+  };
+
+  // Get corrected current time
+  const getCorrectedTime = () => {
+    const now = new Date();
+    return new Date(now.getTime() + serverTimeOffset * 1000);
+  };
 
   // Fetch organization data for the logged-in user.
   const fetchOrganization = async () => {
@@ -41,9 +69,20 @@ const MyOrganization: React.FC = () => {
         `${import.meta.env.VITE_URL}/organizations/my`,
         { withCredentials: true }
       );
-      // response.data is expected to have { organization, members }
-      setOrganization(response.data.organization);
-      setMembers(response.data.members);
+      
+      const { organization, members, serverTime } = response.data;
+      setOrganization(organization);
+      setMembers(members);
+      
+      // Calculate and store time offset
+      calculateTimeOffset(serverTime);
+
+      // Calculate initial time remaining
+      if (organization?.code_expiration) {
+        const expirationDate = parseISO(organization.code_expiration);
+        const remaining = differenceInSeconds(expirationDate, getCorrectedTime());
+        setTimeRemaining(Math.max(0, remaining));
+      }
     } catch (error) {
       console.error("Error fetching organization data", error);
       setMessage("Failed to load organization data");
@@ -76,6 +115,25 @@ const MyOrganization: React.FC = () => {
   useEffect(() => {
     fetchPendingRequests();
   }, [organization, user?.role]);
+
+  // Update timer and handle refresh
+  useEffect(() => {
+    if (!organization?.code_expiration) return;
+
+    const timer = setInterval(() => {
+      const expirationDate = parseISO(organization.code_expiration);
+      const remaining = differenceInSeconds(expirationDate, getCorrectedTime());
+      
+      if (remaining <= 0) {
+        fetchOrganization(); // Refresh when time expires
+      } else {
+        setTimeRemaining(remaining);
+        setIsBlinking(remaining <= 5);
+      }
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [organization?.code_expiration, serverTimeOffset]);
 
   // Function to copy the invite code to clipboard
   const handleCopyCode = () => {
@@ -147,6 +205,16 @@ const MyOrganization: React.FC = () => {
     }
   };
 
+  // Format remaining time
+  const formatTimeRemaining = (seconds: number): string => {
+    if (seconds < 60) {
+      return `${seconds}s`;
+    }
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}m ${remainingSeconds}s`;
+  };
+
   if (loading) {
     return (
       <MainNav>
@@ -168,9 +236,18 @@ const MyOrganization: React.FC = () => {
         {organization ? (
           <>
             <h4>{organization.name}</h4>
-            <p className="fs-5">
-              <strong>Invite Code:</strong> <Badge bg="success" className="fs-5">{organization.org_code}</Badge>
-            </p>
+            <div className="fs-5 mb-3">
+              <strong>Invite Code:</strong>{" "}
+              <Badge 
+                bg="success" 
+                className={`fs-5 ${isBlinking ? 'blinking-badge' : ''}`}
+              >
+                {organization.org_code}
+              </Badge>
+              <span className="ms-2 text-muted">
+                (resets in {formatTimeRemaining(timeRemaining)})
+              </span>
+            </div>
             <Button variant="outline-primary" onClick={handleCopyCode}>
               Copy Invite Code
             </Button>

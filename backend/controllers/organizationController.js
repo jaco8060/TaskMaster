@@ -27,18 +27,33 @@ export const handleCreateOrganization = async (req, res) => {
   }
 };
 export const handleGetMyOrganization = async (req, res) => {
-  const organization_id = req.user.organization_id;
-  if (!organization_id) {
-    // Instead of a 404, return a 200 with organization set to null
-    return res.status(200).json({ organization: null, members: [] });
-  }
+  const userId = req.user.id;
   try {
-    const organization = await getOrganizationById(organization_id);
-    const members = await getOrganizationMembers(organization_id);
-    return res.status(200).json({ organization, members });
+    // Get organization data with code expiration
+    const orgQuery = await pool.query(
+      `SELECT o.*, om.status 
+       FROM organizations o 
+       JOIN organization_members om ON o.id = om.organization_id 
+       WHERE om.user_id = $1 AND om.status = 'approved'`,
+      [userId]
+    );
+
+    const membersQuery = await pool.query(
+      `SELECT u.id, u.username, u.email, u.role 
+       FROM users u 
+       JOIN organization_members om ON u.id = om.user_id 
+       WHERE om.organization_id = $1 AND om.status = 'approved'`,
+      [orgQuery.rows[0]?.id]
+    );
+
+    res.json({
+      organization: orgQuery.rows[0] || null,
+      members: membersQuery.rows,
+      serverTime: new Date().toISOString()
+    });
   } catch (error) {
-    console.error("Error fetching organization data:", error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("Error fetching organization:", error);
+    res.status(500).json({ error: "Failed to fetch organization data" });
   }
 };
 // Join an organization using a code

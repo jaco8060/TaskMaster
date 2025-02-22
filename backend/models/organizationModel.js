@@ -105,3 +105,16 @@ export const getPendingJoinRequests = async (organization_id) => {
   );
   return result.rows;
 };
+
+export const updateOrganizationCode = async (orgId) => {
+  const newCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+  const result = await pool.query(
+    `UPDATE organizations 
+     SET org_code = $1, 
+         code_expiration = NOW() + INTERVAL '1 minute'
+     WHERE id = $2 
+     RETURNING *`,
+    [newCode, orgId]
+  );
+  return result.rows[0];
+};

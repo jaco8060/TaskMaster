@@ -154,5 +154,5 @@ CREATE INDEX IF NOT EXISTS idx_projects_org ON projects(organization_id);
 SELECT cron.schedule('update_org_codes', '* * * * *', $$
   UPDATE organizations
   SET org_code = substring(gen_random_uuid()::text, 1, 20),
-      code_expiration = NOW() + INTERVAL '1 minute' * (1 + random());
+      code_expiration = NOW() + INTERVAL '1 minute';
 $$);
