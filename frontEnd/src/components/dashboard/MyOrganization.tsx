@@ -1,5 +1,6 @@
 // frontEnd/src/components/dashboard/MyOrganization.tsx
 import axios from "axios";
+import { differenceInSeconds, format, parseISO } from "date-fns";
 import React, { useContext, useEffect, useState } from "react";
 import {
   Alert,
@@ -13,9 +14,8 @@ import {
 import { useNavigate } from "react-router-dom";
 import { AuthContext, AuthContextType } from "../../contexts/AuthProvider";
 import DataTable from "../../hooks/DataTable";
+import "../../styles/dashboard/MyOrganization.scss";
 import { MainNav } from "./NavBars";
-import { format, differenceInSeconds, parseISO } from "date-fns";
-import "../../styles/dashboard/MyOrganization.scss"
 
 interface OrganizationData {
   id: number;
@@ -27,7 +27,9 @@ interface OrganizationData {
 }
 
 const MyOrganization: React.FC = () => {
-  const [organization, setOrganization] = useState<OrganizationData | null>(null);
+  const [organization, setOrganization] = useState<OrganizationData | null>(
+    null
+  );
   const [members, setMembers] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [message, setMessage] = useState("");
@@ -69,18 +71,21 @@ const MyOrganization: React.FC = () => {
         `${import.meta.env.VITE_URL}/organizations/my`,
         { withCredentials: true }
       );
-      
+
       const { organization, members, serverTime } = response.data;
       setOrganization(organization);
       setMembers(members);
-      
+
       // Calculate and store time offset
       calculateTimeOffset(serverTime);
 
       // Calculate initial time remaining
       if (organization?.code_expiration) {
         const expirationDate = parseISO(organization.code_expiration);
-        const remaining = differenceInSeconds(expirationDate, getCorrectedTime());
+        const remaining = differenceInSeconds(
+          expirationDate,
+          getCorrectedTime()
+        );
         setTimeRemaining(Math.max(0, remaining));
       }
     } catch (error) {
@@ -123,7 +128,7 @@ const MyOrganization: React.FC = () => {
     const timer = setInterval(() => {
       const expirationDate = parseISO(organization.code_expiration);
       const remaining = differenceInSeconds(expirationDate, getCorrectedTime());
-      
+
       if (remaining <= 0) {
         fetchOrganization(); // Refresh when time expires
       } else {
@@ -238,9 +243,9 @@ const MyOrganization: React.FC = () => {
             <h4>{organization.name}</h4>
             <div className="fs-5 mb-3">
               <strong>Invite Code:</strong>{" "}
-              <Badge 
-                bg="success" 
-                className={`fs-5 ${isBlinking ? 'blinking-badge' : ''}`}
+              <Badge
+                bg="success"
+                className={`fs-5 ${isBlinking ? "blinking-badge" : ""}`}
               >
                 {organization.org_code}
               </Badge>
@@ -295,10 +300,10 @@ const MyOrganization: React.FC = () => {
                   columns={[
                     { header: "Username", accessor: "username" },
                     { header: "Email", accessor: "email" },
-                    { 
-                      header: "Requested At", 
+                    {
+                      header: "Requested At",
                       accessor: "requested_at",
-                      type: "date"
+                      type: "date",
                     },
                     { header: "", accessor: "actions", sortable: false },
                   ]}
@@ -329,7 +334,10 @@ const MyOrganization: React.FC = () => {
                       );
                     }
                     if (accessor === "requested_at") {
-                      return format(new Date(item[accessor]), "MMMM d, yyyy h:mm a");
+                      return format(
+                        new Date(item[accessor]),
+                        "MMMM d, yyyy h:mm a"
+                      );
                     }
                     return item[accessor];
                   }}

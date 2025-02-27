@@ -5,12 +5,12 @@ import { createNotification } from "../models/notificationModel.js";
 import {
   addOrganizationMember,
   createOrganization,
+  getOrganizationByCode,
   getOrganizationById,
   getOrganizationMembers,
   getPendingJoinRequests,
   requestOrganizationJoin,
   searchOrganizations,
-  getOrganizationByCode,
 } from "../models/organizationModel.js";
 // Create a new organization; auto–add the creator as approved member
 export const handleCreateOrganization = async (req, res) => {
@@ -49,7 +49,7 @@ export const handleGetMyOrganization = async (req, res) => {
     res.json({
       organization: orgQuery.rows[0] || null,
       members: membersQuery.rows,
-      serverTime: new Date().toISOString()
+      serverTime: new Date().toISOString(),
     });
   } catch (error) {
     console.error("Error fetching organization:", error);
@@ -64,7 +64,7 @@ export const handleJoinWithCode = async (req, res) => {
   try {
     // First, verify the code and get organization
     const organization = await getOrganizationByCode(org_code);
-    
+
     if (!organization) {
       return res.status(404).json({ error: "Invalid organization code" });
     }
@@ -75,7 +75,11 @@ export const handleJoinWithCode = async (req, res) => {
     }
 
     // Add member to organization with explicit 'approved' status
-    const membership = await addOrganizationMember(user_id, organization.id, 'approved');
+    const membership = await addOrganizationMember(
+      user_id,
+      organization.id,
+      "approved"
+    );
 
     // Create notification for organization admin
     if (organization.admin_id) {
@@ -85,11 +89,10 @@ export const handleJoinWithCode = async (req, res) => {
       );
     }
 
-    res.json({ 
+    res.json({
       message: "Successfully joined organization",
-      organization_id: organization.id 
+      organization_id: organization.id,
     });
-
   } catch (error) {
     console.error("Error joining organization:", error);
     res.status(500).json({ error: "Failed to join organization" });
@@ -112,11 +115,11 @@ export const handleSearchOrganizations = async (req, res) => {
 export const handleRequestJoinOrganization = async (req, res) => {
   const { organization_id } = req.body;
   const user_id = req.user.id;
-  
+
   try {
     const membership = await requestOrganizationJoin(user_id, organization_id);
     const organization = await getOrganizationById(organization_id);
-    
+
     if (organization) {
       await createNotification(
         organization.admin_id,
@@ -124,9 +127,8 @@ export const handleRequestJoinOrganization = async (req, res) => {
       );
     }
     res.status(200).json({ message: "Join request submitted", membership });
-    
   } catch (error) {
-    if (error.message.includes('already exists')) {
+    if (error.message.includes("already exists")) {
       return res.status(409).json({ error: error.message });
     }
     console.error("Error requesting to join organization:", error);
@@ -281,8 +283,8 @@ export const handleGetOrganizationStatus = async (req, res) => {
        WHERE om.user_id = $1`,
       [req.user.id]
     );
-    
-    const status = rows[0]?.status || 'none';
+
+    const status = rows[0]?.status || "none";
     res.json({ status });
   } catch (error) {
     console.error("Error getting organization status:", error);
@@ -311,7 +313,7 @@ export const handleValidateOrgCode = async (req, res) => {
       "SELECT * FROM organizations WHERE org_code = $1",
       [code]
     );
-    
+
     const isValid = result.rows.length > 0;
     res.json({ valid: isValid });
   } catch (error) {
@@ -319,4 +321,3 @@ export const handleValidateOrgCode = async (req, res) => {
     res.status(500).json({ error: "Failed to validate organization code" });
   }
 };
-

@@ -477,7 +477,7 @@ const RegisterWithOrganization: React.FC = () => {
               <Button variant="link" onClick={() => setStep(3)}>
                 Back
               </Button>
-              <Button 
+              <Button
                 onClick={async () => {
                   const isValid = await validateOrgCode(orgJoinInfo.org_code);
                   if (isValid) {
@@ -485,7 +485,8 @@ const RegisterWithOrganization: React.FC = () => {
                   } else {
                     setMessage({
                       type: "error",
-                      content: "Invalid organization code. Please check and try again.",
+                      content:
+                        "Invalid organization code. Please check and try again.",
                     });
                   }
                 }}

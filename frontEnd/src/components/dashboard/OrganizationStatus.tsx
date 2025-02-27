@@ -2,9 +2,9 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Button, Card, Container, Spinner, Toast } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import TaskmasterLogo from "../../assets/taskmaster-logo-animation.svg";
+import "../../styles/dashboard/OrganizationStatus.scss";
 import OrganizationSearch from "./OrganizationSearch.tsx";
-import  "../../styles/dashboard/OrganizationStatus.scss";
-import TaskmasterLogo from '../../assets/taskmaster-logo-animation.svg';
 interface OrganizationStatusProps {
   userId: number;
 }
@@ -31,7 +31,7 @@ const OrganizationStatus: React.FC<OrganizationStatusProps> = ({ userId }) => {
         setLoading(false);
       }
     };
-    
+
     // Check status whenever userId changes or component mounts
     checkStatus();
   }, [userId]); // Add userId to dependency array

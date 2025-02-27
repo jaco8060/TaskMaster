@@ -59,7 +59,7 @@ export const requestOrganizationJoin = async (user_id, organization_id) => {
   );
 
   if (existing.rows.length > 0) {
-    throw new Error('Join request already exists');
+    throw new Error("Join request already exists");
   }
 
   const result = await pool.query(

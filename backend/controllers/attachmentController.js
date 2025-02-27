@@ -25,7 +25,7 @@ export const handleCreateAttachment = async (req, res) => {
 
     // find ticket info for notifications
     const ticket = await getTicketById(ticket_id);
-    
+
     if (ticket.assigned_to && ticket.reported_by) {
       await createNotification(
         ticket.assigned_to,

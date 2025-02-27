@@ -113,7 +113,7 @@ const OrganizationSearch: React.FC<OrganizationSearchProps> = ({
 
   const handleRequestJoin = async (organizationId: number) => {
     if (!selectedOrg || isSubmitting) return;
-    
+
     setIsSubmitting(true);
     try {
       // First cancel any existing pending requests
@@ -134,16 +134,15 @@ const OrganizationSearch: React.FC<OrganizationSearchProps> = ({
         message: "Join request submitted successfully",
         variant: "success",
       });
-      
-      setSearchResults(results => 
-        results.map(org => 
-          org.id === organizationId ? {...org, hasPendingRequest: true} : org
+
+      setSearchResults((results) =>
+        results.map((org) =>
+          org.id === organizationId ? { ...org, hasPendingRequest: true } : org
         )
       );
       setSelectedOrg(null);
 
       onJoinSuccess();
-
     } catch (error) {
       setToast({
         show: true,
@@ -251,7 +250,9 @@ const OrganizationSearch: React.FC<OrganizationSearchProps> = ({
                     </div>
                     {selectedOrg === org.id && (
                       <span className="badge bg-success">
-                        {org.hasPendingRequest ? "Pending Approval" : "Selected"}
+                        {org.hasPendingRequest
+                          ? "Pending Approval"
+                          : "Selected"}
                       </span>
                     )}
                   </Card.Body>

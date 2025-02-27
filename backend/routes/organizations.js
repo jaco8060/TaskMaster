@@ -1,16 +1,16 @@
 // backend/routes/organizations.js
 import express from "express";
 import {
+  handleCancelJoinRequest,
   handleCreateOrganization,
   handleGetMyOrganization,
+  handleGetOrganizationStatus,
   handleGetPendingRequests,
   handleJoinWithCode,
   handleProcessJoinRequest,
   handleRemoveOrganizationMember,
   handleRequestJoinOrganization,
   handleSearchOrganizations,
-  handleGetOrganizationStatus,
-  handleCancelJoinRequest,
   handleValidateOrgCode,
 } from "../controllers/organizationController.js";
 import { ensureAuthenticated } from "../middleware/authMiddleware.js";
@@ -22,11 +22,7 @@ organizationRouter.post(
   ensureAuthenticated,
   handleCreateOrganization
 );
-organizationRouter.post(
-  "/join-code",
-  ensureAuthenticated,
-  handleJoinWithCode
-);
+organizationRouter.post("/join-code", ensureAuthenticated, handleJoinWithCode);
 organizationRouter.get("/search", handleSearchOrganizations);
 organizationRouter.post(
   "/request-join",
@@ -54,12 +50,17 @@ organizationRouter.delete(
   handleRemoveOrganizationMember
 );
 
-organizationRouter.get('/status', ensureAuthenticated, handleGetOrganizationStatus);
-organizationRouter.delete('/cancel-request', ensureAuthenticated, handleCancelJoinRequest);
-
 organizationRouter.get(
-  "/validate-code/:code",
-  handleValidateOrgCode
+  "/status",
+  ensureAuthenticated,
+  handleGetOrganizationStatus
 );
+organizationRouter.delete(
+  "/cancel-request",
+  ensureAuthenticated,
+  handleCancelJoinRequest
+);
+
+organizationRouter.get("/validate-code/:code", handleValidateOrgCode);
 
 export default organizationRouter;
