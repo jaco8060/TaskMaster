@@ -23,6 +23,7 @@ import TaskMasterIcon from "../../assets/taskmaster-logo.svg";
 import { AuthContext, AuthContextType } from "../../contexts/AuthProvider";
 import "../../styles/dashboard/NavBars.scss";
 import Notifications from "./Notifications";
+import SearchModal from "./SearchModal";
 import UserTabs from "./UserTabs";
 
 interface TopNavBarProps {
@@ -137,18 +138,9 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ children }) => {
             </Offcanvas.Header>
 
             <Offcanvas.Body>
-              <Form
-                className="d-flex me-auto my-2 my-lg-0"
-                style={{ width: "auto" }}
-              >
-                <Form.Control
-                  type="search"
-                  placeholder="Search"
-                  className="me-2"
-                  aria-label="Search"
-                />
-                <Button variant="outline-success">Search</Button>
-              </Form>
+              <div className="">
+                <SearchModal />
+              </div>
               <div className="d-flex flex-column d-lg-none justify-content-center">
                 <hr />
                 <div id="TopNavBarMobile">{children}</div>
@@ -156,10 +148,10 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ children }) => {
               <hr />
               {/* Mobile view: use a modal for notifications */}
               <div className="d-flex d-lg-none justify-content-center">
-                <div className="d-inline-flex bg-body-tertiary rounded py-2 px-3 justify-content-center gap-4">
+                <div className="d-inline-flex bg-primary rounded py-2 px-3 justify-content-center gap-4">
                   <Button
                     variant="link"
-                    className="no-caret mb-0 p-0"
+                    className="no-caret mb-0 p-0 text-light"
                     style={{
                       textDecoration: "none",
                       boxShadow: "none",
@@ -170,12 +162,12 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ children }) => {
                     <FaBell size={30} />
                   </Button>
                   {/* For mobile, the Account icon remains as an icon */}
-                  <Nav.Link href="#Account" className="mb-0">
+                  <Nav.Link href="#Account" className="mb-0 text-light">
                     <FaSlidersH size={30} />
                   </Nav.Link>
                   <Nav.Link
                     href="#logout"
-                    className="mb-0"
+                    className="mb-0 text-light"
                     onClick={handleLogout}
                   >
                     <FaSignOutAlt size={30} />
@@ -185,7 +177,7 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ children }) => {
               {/* Large screen view */}
               <Nav className="justify-content-end flex-grow-1 pe-3 offcanvas-nav">
                 {/* Notifications dropdown */}
-                <Dropdown align="end" className="d-none d-lg-inline">
+                <Dropdown align="end" className="d-none d-lg-flex">
                   <Dropdown.Toggle
                     variant="link"
                     id="dropdown-notifications"
@@ -212,7 +204,7 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ children }) => {
                   </Dropdown.Menu>
                 </Dropdown>
                 {/* Account dropdown with user info */}
-                <Dropdown align="end" className="d-none d-lg-inline">
+                <Dropdown align="end" className="d-none d-lg-flex">
                   <Dropdown.Toggle
                     variant="link"
                     id="dropdown-Account"
@@ -255,7 +247,7 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ children }) => {
                     </Dropdown.ItemText>
                   </Dropdown.Menu>
                 </Dropdown>
-                <Nav.Link className="d-none d-lg-inline" onClick={handleLogout}>
+                <Nav.Link className="d-none d-lg-flex" onClick={handleLogout}>
                   <div className="d-flex align-items-center">
                     <h6 className="mb-0 me-2">Logout</h6>
                     <FaSignOutAlt size={25} />

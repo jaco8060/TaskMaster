@@ -77,6 +77,12 @@
 
     .offcanvas-body {
       background-color: #f5ba41;
+
+      .search-input-button {
+        width: 100%;
+        min-width: auto;
+        padding: 1rem 1.5rem;
+      }
     }
   }
 
@@ -97,4 +103,102 @@
 /* Hide the default caret on Dropdown.Toggle elements with the "no-caret" class */
 .no-caret::after {
   display: none;
+}
+
+.nav-search {
+  margin-left: auto;
+
+  .btn-outline-light {
+    border-color: rgba(255, 255, 255, 0.1);
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+  }
+}
+
+.search-results {
+  max-height: 60vh;
+  overflow-y: auto;
+
+  .list-group-item {
+    border-radius: 0.25rem;
+    margin-bottom: 2px;
+    transition: all 0.2s;
+
+    &:hover {
+      background-color: #f8f9fa;
+      transform: translateX(5px);
+      width: calc(
+        100% - 10px
+      ); //to remove horizontal scroll bar when it translates to the side
+    }
+  }
+}
+
+.search-input-button {
+  background: var(--bs-dark);
+  color: #dee2e6;
+  border: 1px solid #dee2e6;
+  border-radius: 20px;
+  padding: 0.7rem 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 250px;
+  margin: auto 0;
+  &:hover {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+  }
+
+  .bi-search {
+    color: #6c757d;
+  }
+}
+
+.search-modal {
+  .modal-content {
+    background-color: #2d3338; // Dark background
+    color: #ffffff; // Force white text
+
+    .modal-header {
+      border-bottom: 1px solid #4b545c;
+
+      .modal-title {
+        color: #ffffff;
+      }
+
+      .btn-close {
+        filter: invert(1); // White close button
+      }
+    }
+
+    .modal-body {
+      background-color: #2d3338;
+
+      .form-control {
+        background-color: #1e2226;
+        border-color: #4b545c;
+
+        &::placeholder {
+          // Color of input form search
+          color: #868f98;
+        }
+      }
+
+      h6 {
+        color: #adb5bd; // Slightly gray for group headers
+      }
+
+      .list-group-item {
+        background-color: #2d3338;
+        border-color: #4b545c;
+        color: #ffffff;
+
+        &:hover {
+          background-color: #3a4046;
+          color: #ffffff;
+        }
+      }
+    }
+  }
 }
