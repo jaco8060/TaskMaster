@@ -11,6 +11,7 @@ import {
   Modal,
   Row,
   Spinner,
+  Toast,
 } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import { AuthContext, AuthContextType } from "../../../contexts/AuthProvider";
@@ -68,6 +69,12 @@ const TicketDetails: React.FC = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [showImageModal, setShowImageModal] = useState<boolean>(false);
 
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastVariant, setToastVariant] = useState<"success" | "danger">(
+    "success"
+  );
+
   const fetchTicketDetails = async () => {
     try {
       const response = await axios.get(
@@ -77,7 +84,9 @@ const TicketDetails: React.FC = () => {
       setTicket(response.data);
     } catch (error) {
       console.error("Error fetching ticket details:", error);
-      alert("Failed to fetch ticket details.");
+      setToastVariant("danger");
+      setToastMessage("Failed to fetch ticket details");
+      setShowToast(true);
     } finally {
       setLoading(false);
     }
@@ -92,7 +101,9 @@ const TicketDetails: React.FC = () => {
       setAttachments(response.data);
     } catch (error) {
       console.error("Error fetching attachments:", error);
-      alert("Failed to fetch attachments.");
+      setToastVariant("danger");
+      setToastMessage("Failed to fetch attachments");
+      setShowToast(true);
     }
   };
 
@@ -116,7 +127,9 @@ const TicketDetails: React.FC = () => {
       setShowModal(false);
     } catch (error) {
       console.error("Error updating ticket:", error);
-      alert("Failed to update ticket.");
+      setToastVariant("danger");
+      setToastMessage("Failed to update ticket");
+      setShowToast(true);
     }
   };
 
@@ -128,7 +141,9 @@ const TicketDetails: React.FC = () => {
   const handleAddAttachment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!attachmentFile) {
-      alert("Please choose a file to attach");
+      setToastVariant("danger");
+      setToastMessage("Please choose a file to attach");
+      setShowToast(true);
       return;
     }
 
@@ -147,7 +162,9 @@ const TicketDetails: React.FC = () => {
       setRefresh(!refresh);
     } catch (error) {
       console.error("Error uploading attachment:", error);
-      alert("Failed to upload attachment.");
+      setToastVariant("danger");
+      setToastMessage("Failed to upload attachment");
+      setShowToast(true);
     }
   };
 
@@ -169,11 +186,12 @@ const TicketDetails: React.FC = () => {
       setRefresh(!refresh);
     } catch (error) {
       console.error("Error updating attachment description:", error);
-      alert("Failed to update attachment description.");
+      setToastVariant("danger");
+      setToastMessage("Failed to update description");
+      setShowToast(true);
     }
   };
 
-  // New: Handler for removing an attachment
   const handleRemoveAttachment = async (attachmentId: number) => {
     try {
       await axios.delete(
@@ -183,7 +201,9 @@ const TicketDetails: React.FC = () => {
       setRefresh(!refresh);
     } catch (error) {
       console.error("Error deleting attachment:", error);
-      alert("Failed to delete attachment.");
+      setToastVariant("danger");
+      setToastMessage("Failed to delete attachment");
+      setShowToast(true);
     }
   };
 
@@ -315,6 +335,22 @@ const TicketDetails: React.FC = () => {
 
   return (
     <MainNav>
+      <Toast
+        onClose={() => setShowToast(false)}
+        show={showToast}
+        delay={3000}
+        autohide
+        bg={toastVariant}
+        className="position-fixed start-50 translate-middle-x"
+        style={{ top: "70px" }}
+      >
+        <Toast.Header>
+          <strong className="me-auto">
+            {toastVariant === "success" ? "Success" : "Error"}
+          </strong>
+        </Toast.Header>
+        <Toast.Body className="text-white">{toastMessage}</Toast.Body>
+      </Toast>
       <div className="d-flex flex-column">
         <Row>
           <Col md={6}>

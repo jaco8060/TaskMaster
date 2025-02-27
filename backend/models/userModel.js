@@ -1,21 +1,32 @@
+// backend/models/userModel.js
 import bcrypt from "bcrypt";
 import { pool } from "../database.js";
 
-export const getUsers = async () => {
+export const getUsersByOrganization = async (orgId) => {
   try {
-    const { rows } = await pool.query("SELECT * FROM users");
+    const { rows } = await pool.query(
+      `SELECT u.*, om.organization_id, o.name AS organization_name
+       FROM users u
+       JOIN organization_members om ON u.id = om.user_id
+       JOIN organizations o ON om.organization_id = o.id
+       WHERE om.organization_id = $1 AND om.status = 'approved'`,
+      [orgId]
+    );
     return rows;
   } catch (error) {
-    console.error("Error fetching users:", error);
+    console.error("Error fetching users by organization:", error);
     throw error;
   }
 };
 
-export const getUsersAssignedBy = async (assignedBy) => {
+export const getUsersAssignedBy = async (assignedBy, organization_id) => {
   try {
     const { rows } = await pool.query(
-      "SELECT * FROM users WHERE assigned_by = $1",
-      [assignedBy]
+      `SELECT u.*
+       FROM users u
+       JOIN organization_members om ON u.id = om.user_id
+       WHERE u.assigned_by = $1 AND om.organization_id = $2`,
+      [assignedBy, organization_id]
     );
     return rows;
   } catch (error) {
@@ -38,7 +49,6 @@ export const createUser = async (
     return result.rows[0];
   } catch (error) {
     if (error.code === "23505") {
-      // Handle unique constraint violation
       if (error.constraint === "users_username_key") {
         return { error: "Username already exists" };
       } else if (error.constraint === "users_email_key") {

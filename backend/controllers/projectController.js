@@ -1,3 +1,4 @@
+// backend/controllers/projectController.js
 import { createNotification } from "../models/notificationModel.js";
 import {
   assignMultiplePersonnel,
@@ -12,9 +13,18 @@ import {
 } from "../models/projectModel.js";
 
 export const handleCreateProject = async (req, res) => {
-  const { name, description, user_id } = req.body;
+  const { name, description } = req.body;
+  // Get the organization_id from the logged in user
+  const organization_id = req.user.organization_id;
+  const user_id = req.user.id;
   try {
-    const project = await createProject(name, description, user_id);
+    // Pass organization_id to the model function (if not provided, it may be null)
+    const project = await createProject(
+      name,
+      description,
+      user_id,
+      organization_id
+    );
     res.status(201).json(project);
   } catch (error) {
     console.error("Error creating project:", error);
@@ -72,10 +82,14 @@ export const handleAssignPersonnel = async (req, res) => {
   try {
     const assignment = await assignPersonnel(projectId, userId, role);
 
-    // notify user assigned
+    // Get project name first
+    const project = await getProjectById(projectId);
+
     await createNotification(
       userId,
-      `You have been assigned to project (ID: ${projectId})`
+      `You've been assigned to project: ${project.name}`,
+      null, // ticket_id
+      projectId // project_id for linking
     );
 
     res.status(201).json(assignment);
@@ -118,17 +132,19 @@ export const handleRemovePersonnel = async (req, res) => {
 
 export const handleAssignMultiplePersonnel = async (req, res) => {
   const projectId = req.params.id;
-  // Expect an array of user IDs
   const { userIds, role } = req.body;
   try {
-    // Assign each user in a loop
     const assignments = await assignMultiplePersonnel(projectId, userIds, role);
 
-    // Example: notify them
+    // Get project name once
+    const project = await getProjectById(projectId);
+
     for (const assignment of assignments) {
       await createNotification(
         assignment.user_id,
-        `You have been assigned to project (ID: ${projectId}).`
+        `You've been assigned to project: ${project.name}`,
+        null,
+        projectId
       );
     }
 

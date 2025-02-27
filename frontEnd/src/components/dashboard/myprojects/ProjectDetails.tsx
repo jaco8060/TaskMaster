@@ -9,6 +9,7 @@ import {
   Modal,
   Row,
   Spinner,
+  Toast,
 } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import DataTable from "../../../hooks/DataTable";
@@ -49,6 +50,11 @@ const ProjectDetails: React.FC = () => {
   const [projectName, setProjectName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [isActive, setIsActive] = useState<boolean>(true);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastVariant, setToastVariant] = useState<"success" | "danger">(
+    "success"
+  );
 
   useEffect(() => {
     const fetchProjectDetails = async () => {
@@ -63,7 +69,9 @@ const ProjectDetails: React.FC = () => {
         setIsActive(response.data.is_active);
       } catch (error) {
         console.error("Error fetching project details:", error);
-        alert("Failed to fetch project details.");
+        setToastVariant("danger");
+        setToastMessage("Failed to fetch project details");
+        setShowToast(true);
       } finally {
         setLoading(false);
       }
@@ -78,7 +86,9 @@ const ProjectDetails: React.FC = () => {
         setPersonnel(response.data);
       } catch (error) {
         console.error("Error fetching assigned personnel:", error);
-        alert("Failed to fetch assigned personnel.");
+        setToastVariant("danger");
+        setToastMessage("Failed to fetch assigned personnel");
+        setShowToast(true);
       }
     };
 
@@ -113,9 +123,14 @@ const ProjectDetails: React.FC = () => {
         description,
         is_active: isActive,
       }));
+      setToastVariant("success");
+      setToastMessage("Project updated successfully");
+      setShowToast(true);
     } catch (error) {
       console.error("Error updating project:", error);
-      alert("Failed to update project.");
+      setToastVariant("danger");
+      setToastMessage("Failed to update project");
+      setShowToast(true);
     }
   };
 
@@ -180,6 +195,22 @@ const ProjectDetails: React.FC = () => {
 
   return (
     <MainNav>
+      <Toast
+        onClose={() => setShowToast(false)}
+        show={showToast}
+        delay={3000}
+        autohide
+        bg={toastVariant}
+        className="position-fixed start-50 translate-middle-x"
+        style={{ top: "70px" }}
+      >
+        <Toast.Header>
+          <strong className="me-auto">
+            {toastVariant === "success" ? "Success" : "Error"}
+          </strong>
+        </Toast.Header>
+        <Toast.Body className="text-white">{toastMessage}</Toast.Body>
+      </Toast>
       <div className="d-flex flex-column">
         <Row>
           <Col>

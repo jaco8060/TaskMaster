@@ -1,6 +1,16 @@
 services:
   db:
-    image: postgres:14-alpine
+    build:
+      context: ./db-init
+      dockerfile: Dockerfile
+    command:
+      [
+        "postgres",
+        "-c",
+        "shared_preload_libraries=pg_cron",
+        "-c",
+        "cron.database_name=taskmaster",
+      ]
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: root123

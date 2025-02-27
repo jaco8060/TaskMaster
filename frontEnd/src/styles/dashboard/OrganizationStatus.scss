@@ -1,0 +1,50 @@
+.loading-animation {
+  position: relative;
+  width: 100px;
+  height: 100px;
+
+  .spinner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+
+    // Animated background circle (removed rotation)
+    &::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      animation: colorChange 3s ease-in-out infinite;
+    }
+
+    // Larger SVG container
+    img {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 75%;
+      height: 75%;
+      z-index: 1;
+      transform: translate(-50%, -50%);
+    }
+  }
+}
+
+// Keep color animation but remove spin animation
+@keyframes colorChange {
+  0% {
+    background: #f3bc43;
+  }
+  33% {
+    background: #ff9f1c;
+  }
+  66% {
+    background: #e85d04;
+  }
+  100% {
+    background: #f3bc43;
+  }
+}

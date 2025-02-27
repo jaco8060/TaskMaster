@@ -1,5 +1,4 @@
 // frontEnd/src/components/dashboard/Dashboard.tsx
-
 import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
 import { Card, Col, Container, Row, Spinner } from "react-bootstrap";
@@ -195,173 +194,177 @@ const Dashboard: React.FC = () => {
 
   return (
     <MainNav>
-      <Container fluid className="mt-4">
-        <Row className="mb-4">
+      <Container className="">
+        <Row>
           <Col>
             <h2>Dashboard</h2>
+            {user.organization_name && (
+              <h6 className="text-muted">
+                Organization: {user.organization_name}
+              </h6>
+            )}
           </Col>
-        </Row>
+          {/* User Metrics Cards */}
+          {userMetrics && (
+            <Row className="mb-4">
+              <Col md={3}>
+                <Card>
+                  <Card.Body>
+                    <Card.Title>Active Projects</Card.Title>
+                    <Card.Text>{userMetrics.activeProjects}</Card.Text>
+                  </Card.Body>
+                </Card>
+              </Col>
+              <Col md={3}>
+                <Card>
+                  <Card.Body>
+                    <Card.Title>Total Tickets</Card.Title>
+                    <Card.Text>{userMetrics.totalTickets}</Card.Text>
+                  </Card.Body>
+                </Card>
+              </Col>
+              <Col md={3}>
+                <Card>
+                  <Card.Body>
+                    <Card.Title>Unassigned Tickets</Card.Title>
+                    <Card.Text>{userMetrics.unassignedTickets}</Card.Text>
+                  </Card.Body>
+                </Card>
+              </Col>
+              <Col md={3}>
+                <Card>
+                  <Card.Body>
+                    <Card.Title>Notifications</Card.Title>
+                    <Card.Text>{userMetrics.notifications}</Card.Text>
+                  </Card.Body>
+                </Card>
+              </Col>
+            </Row>
+          )}
 
-        {/* User Metrics Cards */}
-        {userMetrics && (
+          {/* Admin Metrics Cards (visible only to admin) */}
+          {user.role === "admin" && adminMetrics && (
+            <Row className="mb-4">
+              <Col md={3}>
+                <Card>
+                  <Card.Body>
+                    <Card.Title>New Users</Card.Title>
+                    <Card.Text>{adminMetrics.newUsers}</Card.Text>
+                  </Card.Body>
+                </Card>
+              </Col>
+              <Col md={3}>
+                <Card>
+                  <Card.Body>
+                    <Card.Title>Total Users</Card.Title>
+                    <Card.Text>{adminMetrics.totalUsers}</Card.Text>
+                  </Card.Body>
+                </Card>
+              </Col>
+              <Col md={3}>
+                <Card>
+                  <Card.Body>
+                    <Card.Title>Tickets in Development</Card.Title>
+                    <Card.Text>{adminMetrics.ticketsInDevelopment}</Card.Text>
+                  </Card.Body>
+                </Card>
+              </Col>
+              <Col md={3}>
+                <Card>
+                  <Card.Body>
+                    <Card.Title>Total Developers</Card.Title>
+                    <Card.Text>{adminMetrics.totalDevelopers}</Card.Text>
+                  </Card.Body>
+                </Card>
+              </Col>
+            </Row>
+          )}
+
+          {/* Priority Projects Pie Chart */}
           <Row className="mb-4">
-            <Col md={3}>
+            <Col md={6}>
               <Card>
                 <Card.Body>
-                  <Card.Title>Active Projects</Card.Title>
-                  <Card.Text>{userMetrics.activeProjects}</Card.Text>
+                  <Card.Title>Ticket Priority Distribution</Card.Title>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <PieChart>
+                      <Pie
+                        data={priorityData}
+                        dataKey="value"
+                        nameKey="name"
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={80}
+                        fill="#8884d8"
+                        label
+                      >
+                        {priorityData.map((entry, index) => (
+                          <Cell
+                            key={`cell-${index}`}
+                            fill={pieColors[index % pieColors.length]}
+                          />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                      <Legend verticalAlign="bottom" height={36} />
+                    </PieChart>
+                  </ResponsiveContainer>
                 </Card.Body>
               </Card>
             </Col>
-            <Col md={3}>
+
+            {/* Active Ticket Distribution Pie Chart */}
+            <Col md={6}>
               <Card>
                 <Card.Body>
-                  <Card.Title>Total Tickets</Card.Title>
-                  <Card.Text>{userMetrics.totalTickets}</Card.Text>
-                </Card.Body>
-              </Card>
-            </Col>
-            <Col md={3}>
-              <Card>
-                <Card.Body>
-                  <Card.Title>Unassigned Tickets</Card.Title>
-                  <Card.Text>{userMetrics.unassignedTickets}</Card.Text>
-                </Card.Body>
-              </Card>
-            </Col>
-            <Col md={3}>
-              <Card>
-                <Card.Body>
-                  <Card.Title>Notifications</Card.Title>
-                  <Card.Text>{userMetrics.notifications}</Card.Text>
+                  <Card.Title>Active Ticket Distribution</Card.Title>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <PieChart>
+                      <Pie
+                        data={ticketDistribution}
+                        dataKey="tickets"
+                        nameKey="project"
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={80}
+                        fill="#82ca9d"
+                        label
+                      >
+                        {ticketDistribution.map((entry, index) => (
+                          <Cell
+                            key={`cell-${index}`}
+                            fill={pieColors[index % pieColors.length]}
+                          />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                      <Legend verticalAlign="bottom" height={36} />
+                    </PieChart>
+                  </ResponsiveContainer>
                 </Card.Body>
               </Card>
             </Col>
           </Row>
-        )}
 
-        {/* Admin Metrics Cards (visible only to admin) */}
-        {user.role === "admin" && adminMetrics && (
+          {/* User Types Bar Chart */}
           <Row className="mb-4">
-            <Col md={3}>
+            <Col>
               <Card>
                 <Card.Body>
-                  <Card.Title>New Users</Card.Title>
-                  <Card.Text>{adminMetrics.newUsers}</Card.Text>
-                </Card.Body>
-              </Card>
-            </Col>
-            <Col md={3}>
-              <Card>
-                <Card.Body>
-                  <Card.Title>Total Users</Card.Title>
-                  <Card.Text>{adminMetrics.totalUsers}</Card.Text>
-                </Card.Body>
-              </Card>
-            </Col>
-            <Col md={3}>
-              <Card>
-                <Card.Body>
-                  <Card.Title>Tickets in Development</Card.Title>
-                  <Card.Text>{adminMetrics.ticketsInDevelopment}</Card.Text>
-                </Card.Body>
-              </Card>
-            </Col>
-            <Col md={3}>
-              <Card>
-                <Card.Body>
-                  <Card.Title>Total Developers</Card.Title>
-                  <Card.Text>{adminMetrics.totalDevelopers}</Card.Text>
+                  <Card.Title>User Types Distribution</Card.Title>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={userTypeData}>
+                      <XAxis dataKey="type" />
+                      <YAxis />
+                      <Tooltip />
+                      <Legend />
+                      <Bar dataKey="count" fill="#8884d8" />
+                    </BarChart>
+                  </ResponsiveContainer>
                 </Card.Body>
               </Card>
             </Col>
           </Row>
-        )}
-
-        {/* Priority Projects Pie Chart */}
-        <Row className="mb-4">
-          <Col md={6}>
-            <Card>
-              <Card.Body>
-                <Card.Title>Priority Distribution</Card.Title>
-                <ResponsiveContainer width="100%" height={300}>
-                  <PieChart>
-                    <Pie
-                      data={priorityData}
-                      dataKey="value"
-                      nameKey="name"
-                      cx="50%"
-                      cy="50%"
-                      outerRadius={80}
-                      fill="#8884d8"
-                      label
-                    >
-                      {priorityData.map((entry, index) => (
-                        <Cell
-                          key={`cell-${index}`}
-                          fill={pieColors[index % pieColors.length]}
-                        />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                    <Legend verticalAlign="bottom" height={36} />
-                  </PieChart>
-                </ResponsiveContainer>
-              </Card.Body>
-            </Card>
-          </Col>
-
-          {/* Active Ticket Distribution Pie Chart */}
-          <Col md={6}>
-            <Card>
-              <Card.Body>
-                <Card.Title>Active Ticket Distribution</Card.Title>
-                <ResponsiveContainer width="100%" height={300}>
-                  <PieChart>
-                    <Pie
-                      data={ticketDistribution}
-                      dataKey="tickets"
-                      nameKey="project"
-                      cx="50%"
-                      cy="50%"
-                      outerRadius={80}
-                      fill="#82ca9d"
-                      label
-                    >
-                      {ticketDistribution.map((entry, index) => (
-                        <Cell
-                          key={`cell-${index}`}
-                          fill={pieColors[index % pieColors.length]}
-                        />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                    <Legend verticalAlign="bottom" height={36} />
-                  </PieChart>
-                </ResponsiveContainer>
-              </Card.Body>
-            </Card>
-          </Col>
-        </Row>
-
-        {/* User Types Bar Chart */}
-        <Row className="mb-4">
-          <Col>
-            <Card>
-              <Card.Body>
-                <Card.Title>User Types Distribution</Card.Title>
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={userTypeData}>
-                    <XAxis dataKey="type" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="count" fill="#8884d8" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </Card.Body>
-            </Card>
-          </Col>
         </Row>
       </Container>
     </MainNav>

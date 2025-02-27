@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  handleClearAllNotifications,
   handleGetNotifications,
   handleMarkAllNotificationsAsRead,
   handleMarkNotificationAsRead,
@@ -18,6 +19,11 @@ notificationRouter.put(
   "/read/all",
   ensureAuthenticated,
   handleMarkAllNotificationsAsRead
+);
+notificationRouter.delete(
+  "/clear-all",
+  ensureAuthenticated,
+  handleClearAllNotifications
 );
 
 export default notificationRouter;

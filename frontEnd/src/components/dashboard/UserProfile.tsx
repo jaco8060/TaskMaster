@@ -10,12 +10,17 @@ import {
   Image,
   Row,
 } from "react-bootstrap";
+import Toast from "react-bootstrap/Toast";
 import { AuthContext, AuthContextType } from "../../contexts/AuthProvider";
 import { MainNav } from "./NavBars";
 
 const UserProfile: React.FC = () => {
-  // Assumes your User type now includes profile_picture?: string
   const { user, setUser } = useContext(AuthContext) as AuthContextType;
+
+  // Determine if this is a demo user (assuming demo accounts have usernames starting with "demo_")
+  const isDemoUser = user?.username.startsWith("demo_");
+
+  // Initialize local state from the user context
   const [username, setUsername] = useState(user?.username || "");
   const [email, setEmail] = useState(user?.email || "");
   const [password, setPassword] = useState("");
@@ -24,6 +29,11 @@ const UserProfile: React.FC = () => {
   const [preview, setPreview] = useState<string>("");
   const [message, setMessage] = useState("");
   const [roleRequestMessage, setRoleRequestMessage] = useState("");
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastVariant, setToastVariant] = useState<"success" | "danger">(
+    "success"
+  );
 
   // Generate a preview of the selected profile picture file
   useEffect(() => {
@@ -38,6 +48,11 @@ const UserProfile: React.FC = () => {
 
   const handleProfileSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // For demo users, do not allow any changes.
+    if (isDemoUser) {
+      setMessage("Demo users are not allowed to update their profile.");
+      return;
+    }
     if (password && password !== confirmPassword) {
       setMessage("Passwords do not match");
       return;
@@ -64,14 +79,23 @@ const UserProfile: React.FC = () => {
         }
       );
       setUser(response.data);
-      setMessage("Profile updated successfully");
+      setToastVariant("success");
+      setToastMessage("Profile updated successfully");
+      setShowToast(true);
     } catch (error) {
       console.error("Error updating profile", error);
-      setMessage("Failed to update profile");
+      setToastVariant("danger");
+      setToastMessage("Failed to update profile");
+      setShowToast(true);
     }
   };
 
   const handleRoleRequest = async () => {
+    // For demo users, prevent role change requests.
+    if (isDemoUser) {
+      setMessage("Demo users cannot request a role change.");
+      return;
+    }
     if (!roleRequestMessage) {
       setMessage("Please enter a message for role change request");
       return;
@@ -84,21 +108,47 @@ const UserProfile: React.FC = () => {
       );
       setMessage(response.data.message);
       setRoleRequestMessage("");
+      setToastVariant("success");
+      setToastMessage("Role change request sent successfully");
+      setShowToast(true);
     } catch (error) {
       console.error("Error requesting role change", error);
-      setMessage("Failed to send role change request");
+      setToastVariant("danger");
+      setToastMessage("Failed to send role change request");
+      setShowToast(true);
     }
   };
 
   return (
     <MainNav>
+      <Toast
+        onClose={() => setShowToast(false)}
+        show={showToast}
+        delay={3000}
+        autohide
+        bg={toastVariant}
+        className="position-fixed start-50 translate-middle-x"
+        style={{ top: "70px" }}
+      >
+        <Toast.Header>
+          <strong className="me-auto">
+            {toastVariant === "success" ? "Success" : "Error"}
+          </strong>
+        </Toast.Header>
+        <Toast.Body className="text-white">{toastMessage}</Toast.Body>
+      </Toast>
       <div className="d-flex flex-column">
         <Container className="section-container">
           <h2>User Profile</h2>
           {message && <Alert variant="info">{message}</Alert>}
+          {isDemoUser && (
+            <Alert variant="warning">
+              You are logged in as a demo user. Changes to your profile are not
+              permitted.
+            </Alert>
+          )}
           <Form onSubmit={handleProfileSubmit}>
             <Row className="mb-3">
-              <div></div>
               <Col md={6}>
                 <Form.Group>
                   <div className="d-flex flex-column justify-content-center align-items-center">
@@ -122,12 +172,12 @@ const UserProfile: React.FC = () => {
                     <Form.Control
                       type="file"
                       onChange={(e) => {
-                        // Typecast e.target as HTMLInputElement to access .files
                         const target = e.target as HTMLInputElement;
                         if (target.files) {
                           setProfilePicture(target.files[0]);
                         }
                       }}
+                      disabled={isDemoUser}
                     />
                   </div>
                 </Form.Group>
@@ -140,6 +190,7 @@ const UserProfile: React.FC = () => {
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     required
+                    disabled={isDemoUser}
                   />
                 </Form.Group>
                 <Form.Group className="mb-3">
@@ -149,6 +200,7 @@ const UserProfile: React.FC = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
+                    disabled={isDemoUser}
                   />
                 </Form.Group>
                 <Form.Group className="mb-3">
@@ -158,6 +210,7 @@ const UserProfile: React.FC = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Leave blank to keep current password"
+                    disabled={isDemoUser}
                   />
                 </Form.Group>
                 <Form.Group className="mb-3">
@@ -167,6 +220,7 @@ const UserProfile: React.FC = () => {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="Confirm new password"
+                    disabled={isDemoUser}
                   />
                 </Form.Group>
               </Col>
@@ -179,30 +233,35 @@ const UserProfile: React.FC = () => {
                 readOnly
               />
             </Form.Group>
-            <Button type="submit" variant="primary">
-              Update Profile
-            </Button>
+            {!isDemoUser && (
+              <Button type="submit" variant="primary">
+                Update Profile
+              </Button>
+            )}
           </Form>
 
+          {/* Hide role change request for demo users */}
+          {!isDemoUser && (
+            <>
+              <hr />
+              <h4>Request Role Change / Message Admin/PM</h4>
+              <Form.Group className="mb-3">
+                <Form.Label>Message</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={3}
+                  value={roleRequestMessage}
+                  onChange={(e) => setRoleRequestMessage(e.target.value)}
+                  placeholder="Enter your request message"
+                />
+              </Form.Group>
+              <Button onClick={handleRoleRequest} variant="secondary">
+                Send Request
+              </Button>
+            </>
+          )}
+
           <hr />
-
-          <h4>Request Role Change / Message Admin/PM</h4>
-          <Form.Group className="mb-3">
-            <Form.Label>Message</Form.Label>
-            <Form.Control
-              as="textarea"
-              rows={3}
-              value={roleRequestMessage}
-              onChange={(e) => setRoleRequestMessage(e.target.value)}
-              placeholder="Enter your request message"
-            />
-          </Form.Group>
-          <Button onClick={handleRoleRequest} variant="secondary">
-            Send Request
-          </Button>
-
-          <hr />
-
           <h4>Feedback and Support</h4>
           <p>
             If you encounter issues or have feedback, please submit an issue on

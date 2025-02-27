@@ -1,4 +1,5 @@
 import {
+  deleteAllNotificationsForUser,
   getNotificationsForUser,
   markAllNotificationsAsRead,
   markNotificationAsRead,
@@ -42,5 +43,16 @@ export const handleMarkAllNotificationsAsRead = async (req, res) => {
   } catch (error) {
     console.error("Error marking all notifications as read:", error);
     res.status(500).json({ error: "Failed to mark notifications as read" });
+  }
+};
+
+export const handleClearAllNotifications = async (req, res) => {
+  const userId = req.user.id;
+  try {
+    await deleteAllNotificationsForUser(userId);
+    res.status(200).json({ message: "All notifications cleared" });
+  } catch (error) {
+    console.error("Error clearing notifications:", error);
+    res.status(500).json({ error: "Failed to clear notifications" });
   }
 };

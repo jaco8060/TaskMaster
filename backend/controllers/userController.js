@@ -1,10 +1,11 @@
+// backend/controllers/userController.js
 import multer from "multer";
 import { pool } from "../database.js";
 import { createNotification } from "../models/notificationModel.js";
 import {
   assignRoles,
-  getUsers,
   getUsersAssignedBy,
+  getUsersByOrganization,
   updateUserProfile,
 } from "../models/userModel.js";
 
@@ -22,9 +23,14 @@ export const uploadProfilePicture = multer({ storage });
 export const handleGetUsers = async (req, res) => {
   const assignedBy = req.query.assigned_by;
   try {
-    const users = assignedBy
-      ? await getUsersAssignedBy(assignedBy)
-      : await getUsers();
+    let users;
+    if (assignedBy) {
+      // Pass the organization id as well:
+      users = await getUsersAssignedBy(assignedBy, req.user.organization_id);
+    } else {
+      // Otherwise, list all users in the same organization.
+      users = await getUsersByOrganization(req.user.organization_id);
+    }
     res.json(users);
   } catch (error) {
     console.error("Error fetching users:", error);
@@ -34,8 +40,7 @@ export const handleGetUsers = async (req, res) => {
 
 export const handleAssignRoles = async (req, res) => {
   const { userIds, role } = req.body;
-  const assignedBy = req.user.id; // logged-in user's ID in req.user
-
+  const assignedBy = req.user.id;
   try {
     await assignRoles(userIds, role, assignedBy);
     res.status(200).send({ message: "Role assigned successfully!" });
@@ -49,7 +54,7 @@ export const handleRemoveRoleAssignment = async (req, res) => {
   const userId = req.params.userId;
   try {
     const result = await pool.query(
-      "UPDATE users SET role = 'user', assigned_by = NULL WHERE id = $1 RETURNING *",
+      "UPDATE users SET role = 'submitter', assigned_by = NULL WHERE id = $1 RETURNING *",
       [userId]
     );
     if (result.rowCount === 0) {

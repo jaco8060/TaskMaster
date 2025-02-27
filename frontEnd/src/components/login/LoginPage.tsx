@@ -1,9 +1,10 @@
 import axios from "axios";
 import React, { useContext, useState } from "react";
-import { Button, Col, Container, Form, Row } from "react-bootstrap";
+import { Button, Col, Container, Form, Row, Toast } from "react-bootstrap";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../contexts/AuthProvider";
 import ForgotPassword from "./ForgotPassword";
+import RegisterWithOrganization from "./RegisterWithOrganization";
 import ResetPassword from "./ResetPassword.tsx";
 
 // Custom hook for form handling
@@ -90,6 +91,7 @@ const Login: React.FC = () => {
   const [formData, handleChange] = useForm({ username: "", password: "" });
   const navigate = useNavigate();
   const { setUser } = useContext(AuthContext) as AuthContextType;
+  const [showToast, setShowToast] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -108,7 +110,7 @@ const Login: React.FC = () => {
       navigate("/dashboard");
     } catch (error) {
       console.error("Login error:", error);
-      alert("Login failed");
+      setShowToast(true);
     }
   };
 
@@ -167,6 +169,21 @@ const Login: React.FC = () => {
           </p>
         </div>
       </div>
+      {showToast && (
+        <Toast
+          onClose={() => setShowToast(false)}
+          show={showToast}
+          delay={3000}
+          autohide
+          bg="danger"
+          className="position-fixed top-0 start-50 translate-middle-x mt-3"
+        >
+          <Toast.Header>
+            <strong className="me-auto">Error</strong>
+          </Toast.Header>
+          <Toast.Body className="text-white">Login failed</Toast.Body>
+        </Toast>
+      )}
     </FormComponent>
   );
 };
@@ -179,13 +196,14 @@ const Register: React.FC = () => {
     email: "",
   });
   const navigate = useNavigate();
+  const [showErrorToast, setShowErrorToast] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       await axios.post(
         `${import.meta.env.VITE_URL}/auth/register`,
-        { ...formData, role: "user" },
+        { ...formData, role: "submitter" },
         {
           headers: {
             "Content-Type": "application/json",
@@ -196,7 +214,7 @@ const Register: React.FC = () => {
       navigate("/login");
     } catch (error) {
       console.error("Registration error:", error);
-      alert("Registration failed");
+      setShowErrorToast(true);
     }
   };
 
@@ -238,6 +256,23 @@ const Register: React.FC = () => {
       <Button variant="success" type="submit">
         Register
       </Button>
+      {showErrorToast && (
+        <Toast
+          onClose={() => setShowErrorToast(false)}
+          show={showErrorToast}
+          delay={5000}
+          autohide
+          bg="danger"
+          className="position-fixed top-0 start-50 translate-middle-x mt-3"
+        >
+          <Toast.Header>
+            <strong className="me-auto">Error</strong>
+          </Toast.Header>
+          <Toast.Body className="text-white">
+            Registration failed. Please try again.
+          </Toast.Body>
+        </Toast>
+      )}
     </FormComponent>
   );
 };
@@ -246,6 +281,7 @@ const Register: React.FC = () => {
 const DemoUser: React.FC = () => {
   const navigate = useNavigate();
   const { setUser } = useContext(AuthContext) as AuthContextType;
+  const [showToast, setShowToast] = useState(false);
 
   const demoUsers = [
     { role: "admin", username: "demo_admin", password: "demo123" },
@@ -277,7 +313,7 @@ const DemoUser: React.FC = () => {
       navigate("/dashboard");
     } catch (error) {
       console.error("Login error:", error);
-      alert("Demo login failed");
+      setShowToast(true);
     }
   };
 
@@ -303,6 +339,21 @@ const DemoUser: React.FC = () => {
           </div>
         </Col>
       </Row>
+      {showToast && (
+        <Toast
+          onClose={() => setShowToast(false)}
+          show={showToast}
+          delay={3000}
+          autohide
+          bg="danger"
+          className="position-fixed top-0 start-50 translate-middle-x mt-3"
+        >
+          <Toast.Header>
+            <strong className="me-auto">Error</strong>
+          </Toast.Header>
+          <Toast.Body className="text-white">Demo login failed</Toast.Body>
+        </Toast>
+      )}
     </Container>
   );
 };
@@ -312,7 +363,7 @@ const LoginPage: React.FC = () => {
   return (
     <Routes>
       <Route path="/" element={<Login />} />
-      <Route path="/register" element={<Register />} />
+      <Route path="/register" element={<RegisterWithOrganization />} />
       <Route path="/demo" element={<DemoUser />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password/:token" element={<ResetPassword />} />

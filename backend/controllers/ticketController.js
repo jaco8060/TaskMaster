@@ -12,8 +12,9 @@ import {
 
 export const handleGetTicketsByUserId = async (req, res) => {
   const userId = req.params.userId;
+  const organizationId = req.user.organization_id;
   try {
-    const tickets = await getTicketsByUserId(userId);
+    const tickets = await getTicketsByUserId(userId, organizationId);
     res.status(200).json(tickets);
   } catch (error) {
     console.error("Error fetching tickets:", error);
@@ -41,13 +42,16 @@ export const handleCreateTicket = async (req, res) => {
       reported_by,
       assigned_to
     );
-    // notify assigned user
+
+    // Only create ticket-related notification
     if (assigned_to) {
       await createNotification(
         assigned_to,
-        `A new ticket (#${ticket.id}) has been assigned to you.`
+        `You've been assigned to ticket: "${title}"`,
+        ticket.id // ticket_id
       );
     }
+
     res.status(201).json(ticket);
   } catch (error) {
     console.error("Error creating ticket:", error);
@@ -97,16 +101,19 @@ export const handleUpdateTicket = async (req, res) => {
       assigned_to,
       changed_by // Pass the user ID here
     );
-    // if assigned_to changed
+
+    // Only handle ticket assignment changes
     if (
       updatedTicket.assigned_to &&
       updatedTicket.assigned_to !== oldAssignedTo
     ) {
       await createNotification(
         updatedTicket.assigned_to,
-        `Ticket (#${updatedTicket.id}) is now assigned to you.`
+        `You've been assigned to ticket: "${updatedTicket.title}"`,
+        ticketId
       );
     }
+
     res.status(200).json(updatedTicket);
   } catch (error) {
     console.error("Error updating ticket:", error);

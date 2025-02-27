@@ -28,8 +28,7 @@ const ManageRoles: React.FC = () => {
         </Row>
         <Row>
           <Col xs={10} sm={12}>
-            {/* Pass the refresh state and the handler to update roles */}
-            <UserTable refresh={refresh} onRoleChanged={handleRefresh} />
+            <UserTable refresh={refresh} />
           </Col>
         </Row>
       </div>

@@ -1,13 +1,19 @@
 import { pool } from "../database.js";
 
-export const createProject = async (name, description, user_id) => {
+export const createProject = async (
+  name,
+  description,
+  user_id,
+  organization_id = null
+) => {
   try {
     const result = await pool.query(
-      "INSERT INTO projects (name, description, user_id) VALUES ($1, $2, $3) RETURNING *",
-      [name, description, user_id]
+      "INSERT INTO projects (name, description, user_id, organization_id) VALUES ($1, $2, $3, $4) RETURNING *",
+      [name, description, user_id, organization_id]
     );
     return result.rows[0];
   } catch (error) {
+    console.error("Error creating project:", error);
     throw error;
   }
 };

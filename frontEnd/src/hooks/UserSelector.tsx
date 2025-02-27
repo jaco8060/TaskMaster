@@ -1,3 +1,4 @@
+// frontEnd/src/hooks/UserSelector.tsx
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import {
@@ -8,6 +9,7 @@ import {
   Row,
   Spinner,
   Table,
+  Toast,
 } from "react-bootstrap";
 import "../styles/hooks/UserSelector.scss";
 
@@ -15,6 +17,8 @@ interface UserSelectorProps {
   endpoint: string;
   onAssign: (userIds: number[], role?: string) => void;
   roleSelection?: boolean;
+  // New prop: list of usernames that cannot be selected.
+  disabledUsernames?: string[];
 }
 
 interface User {
@@ -27,12 +31,14 @@ const UserSelector: React.FC<UserSelectorProps> = ({
   endpoint,
   onAssign,
   roleSelection = false,
+  disabledUsernames = [],
 }) => {
   const [users, setUsers] = useState<User[]>([]);
   const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
   const [role, setRole] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [showToast, setShowToast] = useState(false);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -49,7 +55,9 @@ const UserSelector: React.FC<UserSelectorProps> = ({
     fetchUsers();
   }, [endpoint]);
 
-  const handleSelectUser = (userId: number) => {
+  const handleSelectUser = (userId: number, username: string) => {
+    // If this user is in the disabled list, do nothing.
+    if (disabledUsernames.includes(username)) return;
     setSelectedUsers((prevSelected) =>
       prevSelected.includes(userId)
         ? prevSelected.filter((id) => id !== userId)
@@ -69,7 +77,7 @@ const UserSelector: React.FC<UserSelectorProps> = ({
         onAssign(selectedUsers);
       }
     } else {
-      alert("Please select at least one user.");
+      setShowToast(true);
     }
   };
 
@@ -93,6 +101,21 @@ const UserSelector: React.FC<UserSelectorProps> = ({
 
   return (
     <div className="user-selector">
+      <Toast
+        onClose={() => setShowToast(false)}
+        show={showToast}
+        delay={3000}
+        autohide
+        bg="danger"
+        className="position-fixed top-0 start-50 translate-middle-x mt-3"
+      >
+        <Toast.Header>
+          <strong className="me-auto">Error</strong>
+        </Toast.Header>
+        <Toast.Body className="text-white">
+          Please select at least one user
+        </Toast.Body>
+      </Toast>
       <Row className="search-container mb-3">
         <Col xs={12} md={6} className="d-flex align-items-center">
           <InputGroup>
@@ -127,18 +150,22 @@ const UserSelector: React.FC<UserSelectorProps> = ({
               </tr>
             </thead>
             <tbody>
-              {filteredUsers.map((user) => (
-                <tr
-                  key={user.id}
-                  onClick={() => handleSelectUser(user.id)}
-                  className={`user-list-table-row ${
-                    selectedUsers.includes(user.id) ? "selected" : ""
-                  }`}
-                >
-                  <td>{user.username}</td>
-                  <td>{user.email}</td>
-                </tr>
-              ))}
+              {filteredUsers.map((user) => {
+                const isDisabled = disabledUsernames.includes(user.username);
+                return (
+                  <tr
+                    key={user.id}
+                    onClick={() => handleSelectUser(user.id, user.username)}
+                    className={`user-list-table-row ${
+                      selectedUsers.includes(user.id) ? "selected" : ""
+                    } ${isDisabled ? "disabled" : ""}`}
+                    style={{ cursor: isDisabled ? "not-allowed" : "pointer" }}
+                  >
+                    <td>{user.username}</td>
+                    <td>{user.email}</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </Table>
         </div>

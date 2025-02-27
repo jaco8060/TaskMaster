@@ -28,7 +28,8 @@ export const handleCreateComment = async (req, res) => {
     if (ticket.assigned_to && ticket.assigned_to !== user_id) {
       await createNotification(
         ticket.assigned_to,
-        `New comment on ticket (#${ticket_id}).`
+        `New comment on ticket: "${ticket.title}"`,
+        ticket_id
       );
     }
 
@@ -36,7 +37,8 @@ export const handleCreateComment = async (req, res) => {
     if (ticket.reported_by && ticket.reported_by !== user_id) {
       await createNotification(
         ticket.reported_by,
-        `New comment on ticket (#${ticket_id}) you created.`
+        `New comment on ticket: "${ticket.title}" you created.`,
+        ticket_id
       );
     }
 
