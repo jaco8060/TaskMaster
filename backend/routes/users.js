@@ -6,6 +6,7 @@ import {
   handleRequestRoleChange,
   handleUpdateUserProfile,
   uploadProfilePicture,
+  handleGetUserById,
 } from "../controllers/userController.js";
 import { ensureAuthenticated } from "../middleware/authMiddleware.js";
 
@@ -38,5 +39,7 @@ userRouter.post(
   ensureAuthenticated,
   handleRequestRoleChange
 );
+
+userRouter.get('/:id', ensureAuthenticated, handleGetUserById);
 
 export default userRouter;

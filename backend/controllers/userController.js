@@ -130,3 +130,22 @@ export const handleRequestRoleChange = async (req, res) => {
     res.status(500).json({ error: "Failed to send role change request" });
   }
 };
+
+export const handleGetUserById = async (req, res) => {
+  const userId = req.params.id;
+  try {
+    const user = await pool.query(
+      'SELECT id, username, email, role, first_name, last_name, bio, organization_id, profile_picture FROM users WHERE id = $1',
+      [userId]
+    );
+    
+    if (user.rows.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.json(user.rows[0]);
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+};

@@ -10,6 +10,7 @@ import {
   Modal,
   Spinner,
   Toast,
+  Table,
 } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { AuthContext, AuthContextType } from "../../contexts/AuthProvider";
@@ -285,6 +286,14 @@ const MyOrganization: React.FC = () => {
                           Remove
                         </Button>
                       )}
+                      <Button
+                        variant="primary"
+                        size="sm"
+                        onClick={() => navigate(`/view-profile/${item.id}`)}
+                        className="ms-2"
+                      >
+                        View Profile
+                      </Button>
                     </div>
                   );
                 }

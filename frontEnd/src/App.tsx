@@ -21,6 +21,7 @@ import AdminRoute from "./components/routes/AdminRoute";
 import PrivateRoute from "./components/routes/PrivateRoute";
 import PublicRoute from "./components/routes/PublicRoute";
 import { AuthContext, AuthContextType } from "./contexts/AuthProvider";
+import ViewProfile from "./components/dashboard/ViewProfile";
 
 const App: React.FC = () => {
   return (
@@ -52,6 +53,7 @@ const App: React.FC = () => {
           <Route path="/ticket-details/:id" element={<TicketDetails />} />
           <Route path="/userprofile" element={<UserProfile />} />
           <Route path="/myorganization" element={<MyOrganization />} />
+          <Route path="/view-profile/:id" element={<ViewProfile />} />
         </Route>
         <Route element={<AdminRoute />}>
           <Route path="/manage-roles" element={<ManageRoles />} />

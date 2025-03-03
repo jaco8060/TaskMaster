@@ -12,7 +12,7 @@ export const handleSearch = async (req, res) => {
       limit: 5,
     });
     const ticketResults = await meiliClient.index("tickets").search(query, {
-      filter: `(assigned_to = ${userId} OR reported_by = ${userId}) AND project_id EXISTS`,
+      filter: `(assigned_to = ${userId} OR reported_by = ${userId}) AND organization_id = ${organizationId}`,
       limit: 5,
     });
     const projectResults = await meiliClient.index("projects").search(query, {
@@ -25,7 +25,7 @@ export const handleSearch = async (req, res) => {
         id: hit.id,
         username: hit.username,
         email: hit.email,
-        link: `/userprofile?id=${hit.id}`,
+        link: `/view-profile/${hit.id}`,
       })),
       tickets: ticketResults.hits.map((hit) => ({
         id: hit.id,

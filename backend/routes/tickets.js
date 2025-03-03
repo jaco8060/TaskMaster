@@ -41,7 +41,7 @@ ticketRouter.get("/project/:projectId", handleGetTicketsByProjectId);
 ticketRouter.get("/:id", handleGetTicketById);
 ticketRouter.put("/:id", ensureAuthenticated, handleUpdateTicket);
 ticketRouter.delete("/:id", handleDeleteTicket);
-ticketRouter.get("/user/:userId", handleGetTicketsByUserId);
+ticketRouter.get("/user/:userId", ensureAuthenticated, handleGetTicketsByUserId);
 ticketRouter.post("/:id/assign-users", ensureAuthenticated, handleAssignUsers);
 
 //History route

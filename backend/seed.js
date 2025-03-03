@@ -19,7 +19,7 @@ export const initializeIndexes = async () => {
       {
         name: "tickets",
         primaryKey: "id",
-        filterableAttributes: ["project_id", "assigned_to", "reported_by"],
+        filterableAttributes: ["assigned_to", "reported_by", "project_id", "organization_id"],
       },
       {
         name: "projects",

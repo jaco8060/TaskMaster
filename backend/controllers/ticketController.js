@@ -10,10 +10,17 @@ import {
   getTicketsByUserId,
   updateTicket,
 } from "../models/ticketModel.js";
+import { getProjectById } from "../models/projectModel.js";
 
 export const handleGetTicketsByUserId = async (req, res) => {
+  // Ensure user is authenticated
+  if (!req.user) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+
   const userId = req.params.userId;
   const organizationId = req.user.organization_id;
+  
   try {
     const tickets = await getTicketsByUserId(userId, organizationId);
     res.status(200).json(tickets);
@@ -68,16 +75,26 @@ export const handleCreateTicket = async (req, res) => {
 };
 
 export const indexTicket = async (ticket) => {
-  await meiliClient.index("tickets").addDocuments([
-    {
-      id: ticket.id,
-      title: ticket.title,
-      description: ticket.description,
-      project_id: ticket.project_id,
-      assigned_to: ticket.assigned_to,
-      reported_by: ticket.reported_by,
-    },
-  ]);
+  try {
+    const project = await getProjectById(ticket.project_id);
+    if (!project) {
+      console.error(`Project not found for ticket ${ticket.id}`);
+      return;
+    }
+    await meiliClient.index("tickets").addDocuments([
+      {
+        id: ticket.id,
+        title: ticket.title,
+        description: ticket.description,
+        project_id: ticket.project_id,
+        assigned_to: ticket.assigned_to,
+        reported_by: ticket.reported_by,
+        organization_id: project.organization_id,
+      },
+    ]);
+  } catch (error) {
+    console.error("Error indexing ticket:", error);
+  }
 };
 
 export const handleGetTicketsByProjectId = async (req, res) => {
