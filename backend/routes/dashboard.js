@@ -1,8 +1,9 @@
 // backend/routes/dashboard.js
 
 import express from "express";
+import { handleSearch } from "../controllers/searchController.js";
 import { pool } from "../database.js";
-
+import { ensureAuthenticated } from "../middleware/authMiddleware.js";
 const router = express.Router();
 
 // GET /dashboard/user-metrics?userId=...
@@ -202,5 +203,7 @@ router.get("/ticket-distribution", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch ticket distribution data" });
   }
 });
+
+router.get("/search", ensureAuthenticated, handleSearch);
 
 export default router;

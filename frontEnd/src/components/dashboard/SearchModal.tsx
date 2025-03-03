@@ -1,122 +1,109 @@
-import { useMemo, useState } from "react";
-import { Button, Form, InputGroup, ListGroup, Modal } from "react-bootstrap";
+// frontEnd/src/components/dashboard/SearchModal.tsx
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { Badge, Form, ListGroup, Modal } from "react-bootstrap";
 import { FaSearch } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import "../../styles/dashboard/NavBars.scss";
+
+interface SearchResult {
+  users: Array<{ id: number; username: string; email: string; link: string }>;
+  tickets: Array<{
+    id: number;
+    title: string;
+    description: string;
+    link: string;
+  }>;
+  projects: Array<{
+    id: number;
+    name: string;
+    description: string;
+    link: string;
+  }>;
+}
 
 const SearchModal = () => {
   const [showModal, setShowModal] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState<SearchResult>({
+    users: [],
+    tickets: [],
+    projects: [],
+  });
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Keyword groups defined inside the component
-  const keywordGroups = useMemo(
-    () => [
-      {
-        component: "Dashboard",
-        route: "/dashboard",
-        keywords: [
-          "overview",
-          "statistics",
-          "activity feed",
-          "quick actions",
-          "recent updates",
-        ],
-      },
-      {
-        component: "MyProjects",
-        route: "/myprojects",
-        keywords: [
-          "projects",
-          "create project",
-          "project details",
-          "assign personnel",
-          "project status",
-        ],
-      },
-      {
-        component: "ProjectDetails",
-        route: "/project-details/:id",
-        keywords: [
-          "project timeline",
-          "personnel management",
-          "tickets",
-          "description",
-          "active status",
-        ],
-      },
-      {
-        component: "MyTickets",
-        route: "/mytickets",
-        keywords: [
-          "tickets",
-          "bug reports",
-          "feature requests",
-          "priority",
-          "status",
-          "assignee",
-        ],
-      },
-      {
-        component: "TicketDetails",
-        route: "/ticket-details/:id",
-        keywords: [
-          "comments",
-          "attachments",
-          "history",
-          "priority",
-          "status update",
-          "description",
-        ],
-      },
-      {
-        component: "ManageRoles",
-        route: "/manage-roles",
-        keywords: [
-          "user roles",
-          "permissions",
-          "role assignment",
-          "admin controls",
-          "access levels",
-        ],
-      },
-      {
-        component: "UserProfile",
-        route: "/userprofile",
-        keywords: [
-          "profile settings",
-          "avatar",
-          "password change",
-          "email",
-          "notification preferences",
-        ],
-      },
-      {
-        component: "MyOrganization",
-        route: "/myorganization",
-        keywords: [
-          "team management",
-          "organization settings",
-          "members",
-          "invitations",
-          "billing",
-        ],
-      },
-    ],
-    []
-  );
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      if (query.trim()) {
+        handleSearch();
+      } else {
+        setResults({ users: [], tickets: [], projects: [] });
+      }
+    }, 300);
 
-  const filteredGroups = useMemo(
-    () =>
-      keywordGroups
-        .map((group) => ({
-          ...group,
-          keywords: group.keywords.filter((keyword) =>
-            keyword.toLowerCase().includes(searchQuery.toLowerCase())
-          ),
-        }))
-        .filter((group) => group.keywords.length > 0),
-    [searchQuery, keywordGroups]
-  );
+    return () => clearTimeout(delayDebounceFn);
+  }, [query]);
+
+  const handleSearch = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_URL}/dashboard/search`,
+        {
+          params: { query },
+          withCredentials: true,
+        }
+      );
+      setResults(response.data);
+    } catch (error) {
+      console.error("Search error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResultClick = (link: string) => {
+    navigate(link);
+    setShowModal(false);
+  };
+
+  const renderResults = (
+    items: any[],
+    type: string,
+    keyField: string,
+    displayField: string
+  ) =>
+    items.length > 0 && (
+      <>
+        <h6>
+          {type}{" "}
+          <Badge bg="secondary" text="primary">
+            {items.length}
+          </Badge>
+        </h6>
+        <ListGroup variant="flush">
+          {items.map((item) => (
+            <ListGroup.Item
+              key={item[keyField]}
+              action
+              onClick={() => handleResultClick(item.link)}
+              className="d-flex justify-content-between align-items-center"
+            >
+              <div>
+                <strong>{item[displayField]}</strong>
+                {item.description && (
+                  <p className="mb-0 text-muted">
+                    {item.description.slice(0, 100)}...
+                  </p>
+                )}
+                {item.email && <p className="mb-0">{item.email}</p>}
+              </div>
+            </ListGroup.Item>
+          ))}
+        </ListGroup>
+      </>
+    );
 
   return (
     <>
@@ -134,43 +121,36 @@ const SearchModal = () => {
       <Modal
         show={showModal}
         onHide={() => setShowModal(false)}
-        size="lg"
-        className="search-modal"
+        centered
+        dialogClassName="search-modal"
       >
         <Modal.Header closeButton>
-          <Modal.Title>Quick Search</Modal.Title>
+          <Modal.Title>Search TaskMaster</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <InputGroup className="mb-3 ">
+          <Form.Group className="mb-3">
             <Form.Control
-              placeholder="Search features"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              type="text"
+              placeholder="Search users, tickets, projects..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
               autoFocus
+              disabled={loading}
             />
-          </InputGroup>
-
-          <div className="search-results">
-            {filteredGroups.map((group) => (
-              <div key={group.component} className="mb-4">
-                <h6 className="mb-2">{group.component}</h6>
-                <ListGroup variant="flush">
-                  {group.keywords.map((keyword) => (
-                    <ListGroup.Item
-                      key={keyword}
-                      action
-                      onClick={() => {
-                        navigate(group.route);
-                        setShowModal(false);
-                      }}
-                    >
-                      {keyword}
-                    </ListGroup.Item>
-                  ))}
-                </ListGroup>
-              </div>
-            ))}
-          </div>
+          </Form.Group>
+          {loading ? (
+            <div className="text-center">Loading...</div>
+          ) : (
+            <div className="search-results">
+              {renderResults(results.users, "Users", "id", "username")}
+              {renderResults(results.tickets, "Tickets", "id", "title")}
+              {renderResults(results.projects, "Projects", "id", "name")}
+              {query.trim() &&
+                !results.users.length &&
+                !results.tickets.length &&
+                !results.projects.length && <p>No results found.</p>}
+            </div>
+          )}
         </Modal.Body>
       </Modal>
     </>

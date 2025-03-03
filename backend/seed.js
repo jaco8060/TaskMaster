@@ -1,7 +1,67 @@
 // backend/seed.js
 
 import bcrypt from "bcrypt";
+import { indexProject } from "./controllers/projectController.js";
+import { indexTicket } from "./controllers/ticketController.js";
+import { indexUser } from "./controllers/userController.js";
 import { pool } from "./database.js";
+import { meiliClient } from "./meilisearch.js";
+
+// Function to initialize indexes with primary keys
+export const initializeIndexes = async () => {
+  try {
+    const indexes = [
+      {
+        name: "users",
+        primaryKey: "id",
+        filterableAttributes: ["organization_id"],
+      },
+      {
+        name: "tickets",
+        primaryKey: "id",
+        filterableAttributes: ["project_id", "assigned_to", "reported_by"],
+      },
+      {
+        name: "projects",
+        primaryKey: "id",
+        filterableAttributes: ["user_id", "organization_id"],
+      },
+    ];
+
+    for (const index of indexes) {
+      // Delete existing index if it exists
+      try {
+        await meiliClient.deleteIndex(index.name);
+        console.log(`Deleted existing index: ${index.name}`);
+      } catch (error) {
+        if (error.code !== "index_not_found") {
+          throw error;
+        }
+      }
+
+      // Create the index with the primary key
+      await meiliClient.createIndex(index.name, {
+        primaryKey: index.primaryKey,
+      });
+      console.log(
+        `Created index: ${index.name} with primary key '${index.primaryKey}'`
+      );
+
+      // Set filterable attributes
+      await meiliClient.index(index.name).updateSettings({
+        filterableAttributes: index.filterableAttributes,
+      });
+      console.log(
+        `Set filterable attributes for ${
+          index.name
+        }: ${index.filterableAttributes.join(", ")}`
+      );
+    }
+  } catch (error) {
+    console.error("Error initializing indexes:", error);
+    throw error;
+  }
+};
 
 export const seedUsers = async () => {
   const users = [
@@ -85,4 +145,19 @@ export const seedUsers = async () => {
   }
 };
 
-export default seedUsers;
+export const indexAllData = async () => {
+  try {
+    const users = await pool.query("SELECT * FROM users");
+    const tickets = await pool.query("SELECT * FROM tickets");
+    const projects = await pool.query("SELECT * FROM projects");
+
+    await Promise.all([
+      ...users.rows.map((user) => indexUser(user)),
+      ...tickets.rows.map((ticket) => indexTicket(ticket)),
+      ...projects.rows.map((project) => indexProject(project)),
+    ]);
+    console.log("Data indexed successfully");
+  } catch (error) {
+    console.error("Indexing error:", error);
+  }
+};

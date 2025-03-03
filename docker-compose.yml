@@ -1,3 +1,4 @@
+# docker-compose.yml
 services:
   db:
     build:
@@ -27,10 +28,9 @@ services:
     build:
       context: ./backend
       target: builder # Use 'builder' stage for development; remove for production
-    environment:
-      NODE_ENV: development
-      DATABASE_URL: postgresql://postgres:root123@db:5432/taskmaster
-      PORT: 5000
+    env_file:
+      - ./.env # Load shared variables
+      - ./backend/.env # Load variables from backend/.env
     ports:
       - "5000:5000"
     volumes:
@@ -38,6 +38,7 @@ services:
       - /app/node_modules # Anonymous volume to prevent issues with node_modules
     depends_on:
       - db
+      - meilisearch
     networks:
       - app-network
     command: nodemon app.js --config nodemon.json # Use nodemon for development; change to 'node app.js' for production
@@ -69,8 +70,23 @@ services:
     networks:
       - app-network
 
+  meilisearch:
+    image: getmeili/meilisearch:latest
+    env_file:
+      - ./.env # Load shared variables
+    environment:
+      MEILI_ENV: production
+      MEILI_MASTER_KEY: $MEILISEARCH_API_KEY # Use variable from env_file
+    ports:
+      - "7700:7700"
+    volumes:
+      - meilisearch_data:/meili_data
+    networks:
+      - app-network
+
 volumes:
   db_data:
+  meilisearch_data:
 
 networks:
   app-network:

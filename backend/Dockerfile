@@ -1,8 +1,11 @@
 # Stage 1: Build the application
-FROM node:16-alpine AS builder
+FROM node:18-alpine AS builder
 
 # Set the working directory
 WORKDIR /app
+
+# Install curl
+RUN apk add --no-cache curl
 
 # Copy package.json and package-lock.json
 COPY package*.json ./

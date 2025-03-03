@@ -1,4 +1,5 @@
 // backend/controllers/projectController.js
+import { meiliClient } from "../meilisearch.js";
 import { createNotification } from "../models/notificationModel.js";
 import {
   assignMultiplePersonnel,
@@ -14,22 +15,41 @@ import {
 
 export const handleCreateProject = async (req, res) => {
   const { name, description } = req.body;
-  // Get the organization_id from the logged in user
   const organization_id = req.user.organization_id;
   const user_id = req.user.id;
   try {
-    // Pass organization_id to the model function (if not provided, it may be null)
     const project = await createProject(
       name,
       description,
       user_id,
       organization_id
     );
+    await meiliClient.index("projects").addDocuments([
+      {
+        id: project.id,
+        name: project.name,
+        description: project.description,
+        user_id: project.user_id,
+        organization_id: project.organization_id,
+      },
+    ]);
     res.status(201).json(project);
   } catch (error) {
     console.error("Error creating project:", error);
     res.status(500).json({ error: "Server error" });
   }
+};
+
+export const indexProject = async (project) => {
+  await meiliClient.index("projects").addDocuments([
+    {
+      id: project.id,
+      name: project.name,
+      description: project.description,
+      user_id: project.user_id,
+      organization_id: project.organization_id,
+    },
+  ]);
 };
 
 export const handleGetProjectById = async (req, res) => {

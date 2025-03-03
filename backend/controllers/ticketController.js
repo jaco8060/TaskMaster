@@ -1,3 +1,4 @@
+import { meiliClient } from "../meilisearch.js";
 import { createNotification } from "../models/notificationModel.js";
 import {
   assignUsersToTicket,
@@ -42,21 +43,41 @@ export const handleCreateTicket = async (req, res) => {
       reported_by,
       assigned_to
     );
-
-    // Only create ticket-related notification
+    await meiliClient.index("tickets").addDocuments([
+      {
+        id: ticket.id,
+        title: ticket.title,
+        description: ticket.description,
+        project_id: ticket.project_id,
+        assigned_to: ticket.assigned_to,
+        reported_by: ticket.reported_by,
+      },
+    ]);
     if (assigned_to) {
       await createNotification(
         assigned_to,
         `You've been assigned to ticket: "${title}"`,
-        ticket.id // ticket_id
+        ticket.id
       );
     }
-
     res.status(201).json(ticket);
   } catch (error) {
     console.error("Error creating ticket:", error);
     res.status(500).json({ error: "Server error" });
   }
+};
+
+export const indexTicket = async (ticket) => {
+  await meiliClient.index("tickets").addDocuments([
+    {
+      id: ticket.id,
+      title: ticket.title,
+      description: ticket.description,
+      project_id: ticket.project_id,
+      assigned_to: ticket.assigned_to,
+      reported_by: ticket.reported_by,
+    },
+  ]);
 };
 
 export const handleGetTicketsByProjectId = async (req, res) => {

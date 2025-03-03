@@ -1,6 +1,7 @@
 // backend/controllers/userController.js
 import multer from "multer";
 import { pool } from "../database.js";
+import { meiliClient } from "../meilisearch.js";
 import { createNotification } from "../models/notificationModel.js";
 import {
   assignRoles,
@@ -81,11 +82,30 @@ export const handleUpdateUserProfile = async (req, res) => {
       password: password ? password : null,
       profile_picture: req.file ? req.file.filename : null,
     });
+    await meiliClient.index("users").addDocuments([
+      {
+        id: updatedUser.id,
+        username: updatedUser.username,
+        email: updatedUser.email,
+        organization_id: updatedUser.organization_id,
+      },
+    ]);
     res.status(200).json(updatedUser);
   } catch (error) {
     console.error("Error updating profile:", error);
     res.status(500).json({ error: "Failed to update profile" });
   }
+};
+
+export const indexUser = async (user) => {
+  await meiliClient.index("users").addDocuments([
+    {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      organization_id: user.organization_id,
+    },
+  ]);
 };
 
 // Endpoint: Request role change

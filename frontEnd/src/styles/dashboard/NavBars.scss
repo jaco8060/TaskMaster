@@ -116,87 +116,58 @@
   }
 }
 
-.search-results {
-  max-height: 60vh;
-  overflow-y: auto;
-
-  .list-group-item {
-    border-radius: 0.25rem;
-    margin-bottom: 2px;
-    transition: all 0.2s;
-
-    &:hover {
-      background-color: #f8f9fa;
-      transform: translateX(5px);
-      width: calc(
-        100% - 10px
-      ); //to remove horizontal scroll bar when it translates to the side
-    }
-  }
-}
-
-.search-input-button {
-  background: var(--bs-dark);
-  color: #dee2e6;
-  border: 1px solid #dee2e6;
-  border-radius: 20px;
-  padding: 0.7rem 1rem;
-  cursor: pointer;
-  transition: all 0.2s;
-  min-width: 250px;
-  margin: auto 0;
-  &:hover {
-    border-color: #86b7fe;
-    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-  }
-
-  .bi-search {
-    color: #6c757d;
-  }
-}
-
+// frontEnd/src/styles/dashboard/NavBars.scss
 .search-modal {
   .modal-content {
-    background-color: #2d3338; // Dark background
-    color: #ffffff; // Force white text
+    background-color: var(--bs-primary);
+    color: var(--bs-secondary);
 
     .modal-header {
-      border-bottom: 1px solid #4b545c;
-
+      border-bottom: 1px solid var(--bs-secondary);
       .modal-title {
-        color: #ffffff;
+        color: var(--bs-secondary);
       }
-
       .btn-close {
-        filter: invert(1); // White close button
+        filter: invert(1);
       }
     }
 
     .modal-body {
-      background-color: #2d3338;
+      background-color: var(--bs-primary);
+      max-height: 70vh;
+      overflow-y: auto;
 
       .form-control {
-        background-color: #1e2226;
-        border-color: #4b545c;
-
+        background-color: var(--bs-secondary);
+        border-color: #090A11;
+        color: var(--bs-primary);
         &::placeholder {
-          // Color of input form search
-          color: #868f98;
+          color: var(--bs-primary);
         }
       }
 
       h6 {
-        color: #adb5bd; // Slightly gray for group headers
+        color: var(--bs-secondary);
+        margin-top: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
       }
 
       .list-group-item {
-        background-color: #2d3338;
+        background-color: var(--bs-secondary);
         border-color: #4b545c;
-        color: #ffffff;
+        color: (--bs-primary);
+        padding: 0.75rem 1rem;
+        transition: background-color 0.2s;
 
         &:hover {
-          background-color: #3a4046;
-          color: #ffffff;
+          background-color: #d29e36;
+          cursor: pointer;
+        }
+
+        .text-muted {
+          font-size: 0.85rem;
         }
       }
     }

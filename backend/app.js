@@ -13,7 +13,7 @@ import organizationRouter from "./routes/organizations.js";
 import projectRouter from "./routes/projects.js";
 import ticketRouter from "./routes/tickets.js";
 import userRouter from "./routes/users.js";
-import seedUsers from "./seed.js";
+import { indexAllData, initializeIndexes, seedUsers } from "./seed.js";
 
 dotenv.config();
 
@@ -67,7 +67,9 @@ const startServer = async () => {
 
     // Seed users if not in production
     if (process.env.NODE_ENV !== "production") {
+      await initializeIndexes();
       await seedUsers();
+      await indexAllData();
     }
 
     // Start the server
