@@ -4,6 +4,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
 import session from "express-session";
+import fetch from "node-fetch";
 import { pool } from "./database.js";
 import passport from "./passport-config.js";
 import authRouter from "./routes/auth.js";
@@ -14,7 +15,7 @@ import projectRouter from "./routes/projects.js";
 import ticketRouter from "./routes/tickets.js";
 import userRouter from "./routes/users.js";
 import { indexAllData, initializeIndexes, seedUsers } from "./seed.js";
-
+globalThis.fetch = fetch;
 dotenv.config();
 
 const app = express();
