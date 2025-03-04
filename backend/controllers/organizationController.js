@@ -321,3 +321,57 @@ export const handleValidateOrgCode = async (req, res) => {
     res.status(500).json({ error: "Failed to validate organization code" });
   }
 };
+
+export const deleteOrganization = async (req, res) => {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const { id } = req.params;
+    const userId = req.user.id;
+
+    // Get organization with admin check
+    const orgResult = await client.query(
+      `SELECT * FROM organizations 
+       WHERE id = $1 AND admin_id = $2 
+       FOR UPDATE`,
+      [id, userId]
+    );
+
+    if (orgResult.rows.length === 0) {
+      await client.query('ROLLBACK');
+      return res.status(403).json({ error: 'Not authorized' });
+    }
+
+    // Prevent deletion of demo organization
+    if (orgResult.rows[0].name === 'Demo Inc.') {
+      await client.query('ROLLBACK');
+      return res.status(403).json({ error: 'Demo organization cannot be deleted' });
+    }
+
+    // Delete organization and let cascades handle related data
+    await client.query(
+      `DELETE FROM organizations WHERE id = $1`,
+      [id]
+    );
+
+    await client.query('COMMIT');
+    res.sendStatus(204);
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error('Error deleting organization:', error);
+    
+    // Handle foreign key constraint violation
+    if (error.code === '23503') {
+      return res.status(409).json({ 
+        error: 'Organization cannot be deleted due to existing references' 
+      });
+    }
+    
+    res.status(500).json({ 
+      error: 'Failed to delete organization',
+      details: error.message 
+    });
+  } finally {
+    client.release();
+  }
+};

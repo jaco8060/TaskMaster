@@ -73,19 +73,17 @@ CREATE TABLE IF NOT EXISTS tickets (
     updated_at TIMESTAMP DEFAULT NULL
 );
 
--- Create comments table
 CREATE TABLE IF NOT EXISTS comments (
     id SERIAL PRIMARY KEY,
     comment TEXT NOT NULL,
-    ticket_id INT REFERENCES tickets(id),
+    ticket_id INT REFERENCES tickets(id) ON DELETE CASCADE,
     user_id INT REFERENCES users(id),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Create ticket_history table
 CREATE TABLE IF NOT EXISTS ticket_history (
     id SERIAL PRIMARY KEY,
-    ticket_id INT REFERENCES tickets(id),
+    ticket_id INT REFERENCES tickets(id) ON DELETE CASCADE,
     property VARCHAR(50),
     old_value TEXT,
     new_value TEXT,

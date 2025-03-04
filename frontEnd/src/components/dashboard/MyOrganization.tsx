@@ -11,6 +11,7 @@ import {
   Spinner,
   Toast,
   Table,
+  Form,
 } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { AuthContext, AuthContextType } from "../../contexts/AuthProvider";
@@ -49,6 +50,9 @@ const MyOrganization: React.FC = () => {
   const [timeRemaining, setTimeRemaining] = useState<number>(0);
   const [isBlinking, setIsBlinking] = useState(false);
   const [serverTimeOffset, setServerTimeOffset] = useState<number>(0);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [confirmationText, setConfirmationText] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Calculate server-client time offset
   const calculateTimeOffset = (serverTime: string) => {
@@ -211,6 +215,38 @@ const MyOrganization: React.FC = () => {
     }
   };
 
+  const handleDeleteOrganization = async () => {
+    if (!organization || confirmationText !== "I understand") return;
+    
+    setIsDeleting(true);
+    try {
+      await axios.delete(
+        `${import.meta.env.VITE_URL}/organizations/${organization.id}`,
+        { withCredentials: true }
+      );
+      
+      setMessage("Organization deleted successfully");
+      setOrganization(null);
+      navigate("/dashboard");
+    } catch (error) {
+      let errorMessage = "Failed to delete organization";
+      if (axios.isAxiosError(error)) {
+        errorMessage = error.response?.data?.error || errorMessage;
+        if (error.response?.data?.details) {
+          errorMessage += `: ${error.response.data.details}`;
+        }
+      }
+      
+      setRequestToastVariant("danger");
+      setRequestToastMessage(errorMessage);
+      setShowRequestToast(true);
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteModal(false);
+      setConfirmationText("");
+    }
+  };
+
   // Format remaining time
   const formatTimeRemaining = (seconds: number): string => {
     if (seconds < 60) {
@@ -220,6 +256,29 @@ const MyOrganization: React.FC = () => {
     const remainingSeconds = seconds % 60;
     return `${minutes}m ${remainingSeconds}s`;
   };
+
+  const renderDeleteSection = () => (
+    <>
+      <hr />
+      <div className="mt-4 border-top pt-3">
+        <h5 className="text-danger">Danger Zone</h5>
+        <Alert variant="danger">
+          Deleting the organization will permanently remove all associated data including:
+          <ul>
+            <li>All projects and tickets</li>
+            <li>Comments and attachments</li>
+            <li>Organization membership records</li>
+          </ul>
+          <Button 
+            variant="outline-danger" 
+            onClick={() => setShowDeleteModal(true)}
+          >
+            Delete Organization
+          </Button>
+        </Alert>
+      </div>
+    </>
+  );
 
   if (loading) {
     return (
@@ -271,7 +330,8 @@ const MyOrganization: React.FC = () => {
               searchFields={["username", "email", "role"]}
               renderCell={(item: any, accessor: string) => {
                 if (accessor === "actions" && user?.role === "admin") {
-                  const isDisabled = disabledUsernames.includes(item.username);
+                  const isDisabled = disabledUsernames.includes(item.username) || 
+                                    item.id === organization.admin_id;
                   return (
                     <div className="d-flex justify-content-end">
                       {!isDisabled && (
@@ -353,6 +413,9 @@ const MyOrganization: React.FC = () => {
                 />
               </>
             )}
+            {user?.role === "admin" && 
+              !disabledUsernames.includes(user.username) && 
+              renderDeleteSection()}
           </>
         ) : (
           <>
@@ -418,6 +481,37 @@ const MyOrganization: React.FC = () => {
             </Button>
           </Modal.Footer>
         </Modal>
+        {showDeleteModal && (
+          <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
+            <Modal.Header closeButton>
+              <Modal.Title>Delete Organization</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <p className="text-danger">
+                WARNING: This action is irreversible! All organization data will be permanently deleted.
+              </p>
+              <p>Type "I understand" to confirm:</p>
+              <Form.Control
+                type="text"
+                value={confirmationText}
+                onChange={(e) => setConfirmationText(e.target.value)}
+                placeholder="I understand"
+              />
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
+                Cancel
+              </Button>
+              <Button 
+                variant="danger" 
+                onClick={handleDeleteOrganization}
+                disabled={confirmationText !== "I understand" || isDeleting}
+              >
+                {isDeleting ? <Spinner size="sm" /> : "Confirm Deletion"}
+              </Button>
+            </Modal.Footer>
+          </Modal>
+        )}
       </Container>
     </MainNav>
   );

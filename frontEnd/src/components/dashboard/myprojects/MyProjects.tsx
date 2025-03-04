@@ -115,7 +115,8 @@ const MyProjects: React.FC = () => {
         delay={3000}
         autohide
         bg={toastVariant}
-        className="position-fixed top-0 start-50 translate-middle-x mt-3"
+        className="position-fixed start-50 translate-middle-x"
+        style={{ top: "70px" }}
       >
         <Toast.Header>
           <strong className="me-auto">
