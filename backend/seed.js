@@ -19,7 +19,12 @@ export const initializeIndexes = async () => {
       {
         name: "tickets",
         primaryKey: "id",
-        filterableAttributes: ["assigned_to", "reported_by", "project_id", "organization_id"],
+        filterableAttributes: [
+          "assigned_to",
+          "reported_by",
+          "project_id",
+          "organization_id",
+        ],
       },
       {
         name: "projects",
@@ -84,9 +89,7 @@ export const seedUsers = async () => {
       );
 
       // Reset sequence to prevent conflicts
-      await pool.query(
-        "ALTER SEQUENCE organizations_id_seq RESTART WITH 1000"
-      );
+      await pool.query("ALTER SEQUENCE organizations_id_seq RESTART WITH 1000");
 
       console.log("Organization Demo Inc. created with initial org_code");
     }

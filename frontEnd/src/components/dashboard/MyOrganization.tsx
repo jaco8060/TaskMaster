@@ -7,11 +7,11 @@ import {
   Badge,
   Button,
   Container,
+  Form,
   Modal,
   Spinner,
-  Toast,
   Table,
-  Form,
+  Toast,
 } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { AuthContext, AuthContextType } from "../../contexts/AuthProvider";
@@ -217,14 +217,14 @@ const MyOrganization: React.FC = () => {
 
   const handleDeleteOrganization = async () => {
     if (!organization || confirmationText !== "I understand") return;
-    
+
     setIsDeleting(true);
     try {
       await axios.delete(
         `${import.meta.env.VITE_URL}/organizations/${organization.id}`,
         { withCredentials: true }
       );
-      
+
       setMessage("Organization deleted successfully");
       setOrganization(null);
       navigate("/dashboard");
@@ -236,7 +236,7 @@ const MyOrganization: React.FC = () => {
           errorMessage += `: ${error.response.data.details}`;
         }
       }
-      
+
       setRequestToastVariant("danger");
       setRequestToastMessage(errorMessage);
       setShowRequestToast(true);
@@ -263,14 +263,15 @@ const MyOrganization: React.FC = () => {
       <div className="mt-4 border-top pt-3">
         <h5 className="text-danger">Danger Zone</h5>
         <Alert variant="danger">
-          Deleting the organization will permanently remove all associated data including:
+          Deleting the organization will permanently remove all associated data
+          including:
           <ul>
             <li>All projects and tickets</li>
             <li>Comments and attachments</li>
             <li>Organization membership records</li>
           </ul>
-          <Button 
-            variant="outline-danger" 
+          <Button
+            variant="outline-danger"
             onClick={() => setShowDeleteModal(true)}
           >
             Delete Organization
@@ -330,8 +331,9 @@ const MyOrganization: React.FC = () => {
               searchFields={["username", "email", "role"]}
               renderCell={(item: any, accessor: string) => {
                 if (accessor === "actions" && user?.role === "admin") {
-                  const isDisabled = disabledUsernames.includes(item.username) || 
-                                    item.id === organization.admin_id;
+                  const isDisabled =
+                    disabledUsernames.includes(item.username) ||
+                    item.id === organization.admin_id;
                   return (
                     <div className="d-flex justify-content-end">
                       {!isDisabled && (
@@ -413,8 +415,8 @@ const MyOrganization: React.FC = () => {
                 />
               </>
             )}
-            {user?.role === "admin" && 
-              !disabledUsernames.includes(user.username) && 
+            {user?.role === "admin" &&
+              !disabledUsernames.includes(user.username) &&
               renderDeleteSection()}
           </>
         ) : (
@@ -482,13 +484,17 @@ const MyOrganization: React.FC = () => {
           </Modal.Footer>
         </Modal>
         {showDeleteModal && (
-          <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
+          <Modal
+            show={showDeleteModal}
+            onHide={() => setShowDeleteModal(false)}
+          >
             <Modal.Header closeButton>
               <Modal.Title>Delete Organization</Modal.Title>
             </Modal.Header>
             <Modal.Body>
               <p className="text-danger">
-                WARNING: This action is irreversible! All organization data will be permanently deleted.
+                WARNING: This action is irreversible! All organization data will
+                be permanently deleted.
               </p>
               <p>Type "I understand" to confirm:</p>
               <Form.Control
@@ -499,11 +505,14 @@ const MyOrganization: React.FC = () => {
               />
             </Modal.Body>
             <Modal.Footer>
-              <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
+              <Button
+                variant="secondary"
+                onClick={() => setShowDeleteModal(false)}
+              >
                 Cancel
               </Button>
-              <Button 
-                variant="danger" 
+              <Button
+                variant="danger"
                 onClick={handleDeleteOrganization}
                 disabled={confirmationText !== "I understand" || isDeleting}
               >

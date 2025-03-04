@@ -14,6 +14,7 @@ import OrganizationStatus from "./components/dashboard/OrganizationStatus";
 import MyTickets from "./components/dashboard/tickets/MyTickets";
 import TicketDetails from "./components/dashboard/tickets/TicketDetails";
 import UserProfile from "./components/dashboard/UserProfile";
+import ViewProfile from "./components/dashboard/ViewProfile";
 import LoginPage from "./components/login/LoginPage";
 import RegisterWithOrganization from "./components/login/RegisterWithOrganization"; // New registration flow
 import ResetPassword from "./components/login/ResetPassword";
@@ -21,7 +22,6 @@ import AdminRoute from "./components/routes/AdminRoute";
 import PrivateRoute from "./components/routes/PrivateRoute";
 import PublicRoute from "./components/routes/PublicRoute";
 import { AuthContext, AuthContextType } from "./contexts/AuthProvider";
-import ViewProfile from "./components/dashboard/ViewProfile";
 
 const App: React.FC = () => {
   return (

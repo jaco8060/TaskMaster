@@ -1,9 +1,17 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Button, Container, Spinner, Toast, Alert, Row, Col, Image } from "react-bootstrap";
-import { useParams, useNavigate } from "react-router-dom";
+import {
+  Alert,
+  Button,
+  Col,
+  Container,
+  Image,
+  Row,
+  Spinner,
+  Toast,
+} from "react-bootstrap";
+import { useNavigate, useParams } from "react-router-dom";
 import { MainNav } from "./NavBars";
-
 
 interface UserProfile {
   id: number;
@@ -35,9 +43,12 @@ const ViewProfile: React.FC = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_URL}/users/${id}`, {
-          withCredentials: true,
-        });
+        const response = await axios.get(
+          `${import.meta.env.VITE_URL}/users/${id}`,
+          {
+            withCredentials: true,
+          }
+        );
         setUser(response.data);
       } catch (error) {
         console.error("Error fetching user:", error);
@@ -103,8 +114,12 @@ const ViewProfile: React.FC = () => {
               <Image
                 src={
                   user.profile_picture
-                    ? `${import.meta.env.VITE_URL}/uploads/profile_pictures/${user.profile_picture}`
-                    : `${import.meta.env.VITE_URL}/uploads/profile_pictures/default_profile.svg`
+                    ? `${import.meta.env.VITE_URL}/uploads/profile_pictures/${
+                        user.profile_picture
+                      }`
+                    : `${
+                        import.meta.env.VITE_URL
+                      }/uploads/profile_pictures/default_profile.svg`
                 }
                 roundedCircle
                 width={200}
@@ -113,14 +128,25 @@ const ViewProfile: React.FC = () => {
               />
             </Col>
             <Col md={8}>
-              <p><strong>Username:</strong> {user.username}</p>
-              <p><strong>Email:</strong> {user.email}</p>
-              <p><strong>First Name:</strong> {user.first_name || "Not set"}</p>
-              <p><strong>Last Name:</strong> {user.last_name || "Not set"}</p>
-              <p><strong>Bio:</strong> {user.bio || "Not set"}</p>
+              <p>
+                <strong>Username:</strong> {user.username}
+              </p>
+              <p>
+                <strong>Email:</strong> {user.email}
+              </p>
+              <p>
+                <strong>First Name:</strong> {user.first_name || "Not set"}
+              </p>
+              <p>
+                <strong>Last Name:</strong> {user.last_name || "Not set"}
+              </p>
+              <p>
+                <strong>Bio:</strong> {user.bio || "Not set"}
+              </p>
               <p>
                 <strong>Role:</strong> {user.role} -{" "}
-                {roleDescriptions[user.role as keyof typeof roleDescriptions] || "No description"}
+                {roleDescriptions[user.role as keyof typeof roleDescriptions] ||
+                  "No description"}
               </p>
             </Col>
           </Row>

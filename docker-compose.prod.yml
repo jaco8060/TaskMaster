@@ -1,41 +1,66 @@
+# docker-compose.prod.yml
 services:
   db:
-    image: postgres:14-alpine
+    build:
+      context: ./db-init
+      dockerfile: Dockerfile
+    command:
+      - "postgres"
+      - "-c"
+      - "shared_preload_libraries=pg_cron"
+      - "-c"
+      - "cron.database_name=taskmaster"
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: root123
+      POSTGRES_PASSWORD: "your_secure_password" # Replace with a secure password
       POSTGRES_DB: taskmaster
     volumes:
       - db_data:/var/lib/postgresql/data
+      - ./db-init/:/docker-entrypoint-initdb.d/
     networks:
       - app-network
 
   backend:
     build:
       context: ./backend
+    env_file:
+      - ./.env
+      - ./backend/.env
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+      - meilisearch
+    networks:
+      - app-network
+
+  meilisearch:
+    image: getmeili/meilisearch:latest
+    env_file:
+      - ./.env
     environment:
-      NODE_ENV: production
-      DATABASE_URL: postgresql://postgres:root123@db:5432/taskmaster
-      PORT: 5000
+      MEILI_ENV: production
+      MEILI_MASTER_KEY: "$MEILISEARCH_API_KEY"
+    volumes:
+      - meilisearch_data:/meili_data
+    networks:
+      - app-network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: "$PGADMIN_PASSWORD" # Replace with a secure password
+    ports:
+      - "5050:80"
     depends_on:
       - db
     networks:
       - app-network
-    command: node app.js
-
-  frontend:
-    build:
-      context: ./frontend
-    ports:
-      - "80:80"
-    depends_on:
-      - backend
-    networks:
-      - app-network
-    command: nginx -g 'daemon off;'
 
 volumes:
   db_data:
+  meilisearch_data:
 
 networks:
   app-network:

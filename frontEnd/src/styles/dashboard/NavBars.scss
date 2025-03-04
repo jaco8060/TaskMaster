@@ -139,7 +139,7 @@
 
       .form-control {
         background-color: var(--bs-secondary);
-        border-color: #090A11;
+        border-color: #090a11;
         color: var(--bs-primary);
         &::placeholder {
           color: var(--bs-primary);
@@ -184,7 +184,7 @@
   transition: all 0.2s;
   min-width: 250px;
   margin: auto 0;
-  
+
   &:hover {
     border-color: #86b7fe;
     box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);

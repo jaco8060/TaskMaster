@@ -1,12 +1,12 @@
 import express from "express";
 import {
   handleAssignRoles,
+  handleGetUserById,
   handleGetUsers,
   handleRemoveRoleAssignment,
   handleRequestRoleChange,
   handleUpdateUserProfile,
   uploadProfilePicture,
-  handleGetUserById,
 } from "../controllers/userController.js";
 import { ensureAuthenticated } from "../middleware/authMiddleware.js";
 
@@ -40,6 +40,6 @@ userRouter.post(
   handleRequestRoleChange
 );
 
-userRouter.get('/:id', ensureAuthenticated, handleGetUserById);
+userRouter.get("/:id", ensureAuthenticated, handleGetUserById);
 
 export default userRouter;
