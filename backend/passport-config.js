@@ -22,7 +22,9 @@ passport.deserializeUser(async (id, done) => {
 passport.use(
   new LocalStrategy(
     { usernameField: "username", passwordField: "password" },
+
     async (username, password, done) => {
+      // console.log("Login attempt:", { username, password });
       try {
         const user = await findUserByUsername(username);
         if (!user) {

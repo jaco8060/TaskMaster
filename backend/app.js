@@ -19,31 +19,50 @@ globalThis.fetch = fetch;
 dotenv.config();
 
 const app = express();
+if (process.env.NODE_ENV !== "production") {
+  // Development
+  app.use(
+    cors({
+      origin: process.env.FRONTEND_URL,
+      credentials: true,
+    })
+  );
+  app.use(
+    session({
+      name: "my_session_cookie",
+      secret: "secret_key123",
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        httpOnly: true,
+        secure: false,
+        maxAge: 24 * 60 * 60 * 1000,
+        path: "/",
+      },
+    })
+  );
+} else {
+  // Production
+  app.set("trust proxy", 1); // Required for secure cookies in production
 
-app.use(
-  cors({
-    origin: process.env.FRONTEND_URL,
-    credentials: true,
-  })
-);
-
+  app.use(
+    session({
+      name: "my_session_cookie",
+      secret: "secret_key123",
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        httpOnly: true,
+        secure: true, // Required for HTTPS
+        sameSite: "none", // Allows cross-origin requests
+        maxAge: 24 * 60 * 60 * 1000,
+        path: "/",
+      },
+    })
+  );
+}
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-app.use(
-  session({
-    name: "my_session_cookie",
-    secret: "secret_key123",
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      httpOnly: true,
-      secure: false,
-      maxAge: 24 * 60 * 60 * 1000,
-      path: "/",
-    },
-  })
-);
 
 app.use("/uploads", express.static("uploads"));
 
@@ -67,11 +86,11 @@ const startServer = async () => {
     console.log("Database connected successfully.");
 
     // Seed users if not in production
-    if (process.env.NODE_ENV !== "production") {
-      await initializeIndexes();
-      await seedUsers();
-      await indexAllData();
-    }
+    // if (process.env.NODE_ENV !== "production") {
+    await initializeIndexes();
+    await seedUsers();
+    await indexAllData();
+    // }
 
     // Start the server
     app.listen(process.env.PORT || 5000, () => {
