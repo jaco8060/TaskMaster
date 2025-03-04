@@ -232,6 +232,11 @@ const RegisterWithOrganization: React.FC = () => {
         role: "submitter",
       };
 
+      // Add organization name when creating new org
+      if (orgChoice === "create") {
+        registrationData.organization_name = organizationName;
+      }
+
       // Set organization parameters based on join method
       if (joinMethod === "code") {
         registrationData.org_code = orgJoinInfo.org_code;

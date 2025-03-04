@@ -80,11 +80,15 @@ export const seedUsers = async () => {
       await pool.query(
         `INSERT INTO organizations (id, name, org_code, code_expiration) 
          VALUES (1, 'Demo Inc.', $1, NOW() + INTERVAL '1 minute')`,
-        [Math.random().toString(36).substring(2, 22)] // Simple random code for seeding
+        [Math.random().toString(36).substring(2, 22)]
       );
-      console.log(
-        "Organization Demo Inc. created with initial org_code and code_expiration"
+
+      // Reset sequence to prevent conflicts
+      await pool.query(
+        "ALTER SEQUENCE organizations_id_seq RESTART WITH 1000"
       );
+
+      console.log("Organization Demo Inc. created with initial org_code");
     }
 
     // Seed users with organization_id = 1

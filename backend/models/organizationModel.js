@@ -1,13 +1,10 @@
 import { pool } from "../database.js";
 
 export const createOrganization = async (name, admin_id) => {
-  // Generate a random organization code (e.g., 6–character uppercase string)
-  const org_code = Math.random().toString(36).substring(2, 8).toUpperCase();
-  // Set expiration 7 days from now
-  const code_expiration = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
   const result = await pool.query(
-    "INSERT INTO organizations (name, org_code, code_expiration, admin_id) VALUES ($1, $2, $3, $4) RETURNING *",
-    [name, org_code, code_expiration, admin_id]
+    `INSERT INTO organizations (name, admin_id) 
+     VALUES ($1, $2) RETURNING *`,
+    [name, admin_id]
   );
   return result.rows[0];
 };
