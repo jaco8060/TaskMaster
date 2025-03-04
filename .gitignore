@@ -23,5 +23,7 @@ dist-ssr
 *.sln
 *.sw?
 *.env
+*.pem
+nginx.conf
 
 uploads
