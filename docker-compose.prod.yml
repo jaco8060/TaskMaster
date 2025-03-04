@@ -12,7 +12,7 @@ services:
       - "cron.database_name=taskmaster"
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: "your_secure_password" # Replace with a secure password
+      POSTGRES_PASSWORD: "$PG_PASSWORD"
       POSTGRES_DB: taskmaster
     volumes:
       - db_data:/var/lib/postgresql/data
@@ -50,7 +50,7 @@ services:
     image: dpage/pgadmin4
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: "$PGADMIN_PASSWORD" # Replace with a secure password
+      PGADMIN_DEFAULT_PASSWORD: "$PG_PASSWORD" # Replace with a secure password
     ports:
       - "5050:80"
     depends_on:
