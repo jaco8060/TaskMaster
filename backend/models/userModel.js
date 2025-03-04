@@ -74,7 +74,7 @@ export const assignRoles = async (userIds, role, assignedBy) => {
 
 export const updateUserProfile = async (
   userId,
-  { username, email, password, profile_picture }
+  { username, email, password, profile_picture, first_name, last_name, bio }
 ) => {
   try {
     let query;
@@ -86,21 +86,27 @@ export const updateUserProfile = async (
         SET username = COALESCE($2, username),
             email = COALESCE($3, email),
             profile_picture = COALESCE($4, profile_picture),
-            password = $5
+            first_name = COALESCE($5, first_name),
+            last_name = COALESCE($6, last_name),
+            bio = COALESCE($7, bio),
+            password = $8
         WHERE id = $1 
         RETURNING *
       `;
-      params = [userId, username, email, profile_picture, hashedPassword];
+      params = [userId, username, email, profile_picture, first_name, last_name, bio, hashedPassword];
     } else {
       query = `
         UPDATE users 
         SET username = COALESCE($2, username),
             email = COALESCE($3, email),
-            profile_picture = COALESCE($4, profile_picture)
+            profile_picture = COALESCE($4, profile_picture),
+            first_name = COALESCE($5, first_name),
+            last_name = COALESCE($6, last_name),
+            bio = COALESCE($7, bio)
         WHERE id = $1 
         RETURNING *
       `;
-      params = [userId, username, email, profile_picture];
+      params = [userId, username, email, profile_picture, first_name, last_name, bio];
     }
     const result = await pool.query(query, params);
     return result.rows[0];

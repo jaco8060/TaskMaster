@@ -34,6 +34,9 @@ const UserProfile: React.FC = () => {
   const [toastVariant, setToastVariant] = useState<"success" | "danger">(
     "success"
   );
+  const [firstName, setFirstName] = useState(user?.first_name || "");
+  const [lastName, setLastName] = useState(user?.last_name || "");
+  const [bio, setBio] = useState(user?.bio || "");
 
   // Generate a preview of the selected profile picture file
   useEffect(() => {
@@ -60,6 +63,9 @@ const UserProfile: React.FC = () => {
     const formData = new FormData();
     formData.append("username", username);
     formData.append("email", email);
+    formData.append("first_name", firstName);
+    formData.append("last_name", lastName);
+    formData.append("bio", bio);
     if (password) {
       formData.append("password", password);
       formData.append("confirmPassword", confirmPassword);
@@ -204,6 +210,24 @@ const UserProfile: React.FC = () => {
                   />
                 </Form.Group>
                 <Form.Group className="mb-3">
+                  <Form.Label>First Name</Form.Label>
+                  <Form.Control
+                    type="text"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    disabled={isDemoUser}
+                  />
+                </Form.Group>
+                <Form.Group className="mb-3">
+                  <Form.Label>Last Name</Form.Label>
+                  <Form.Control
+                    type="text"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    disabled={isDemoUser}
+                  />
+                </Form.Group>
+                <Form.Group className="mb-3">
                   <Form.Label>New Password</Form.Label>
                   <Form.Control
                     type="password"
@@ -220,6 +244,16 @@ const UserProfile: React.FC = () => {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="Confirm new password"
+                    disabled={isDemoUser}
+                  />
+                </Form.Group>
+                <Form.Group className="mb-3">
+                  <Form.Label>Bio</Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    rows={3}
+                    value={bio}
+                    onChange={(e) => setBio(e.target.value)}
                     disabled={isDemoUser}
                   />
                 </Form.Group>

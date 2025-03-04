@@ -10,6 +10,9 @@ export interface User {
   profile_picture?: string;
   organization_id?: number;
   organization_name?: string; // Added to allow display in the UI
+  first_name?: string;
+  last_name?: string;
+  bio?: string;
 }
 
 export interface AuthContextType {

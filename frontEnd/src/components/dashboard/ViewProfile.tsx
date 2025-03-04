@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Button, Container, Spinner, Toast, Alert } from "react-bootstrap";
+import { Button, Container, Spinner, Toast, Alert, Row, Col, Image } from "react-bootstrap";
 import { useParams, useNavigate } from "react-router-dom";
 import { MainNav } from "./NavBars";
 
@@ -14,6 +14,7 @@ interface UserProfile {
   last_name?: string;
   organization_id?: number;
   profile_picture?: string;
+  bio?: string;
 }
 
 const ViewProfile: React.FC = () => {
@@ -97,14 +98,32 @@ const ViewProfile: React.FC = () => {
           </Toast>
         )}
         <div className="profile-details">
-          <p><strong>Username:</strong> {user.username}</p>
-          <p><strong>Email:</strong> {user.email}</p>
-          <p><strong>First Name:</strong> {user.first_name || "Not set"}</p>
-          <p><strong>Last Name:</strong> {user.last_name || "Not set"}</p>
-          <p>
-            <strong>Role:</strong> {user.role} -{" "}
-            {roleDescriptions[user.role as keyof typeof roleDescriptions] || "No description"}
-          </p>
+          <Row>
+            <Col md={4} className="text-center">
+              <Image
+                src={
+                  user.profile_picture
+                    ? `${import.meta.env.VITE_URL}/uploads/profile_pictures/${user.profile_picture}`
+                    : `${import.meta.env.VITE_URL}/uploads/profile_pictures/default_profile.svg`
+                }
+                roundedCircle
+                width={200}
+                height={200}
+                className="mb-3"
+              />
+            </Col>
+            <Col md={8}>
+              <p><strong>Username:</strong> {user.username}</p>
+              <p><strong>Email:</strong> {user.email}</p>
+              <p><strong>First Name:</strong> {user.first_name || "Not set"}</p>
+              <p><strong>Last Name:</strong> {user.last_name || "Not set"}</p>
+              <p><strong>Bio:</strong> {user.bio || "Not set"}</p>
+              <p>
+                <strong>Role:</strong> {user.role} -{" "}
+                {roleDescriptions[user.role as keyof typeof roleDescriptions] || "No description"}
+              </p>
+            </Col>
+          </Row>
           <Button variant="secondary" onClick={() => navigate(-1)}>
             Back
           </Button>

@@ -71,7 +71,7 @@ export const handleRemoveRoleAssignment = async (req, res) => {
 // Endpoint: Update user profile
 export const handleUpdateUserProfile = async (req, res) => {
   const userId = req.user.id;
-  const { username, email, password, confirmPassword } = req.body;
+  const { username, email, password, confirmPassword, first_name, last_name, bio } = req.body;
   if (password && password !== confirmPassword) {
     return res.status(400).json({ error: "Passwords do not match" });
   }
@@ -81,6 +81,9 @@ export const handleUpdateUserProfile = async (req, res) => {
       email,
       password: password ? password : null,
       profile_picture: req.file ? req.file.filename : null,
+      first_name,
+      last_name,
+      bio
     });
     await meiliClient.index("users").addDocuments([
       {
