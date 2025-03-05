@@ -1,6 +1,6 @@
-# TaskMaster Tracker
+# TaskMaster
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-TaskMaster%20Tracker-blue?style=-for-the-badge&logo=netlify)](https://taskmastertracker.netlify.app/)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-TaskMaster-blue?style=-for-the-badge&logo=netlify)](https://taskmastertracker.netlify.app/)
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -16,7 +16,7 @@
 
 ## Introduction
 
-TaskMaster Tracker is a web-based project management tool designed to help software development teams organize, track, and manage their tasks efficiently. The application is hosted on Netlify and accessible at [https://taskmastertracker.netlify.app/](https://taskmastertracker.netlify.app/).
+TaskMaster is a web-based project management tool designed to help software development teams organize, track, and manage their tasks efficiently. The application is hosted on Netlify and accessible at [https://taskmastertracker.netlify.app/](https://taskmastertracker.netlify.app/).
 
 ## Getting Started
 
@@ -144,7 +144,7 @@ Want to try before creating an account? Use our demo feature:
 - **Role Management**: Admins can assign user roles (Admin, Manager, Developer)
 
 ### Search Functionality
-The TaskMaster Tracker includes a powerful search feature that allows users to quickly find relevant information across the platform. The search functionality is powered by [MeiliSearch](https://www.meilisearch.com/), providing fast and relevant results.
+The TaskMaster includes a powerful search feature that allows users to quickly find relevant information across the platform. The search functionality is powered by [MeiliSearch](https://www.meilisearch.com/), providing fast and relevant results.
 
 #### How Search Works:
 1. **Search Scope**
@@ -522,7 +522,7 @@ Follow the steps in the "Local Installation on Linux Server with DuckDNS and SSL
    0 0,12 * * * certbot renew --quiet && docker restart $(docker ps -q -f name=nginx)
    ```
 
-### Step 4: Deploy TaskMaster Tracker
+### Step 4: Deploy TaskMaster
 
 1. **Clone the Repository**
    ```bash
@@ -561,7 +561,7 @@ Follow the steps in the "Local Installation on Linux Server with DuckDNS and SSL
      1. Go to your [Google Account Security](https://myaccount.google.com/security) page
      2. Under "Signing in to Google," select **App passwords**
      3. Select **Mail** as the app and **Other (Custom name)** as the device
-     4. Enter "TaskMaster Tracker" as the name and click **Generate**
+     4. Enter "TaskMaster" as the name and click **Generate**
      5. Copy the 16-digit app password and add it to `GMAIL_PASS` in your `.env` file
 
 4. **Build and Start Docker Containers**

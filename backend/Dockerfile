@@ -1,5 +1,5 @@
 # Stage 1: Build the application
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS builder
 
 # Set the working directory
 WORKDIR /app
@@ -16,14 +16,13 @@ RUN npm install
 # Copy the application code
 COPY . .
 
-# Expose port for development (optional)
-EXPOSE 5000
+# # Expose port for development (optional)
+# EXPOSE 5000
 
-# Install nodemon globally for development (optional)
-RUN npm install -g nodemon
-
+# # Install nodemon globally for development (optional)
+# RUN npm install -g nodemon
 # Stage 2: Create the production image
-FROM node:16-alpine
+FROM node:20-alpine
 
 # Set the working directory
 WORKDIR /app
@@ -33,8 +32,6 @@ COPY --from=builder /app/ ./
 
 # Expose the port
 EXPOSE 5000
-
-# Set environment variables (if any)
 
 # Start the application
 CMD ["node", "app.js"]
