@@ -1,7 +1,7 @@
 // frontEnd/src/App.tsx
 import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
-import { Spinner, ToastContainer } from "react-bootstrap";
+import { Container, Spinner, ToastContainer } from "react-bootstrap";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import "./color-theme.scss";
 import Dashboard from "./components/dashboard/Dashboard";
@@ -10,6 +10,7 @@ import MyOrganization from "./components/dashboard/MyOrganization"; // New organ
 import AssignPersonnel from "./components/dashboard/myprojects/AssignPersonnel";
 import MyProjects from "./components/dashboard/myprojects/MyProjects";
 import ProjectDetails from "./components/dashboard/myprojects/ProjectDetails";
+import { MainNav } from "./components/dashboard/NavBars";
 import OrganizationStatus from "./components/dashboard/OrganizationStatus";
 import MyTickets from "./components/dashboard/tickets/MyTickets";
 import TicketDetails from "./components/dashboard/tickets/TicketDetails";
@@ -22,7 +23,6 @@ import AdminRoute from "./components/routes/AdminRoute";
 import PrivateRoute from "./components/routes/PrivateRoute";
 import PublicRoute from "./components/routes/PublicRoute";
 import { AuthContext, AuthContextType } from "./contexts/AuthProvider";
-
 const App: React.FC = () => {
   return (
     <>
@@ -98,7 +98,20 @@ const OrganizationStatusWrapper: React.FC<{ children: React.ReactNode }> = ({
     checkStatus();
   }, [user?.id, location.key]);
 
-  if (loading) return <Spinner animation="border" />;
+  if (loading)
+    return (
+      <>
+        <MainNav>
+          <Container
+            className="d-flex justify-content-center align-items-center"
+            style={{ height: "100vh" }}
+          >
+            <Spinner animation="border" variant="primary" />
+          </Container>
+        </MainNav>
+      </>
+    );
+
   if (orgStatus !== "approved")
     return <OrganizationStatus userId={user?.id || 0} />;
   return <>{children}</>;

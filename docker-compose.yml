@@ -30,7 +30,6 @@ services:
       target: builder # Use 'builder' stage for development; remove for production
     env_file:
       - ./.env # Load shared variables
-      - ./backend/.env # Load variables from backend/.env
     ports:
       - "5000:5000"
     volumes:
@@ -47,6 +46,8 @@ services:
     build:
       context: ./frontend
       target: builder # Use 'builder' stage for development; remove for production
+    env_file:
+      - ./.env # Load shared variables
     ports:
       - "5173:5173" # Change to "80:80" for production
     volumes:

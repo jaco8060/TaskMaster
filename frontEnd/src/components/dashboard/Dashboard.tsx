@@ -184,13 +184,19 @@ const Dashboard: React.FC = () => {
 
   const pieColors = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
-  if (loading) {
+  if (loading)
     return (
-      <Container className="mt-5 text-center">
-        <Spinner animation="border" variant="primary" />
-      </Container>
+      <>
+        <MainNav>
+          <Container
+            className="d-flex justify-content-center align-items-center"
+            style={{ height: "100vh" }}
+          >
+            <Spinner animation="border" variant="primary" />
+          </Container>
+        </MainNav>
+      </>
     );
-  }
 
   return (
     <MainNav>
