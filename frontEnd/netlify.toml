@@ -9,7 +9,7 @@
   status = 200
   force = true
   headers = { 
-    "X-Forwarded-Host" = "taskmastertracker.netlify.app",
-    "Access-Control-Allow-Origin" = "https://taskmastertracker.netlify.app",
+    "X-Forwarded-Host" = "taskmastertracker.netlify.app"
+    "Access-Control-Allow-Origin" = "https://taskmastertracker.netlify.app"
     "Access-Control-Allow-Credentials" = "true"
   }
