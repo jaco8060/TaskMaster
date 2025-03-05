@@ -343,7 +343,7 @@ Follow the steps in the "Local Installation on Linux Server with DuckDNS and SSL
 - Docker and Docker Compose installed
 - Nginx installed
 - Certbot installed
-- DuckDNS account with a configured subdomain (e.g., taskmaster-app.duckdns.org)
+- DuckDNS account with your own configured subdomain (do not use taskmaster-app.duckdns.org as it's just an example)
 - Port forwarding configured on your router (ports 80 and 443)
 
 ### Port Forwarding Setup
@@ -386,8 +386,8 @@ Follow the steps in the "Local Installation on Linux Server with DuckDNS and SSL
 
 1. **Choose Your Domain**
    - Log in to [duckdns.org](https://www.duckdns.org/)
-   - Choose or create a subdomain (e.g., taskmaster-app)
-   - Note your token (e.g., b4d81a39-bab3-44a1-b288-44e037743e82)
+   - Choose or create your own subdomain (do not use taskmaster-app, create your own)
+   - Note your token
 
 2. **Check for Cron and Curl**
    - Verify cron is running:
@@ -409,10 +409,10 @@ Follow the steps in the "Local Installation on Linux Server with DuckDNS and SSL
    ```
 
 4. **Add Script Content**
-   Copy and paste the following, replacing `taskmaster-app` with your domain and `your-duckdns-token` with your actual token:
+   Copy and paste the following, replacing `your-domain` with your chosen DuckDNS subdomain and `your-duckdns-token` with your actual token:
    ```bash
    #!/bin/bash
-   DOMAIN="taskmaster-app"
+   DOMAIN="your-domain"    # Replace with your DuckDNS subdomain
    TOKEN="your-duckdns-token"
    IP=$(curl -s ifconfig.me)
    echo "Updating DuckDNS with IP: $IP"
@@ -503,13 +503,13 @@ Follow the steps in the "Local Installation on Linux Server with DuckDNS and SSL
 ### Step 3: Configure Nginx with SSL
 1. **Obtain SSL Certificates**
    ```bash
-   sudo certbot certonly --standalone -d taskmaster-app.duckdns.org --email your-email@example.com --agree-tos
+   sudo certbot certonly --standalone -d your-domain.duckdns.org --email your-email@example.com --agree-tos
    ```
 
 2. **Copy Certificates**
    ```bash
-   sudo cp /etc/letsencrypt/live/taskmaster-app.duckdns.org/fullchain.pem ~/Workspaces/TaskMaster/nginx/ssl/
-   sudo cp /etc/letsencrypt/live/taskmaster-app.duckdns.org/privkey.pem ~/Workspaces/TaskMaster/nginx/ssl/
+   sudo cp /etc/letsencrypt/live/your-domain.duckdns.org/fullchain.pem ~/Workspaces/TaskMaster/nginx/ssl/
+   sudo cp /etc/letsencrypt/live/your-domain.duckdns.org/privkey.pem ~/Workspaces/TaskMaster/nginx/ssl/
    sudo chown -R $USER:$USER ~/Workspaces/TaskMaster/nginx/ssl
    ```
 
@@ -581,8 +581,8 @@ Follow the steps in the "Local Installation on Linux Server with DuckDNS and SSL
    ```
 
 2. **Test Public Access**
-   - Frontend: `https://taskmaster-app.duckdns.org`
-   - Backend API: `https://taskmaster-app.duckdns.org/api`
+   - Frontend: `https://your-domain.duckdns.org`
+   - Backend API: `https://your-domain.duckdns.org/api`
 
 ### Maintenance
 - **View Logs**
@@ -596,7 +596,7 @@ Follow the steps in the "Local Installation on Linux Server with DuckDNS and SSL
   docker-compose -f docker-compose.prod.yml up --build -d
   ```
 
-## Support
+### Support
 
 Report issues on our [GitHub Issues page](https://github.com/jaco8060/TaskMaster/issues)
 
