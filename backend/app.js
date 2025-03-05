@@ -22,40 +22,31 @@ const app = express();
 // Trust proxy for HTTPS behind Nginx
 app.set("trust proxy", 1);
 
-// Middleware to dynamically set session cookie domain
-app.use((req, res, next) => {
-  req.sessionCookieDomain =
-    req.get("X-Forwarded-Host") || "taskmaster-app.duckdns.org"; // Fallback to backend domain if no proxy header
-  next();
-});
+// CORS configuration for production
+
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+  })
+);
 
 // Session configuration
 app.use(
   session({
     name: "my_session_cookie",
-    secret: process.env.SESSION_SECRET || "secret_key123", // Use .env for secret
+    secret: process.env.SESSION_SECRET || "secret_key123",
     resave: false,
     saveUninitialized: false,
     cookie: {
-      domain: (req) => req.sessionCookieDomain, // Dynamic domain from X-Forwarded-Host
       httpOnly: true,
-      secure: true, // Must be true for HTTPS
-      sameSite: "none", // Required for cross-site cookies
-      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      maxAge: 24 * 60 * 60 * 1000,
       path: "/",
     },
   })
 );
-
-// Remove CORS middleware since Nginx/Netlify handles it
-if (process.env.NODE_ENV !== "production") {
-  app.use(
-    cors({
-      origin: process.env.FRONTEND_URL,
-      credentials: true,
-    })
-  );
-}
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

@@ -25,5 +25,8 @@ dist-ssr
 *.env
 *.pem
 nginx.conf
+frontEnd/netlify.toml
 
 uploads
+# Local Netlify folder
+.netlify
