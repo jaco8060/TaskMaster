@@ -46,12 +46,12 @@ export const handleRegister = async (req, res) => {
     if (organization_name) {
       const organization = await createOrganization(organization_name, user.id);
       await addOrganizationMember(user.id, organization.id, "approved");
-      
+
       // Update user's organization reference in database
-      await pool.query(
-        "UPDATE users SET organization_id = $1 WHERE id = $2",
-        [organization.id, user.id]
-      );
+      await pool.query("UPDATE users SET organization_id = $1 WHERE id = $2", [
+        organization.id,
+        user.id,
+      ]);
       user.organization_id = organization.id; // Update response object
     }
     // 2. Join with Code Flow

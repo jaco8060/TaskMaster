@@ -71,7 +71,15 @@ export const handleRemoveRoleAssignment = async (req, res) => {
 // Endpoint: Update user profile
 export const handleUpdateUserProfile = async (req, res) => {
   const userId = req.user.id;
-  const { username, email, password, confirmPassword, first_name, last_name, bio } = req.body;
+  const {
+    username,
+    email,
+    password,
+    confirmPassword,
+    first_name,
+    last_name,
+    bio,
+  } = req.body;
   if (password && password !== confirmPassword) {
     return res.status(400).json({ error: "Passwords do not match" });
   }
@@ -83,7 +91,7 @@ export const handleUpdateUserProfile = async (req, res) => {
       profile_picture: req.file ? req.file.filename : null,
       first_name,
       last_name,
-      bio
+      bio,
     });
     await meiliClient.index("users").addDocuments([
       {
@@ -138,10 +146,10 @@ export const handleGetUserById = async (req, res) => {
   const userId = req.params.id;
   try {
     const user = await pool.query(
-      'SELECT id, username, email, role, first_name, last_name, bio, organization_id, profile_picture FROM users WHERE id = $1',
+      "SELECT id, username, email, role, first_name, last_name, bio, organization_id, profile_picture FROM users WHERE id = $1",
       [userId]
     );
-    
+
     if (user.rows.length === 0) {
       return res.status(404).json({ error: "User not found" });
     }

@@ -19,48 +19,36 @@ globalThis.fetch = fetch;
 dotenv.config();
 
 const app = express();
+// Trust proxy for HTTPS behind Nginx
+app.set("trust proxy", 1);
+
+// Session configuration
+app.use(
+  session({
+    name: "my_session_cookie",
+    secret: "secret_key123", // Use a secure secret
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // true in production
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // 'none' for cross-origin in production
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      path: "/",
+    },
+  })
+);
+
+// Remove CORS middleware since Nginx handles it in production
 if (process.env.NODE_ENV !== "production") {
-  // Development
   app.use(
     cors({
       origin: process.env.FRONTEND_URL,
       credentials: true,
     })
   );
-  app.use(
-    session({
-      name: "my_session_cookie",
-      secret: "secret_key123",
-      resave: false,
-      saveUninitialized: false,
-      cookie: {
-        httpOnly: true,
-        secure: false,
-        maxAge: 24 * 60 * 60 * 1000,
-        path: "/",
-      },
-    })
-  );
-} else {
-  // Production
-  app.set("trust proxy", 1); // Required for secure cookies in production
-
-  app.use(
-    session({
-      name: "my_session_cookie",
-      secret: "secret_key123",
-      resave: false,
-      saveUninitialized: false,
-      cookie: {
-        httpOnly: true,
-        secure: true, // Required for HTTPS
-        sameSite: "none", // Allows cross-origin requests
-        maxAge: 24 * 60 * 60 * 1000,
-        path: "/",
-      },
-    })
-  );
 }
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
