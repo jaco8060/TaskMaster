@@ -82,6 +82,30 @@
     max-width: 300px;
   }
 
+  // Fix for the specific width range issue
+  @media (min-width: 992px) and (max-width: 1162px) {
+    .table {
+      min-width: 100%;
+      table-layout: fixed;
+    }
+
+    // Adjust column widths for this specific range
+    .description-column {
+      max-width: 200px; // Reduce from 300px
+    }
+
+    .table thead th {
+      min-width: 80px;
+      font-size: clamp(0.65rem, 1vw + 0.03rem, 1rem);
+      padding-right: 0;
+      padding-left: 0.2;
+      
+      .sort-icon {
+        font-size: 0.75rem;
+      }
+    }
+  }
+
   @media (max-width: 576px) {
     .table thead th {
       min-width: 80px;
