@@ -1,6 +1,6 @@
 // frontEnd/src/components/dashboard/SearchModal.tsx
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Badge, Form, ListGroup, Modal } from "react-bootstrap";
 import { FaSearch } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
@@ -32,6 +32,13 @@ const SearchModal = () => {
   });
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (showModal && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [showModal, loading]);
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
@@ -130,6 +137,7 @@ const SearchModal = () => {
         <Modal.Body>
           <Form.Group className="mb-3">
             <Form.Control
+              ref={inputRef}
               type="text"
               placeholder="Search users, tickets, projects..."
               value={query}
