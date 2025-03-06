@@ -319,20 +319,42 @@ Follow the steps in the "Local Installation on Linux Server with DuckDNS and SSL
 
 4. **Configure Environment Variables**
    - Go to "Site settings" > "Build & deploy" > "Environment"
-   - Add required environment variables:
-     - `VITE_API_URL`: Your backend API URL
-     - `VITE_MEILISEARCH_HOST`: Your MeiliSearch host URL
+   - Add required environment variable:
+     - `VITE_API_URL`: https://your-domain.duckdns.org/api
 
-5. **Set Up Custom Domain (Optional)**
+5. **Configure Netlify TOML File**
+   Create `frontEnd/netlify.toml` with these rules (replace domains with your own):
+   ```toml
+   [build]
+     base = "frontEnd"
+     publish = "dist"
+
+   [[redirects]]
+     from = "/api/*"
+     to = "https://your-domain.duckdns.org/:splat"
+     status = 200
+     force = true
+     headers = { "X-Forwarded-Host" = "your-netlify-app.netlify.app" }
+
+   [[redirects]]
+     from = "/*"
+     to = "/index.html"
+     status = 200
+   ```
+   **Important for iOS Cookies**:
+   - The `X-Forwarded-Host` header is required for proper cookie handling on iOS devices
+   - Without this configuration, authentication may fail on Safari/iOS due to cross-domain cookie restrictions
+
+6. **Set Up Custom Domain (Optional)**
    - Go to "Domain settings"
    - Add your custom domain
    - Follow Netlify's instructions to configure DNS
 
-6. **Enable Automatic Deployments**
+7. **Enable Automatic Deployments**
    - In "Build & deploy" settings, enable "Build hooks"
    - Set up automatic deployments on Git push
 
-7. **Test Your Deployment**
+8. **Test Your Deployment**
    - Visit your Netlify site URL
    - Verify all frontend functionality is working
 
@@ -435,8 +457,7 @@ Follow the steps in the "Local Installation on Linux Server with DuckDNS and SSL
 7. **Set Up Cron Job**
    ```bash
    crontab -e
-   ```
-   Add the following line at the bottom:
+   ```   Add the following line at the bottom:
    ```bash
    */5 * * * * ~/duckdns/duck.sh >/dev/null 2>&1
    ```
@@ -513,7 +534,43 @@ Follow the steps in the "Local Installation on Linux Server with DuckDNS and SSL
    sudo chown -R $USER:$USER ~/Workspaces/TaskMaster/nginx/ssl
    ```
 
-3. **Set Up Certbot Renewal**
+3. **Create Nginx Configuration File**
+   Create `nginx/conf/nginx.conf` with the following content (replace `your-domain.duckdns.org` with your actual domain):
+   ```nginx
+   events {
+       worker_connections 1024;
+   }
+
+   http {
+       # Redirect HTTP to HTTPS
+       server {
+           listen 80;
+           server_name your-domain.duckdns.org;
+           return 301 https://$host$request_uri;
+       }
+
+       # HTTPS server
+       server {
+           listen 443 ssl;
+           server_name your-domain.duckdns.org;
+
+           ssl_certificate /etc/nginx/ssl/fullchain.pem;
+           ssl_certificate_key /etc/nginx/ssl/privkey.pem;
+           ssl_protocols TLSv1.2 TLSv1.3;
+           ssl_prefer_server_ciphers on;
+
+           location / {
+               proxy_pass http://backend:5000;
+               proxy_set_header Host $host;
+               proxy_set_header X-Real-IP $remote_addr;
+               proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+               proxy_set_header X-Forwarded-Proto $scheme;
+           }
+  }
+}
+```
+
+4. **Set Up Certbot Renewal**
    ```bash
    crontab -e
    ```
@@ -551,7 +608,7 @@ Follow the steps in the "Local Installation on Linux Server with DuckDNS and SSL
      NODE_ENV=development  # Set to 'development' when using docker-compose.yml
                            # Set to 'production' when using docker-compose.prod.yml
      PORT=5000
-     FRONTEND_URL=http://localhost:3000
+     FRONTEND_URL=https://your-domain.duckdns.org  # Replace with your actual frontend URL else use http://localhost:5173 for development
      MEILISEARCH_HOST=http://meilisearch:7700
      ```
 
@@ -599,6 +656,7 @@ Follow the steps in the "Local Installation on Linux Server with DuckDNS and SSL
 ### Support
 
 Report issues on our [GitHub Issues page](https://github.com/jaco8060/TaskMaster/issues)
+
 
 
 
