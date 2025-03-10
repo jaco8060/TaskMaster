@@ -358,7 +358,7 @@ Follow the steps in the "Local Installation on Linux Server with DuckDNS and SSL
    - Visit your Netlify site URL
    - Verify all frontend functionality is working
 
-## Local Installation on Linux Server with DuckDNS and SSL
+## Local Installation on Linux Server
 
 ### Prerequisites
 - Linux server (Ubuntu 20.04 or later recommended)
@@ -566,9 +566,9 @@ Follow the steps in the "Local Installation on Linux Server with DuckDNS and SSL
                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
                proxy_set_header X-Forwarded-Proto $scheme;
            }
-  }
-}
-```
+      }
+    }
+    ```
 
 4. **Set Up Certbot Renewal**
    ```bash
