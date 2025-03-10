@@ -32,6 +32,8 @@ services:
       - meilisearch
     networks:
       - app-network
+    volumes:
+      - ./backend/uploads:/app/uploads # Mount uploads directory
 
   meilisearch:
     image: getmeili/meilisearch:latest

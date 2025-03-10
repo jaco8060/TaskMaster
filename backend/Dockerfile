@@ -17,7 +17,7 @@ RUN npm install
 COPY . .
 
 # Install nodemon globally for development (optional)
-RUN npm install -g nodemon
+# RUN npm install -g nodemon
 
 # Stage 2: Create the production image
 FROM node:20-alpine

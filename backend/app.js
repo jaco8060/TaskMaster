@@ -4,6 +4,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
 import session from "express-session";
+import fs from "fs";
 import fetch from "node-fetch";
 import { pool } from "./database.js";
 import passport from "./passport-config.js";
@@ -50,6 +51,17 @@ app.use(
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Ensure upload directories exist
+const uploadsDir = "/app/uploads";
+const profilePicsDir = "/app/uploads/profile_pictures";
+
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir);
+}
+if (!fs.existsSync(profilePicsDir)) {
+  fs.mkdirSync(profilePicsDir);
+}
 
 app.use("/uploads", express.static("uploads"));
 

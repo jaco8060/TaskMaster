@@ -560,6 +560,7 @@ Follow the steps in the "Local Installation on Linux Server with DuckDNS and SSL
            ssl_prefer_server_ciphers on;
 
            location / {
+               client_max_body_size 10M;  # allows up to 10MB uploads
                proxy_pass http://backend:5000;
                proxy_set_header Host $host;
                proxy_set_header X-Real-IP $remote_addr;

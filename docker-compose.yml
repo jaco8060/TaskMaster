@@ -35,6 +35,7 @@ services:
     volumes:
       - ./backend:/app # Mount code for development
       - /app/node_modules # Anonymous volume to prevent issues with node_modules
+      - ./backend/uploads:/app/uploads # Mount uploads directory
     depends_on:
       - db
       - meilisearch
