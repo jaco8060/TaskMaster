@@ -40,7 +40,7 @@ services:
       - meilisearch
     networks:
       - app-network
-    command: nodemon app.js --config nodemon.json # Use nodemon for development; change to 'node app.js' for production
+    command: nodemon app.js # Use nodemon for development; change to 'node app.js' for production
 
   frontend:
     build:

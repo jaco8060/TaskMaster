@@ -9,6 +9,9 @@ import {
   getUsersByOrganization,
   updateUserProfile,
 } from "../models/userModel.js";
+import sharp from "sharp";
+import path from "path";
+import fs from "fs";
 
 // Configure multer for profile picture uploads
 const storage = multer.diskStorage({
@@ -68,6 +71,35 @@ export const handleRemoveRoleAssignment = async (req, res) => {
   }
 };
 
+// Improved compressImage function
+const compressImage = async (file) => {
+  const compressedFilename = `compressed-${Date.now()}-${file.originalname.replace(/\.[^/.]+$/, '.jpg')}`;
+  const outputPath = path.join(file.destination, compressedFilename);
+
+  try {
+    await sharp(file.path)
+      .resize({ width: 800, height: 800, fit: 'inside' }) // More generous dimensions
+      .rotate() // Auto-rotate based on EXIF data
+      .jpeg({ 
+        quality: 75,
+        mozjpeg: true // Better compression
+      })
+      .toFile(outputPath);
+
+    // Replace original only after successful compression
+    fs.unlinkSync(file.path); // Remove original
+    fs.renameSync(outputPath, file.path); // Replace with compressed version
+
+    return file.filename; // Keep original filename
+
+  } catch (error) {
+    console.error("Error compressing image:", error);
+    // Clean up failed compression attempts
+    if (fs.existsSync(outputPath)) fs.unlinkSync(outputPath);
+    throw error;
+  }
+};
+
 // Endpoint: Update user profile
 export const handleUpdateUserProfile = async (req, res) => {
   const userId = req.user.id;
@@ -84,11 +116,22 @@ export const handleUpdateUserProfile = async (req, res) => {
     return res.status(400).json({ error: "Passwords do not match" });
   }
   try {
+    let profilePictureFilename = null;
+    if (req.file) {
+      try {
+        await compressImage(req.file);
+        profilePictureFilename = req.file.filename;
+      } catch (error) {
+        return res.status(500).json({ 
+          error: "Failed to process image. Please try another file." 
+        });
+      }
+    }
     const updatedUser = await updateUserProfile(userId, {
       username,
       email,
       password: password ? password : null,
-      profile_picture: req.file ? req.file.filename : null,
+      profile_picture: profilePictureFilename,
       first_name,
       last_name,
       bio,

@@ -12,7 +12,7 @@ import {
 } from "react-bootstrap";
 import Toast from "react-bootstrap/Toast";
 import { AuthContext, AuthContextType } from "../../contexts/AuthProvider";
-import { MainNav } from "./NavBars";
+import { MainNav } from "../dashboard/NavBars";
 
 const UserProfile: React.FC = () => {
   const { user, setUser } = useContext(AuthContext) as AuthContextType;

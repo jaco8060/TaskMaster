@@ -16,11 +16,9 @@ RUN npm install
 # Copy the application code
 COPY . .
 
-# # Expose port for development (optional)
-# EXPOSE 5000
+# Install nodemon globally for development (optional)
+RUN npm install -g nodemon
 
-# # Install nodemon globally for development (optional)
-# RUN npm install -g nodemon
 # Stage 2: Create the production image
 FROM node:20-alpine
 

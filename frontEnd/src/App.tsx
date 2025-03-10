@@ -11,11 +11,11 @@ import AssignPersonnel from "./components/dashboard/myprojects/AssignPersonnel";
 import MyProjects from "./components/dashboard/myprojects/MyProjects";
 import ProjectDetails from "./components/dashboard/myprojects/ProjectDetails";
 import { MainNav } from "./components/dashboard/NavBars";
-import OrganizationStatus from "./components/dashboard/OrganizationStatus";
+import OrganizationStatus from "./components/login/OrganizationStatus";
 import MyTickets from "./components/dashboard/tickets/MyTickets";
 import TicketDetails from "./components/dashboard/tickets/TicketDetails";
-import UserProfile from "./components/dashboard/UserProfile";
-import ViewProfile from "./components/dashboard/ViewProfile";
+import UserProfile from "./components/userprofile/UserProfile";
+import ViewProfile from "./components/userprofile/ViewProfile";
 import LoginPage from "./components/login/LoginPage";
 import RegisterWithOrganization from "./components/login/RegisterWithOrganization"; // New registration flow
 import ResetPassword from "./components/login/ResetPassword";

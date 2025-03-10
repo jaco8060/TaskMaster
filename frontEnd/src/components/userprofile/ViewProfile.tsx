@@ -11,7 +11,7 @@ import {
   Toast,
 } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
-import { MainNav } from "./NavBars";
+import { MainNav } from "../dashboard/NavBars";
 
 interface UserProfile {
   id: number;
