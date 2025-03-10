@@ -6,6 +6,8 @@ import {
 } from "../models/attachmentModel.js";
 import { createNotification } from "../models/notificationModel.js";
 import { getTicketById } from "../models/ticketModel.js";
+import fs from "fs";
+import path from "path";
 
 export const handleCreateAttachment = async (req, res) => {
   const ticket_id = req.params.id;
@@ -92,6 +94,15 @@ export const handleDeleteAttachment = async (req, res) => {
     if (!deleted) {
       return res.status(404).json({ error: "Attachment not found" });
     }
+
+    // Delete the file from the server
+    const filePath = path.join("uploads", deleted.filename);
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    } else {
+      console.warn(`File not found: ${filePath}`);
+    }
+
     res.status(200).json(deleted);
   } catch (error) {
     console.error("Error deleting attachment:", error);

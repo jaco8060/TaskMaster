@@ -112,11 +112,22 @@ export const handleUpdateUserProfile = async (req, res) => {
     last_name,
     bio,
   } = req.body;
+  
   if (password && password !== confirmPassword) {
     return res.status(400).json({ error: "Passwords do not match" });
   }
+
   try {
     let profilePictureFilename = null;
+    let oldProfilePicture = null;
+
+    // Get current profile picture before update
+    const currentUserResult = await pool.query(
+      "SELECT profile_picture FROM users WHERE id = $1",
+      [userId]
+    );
+    oldProfilePicture = currentUserResult.rows[0]?.profile_picture;
+
     if (req.file) {
       try {
         await compressImage(req.file);
@@ -127,6 +138,7 @@ export const handleUpdateUserProfile = async (req, res) => {
         });
       }
     }
+
     const updatedUser = await updateUserProfile(userId, {
       username,
       email,
@@ -136,14 +148,28 @@ export const handleUpdateUserProfile = async (req, res) => {
       last_name,
       bio,
     });
-    await meiliClient.index("users").addDocuments([
-      {
-        id: updatedUser.id,
-        username: updatedUser.username,
-        email: updatedUser.email,
-        organization_id: updatedUser.organization_id,
-      },
-    ]);
+
+    // Clean up old profile picture if it exists and was changed
+    if (profilePictureFilename && oldProfilePicture) {
+      const oldFilePath = path.join(
+        "uploads/profile_pictures", 
+        oldProfilePicture
+      );
+      
+      if (fs.existsSync(oldFilePath)) {
+        fs.unlinkSync(oldFilePath);
+      } else {
+        console.warn(`Old profile picture not found: ${oldFilePath}`);
+      }
+    }
+
+    await meiliClient.index("users").addDocuments([{
+      id: updatedUser.id,
+      username: updatedUser.username,
+      email: updatedUser.email,
+      organization_id: updatedUser.organization_id,
+    }]);
+
     res.status(200).json(updatedUser);
   } catch (error) {
     console.error("Error updating profile:", error);
