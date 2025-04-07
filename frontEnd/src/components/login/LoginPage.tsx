@@ -1,11 +1,29 @@
 import axios from "axios";
 import React, { useContext, useState } from "react";
-import { Button, Col, Container, Form, Row, Toast } from "react-bootstrap";
+import {
+  Button,
+  Col,
+  Container,
+  Form,
+  Image,
+  Row,
+  Toast,
+} from "react-bootstrap";
+import {
+  FaCode,
+  FaSignInAlt,
+  FaUserCog,
+  FaUserEdit,
+  FaUserShield,
+} from "react-icons/fa";
 import { Route, Routes, useNavigate } from "react-router-dom";
+import loginBackground from "../../assets/gears-background.svg"; // <-- UPDATE PATH
+import TaskMasterIcon from "../../assets/taskmaster-logo.svg";
 import { AuthContext } from "../../contexts/AuthProvider";
+import "../../styles/login/LoginPage.scss";
 import ForgotPassword from "./ForgotPassword";
 import RegisterWithOrganization from "./RegisterWithOrganization";
-import ResetPassword from "./ResetPassword.tsx";
+import ResetPassword from "./ResetPassword";
 
 // Custom hook for form handling
 const useForm = <T extends Object>(initialState: T) => {
@@ -43,21 +61,26 @@ const FormComponent: React.FC<FormComponentProps> = ({
   children,
 }) => {
   return (
-    <Container>
+    <Container className="login-page-container">
       <Row className="vh-100 d-flex justify-content-center align-items-center">
-        <Col xs={12} md={8} lg={6}>
-          <div className="d-flex flex-column p-4 justify-content-center align-items-center border rounded shadow-sm border-primary-subtle bg-light">
+        <Col xs={12} md={8} lg={6} xl={5}>
+          <div className="login-card">
+            <Image
+              src={TaskMasterIcon}
+              alt="TaskMaster Logo"
+              className="login-icon"
+            />
             <h1 className="mb-4">{title}</h1>
-            <Form onSubmit={onSubmit} className="w-75">
+            <Form onSubmit={onSubmit} className="w-100">
               <Row>
                 <Col>
                   {fields.map((field) => (
                     <Form.Group
-                      className="mb-3"
+                      className="mb-3 text-start"
                       controlId={`formGroup${field.name}`}
                       key={field.name}
                     >
-                      <Form.Label>{field.label}*</Form.Label>
+                      <Form.Label>{field.label}</Form.Label>
                       <Form.Control
                         type={field.type}
                         placeholder={field.placeholder}
@@ -70,9 +93,7 @@ const FormComponent: React.FC<FormComponentProps> = ({
                   ))}
                 </Col>
               </Row>
-              <div className="d-flex justify-content-center gap-3">
-                {children}
-              </div>
+              <div className="d-grid gap-2">{children}</div>
             </Form>
           </div>
         </Col>
@@ -100,9 +121,7 @@ const Login: React.FC = () => {
         `${import.meta.env.VITE_URL}/auth/login`,
         formData,
         {
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           withCredentials: true,
         }
       );
@@ -137,37 +156,28 @@ const Login: React.FC = () => {
 
   return (
     <FormComponent title="Login" fields={fields} onSubmit={handleSubmit}>
-      <div className="d-flex flex-column gap-4">
-        <Button className="mt-2" variant="primary" type="submit">
-          Login
-        </Button>
-        <div className="d-flex flex-column justify-content-center gap-1 align-items-center">
-          <p className="my-0">
-            Forgot your{" "}
-            <span>
-              <a href="#" onClick={() => navigate("/login/forgot-password")}>
-                password
-              </a>
-            </span>
-            ?
-          </p>
-          <p className="my-0">
-            New account?{" "}
-            <span>
-              <a href="#" onClick={() => navigate("/login/register")}>
-                Register
-              </a>
-            </span>
-          </p>
-          <p className="my-0">
-            Sign in as a{" "}
-            <span>
-              <a href="#" onClick={() => navigate("/login/demo")}>
-                demo user
-              </a>
-            </span>
-          </p>
-        </div>
+      <Button className="mt-2" variant="primary" type="submit" size="lg">
+        <FaSignInAlt className="me-2" /> Login
+      </Button>
+      <div className="form-links">
+        <p>
+          Forgot your{" "}
+          <a href="#" onClick={() => navigate("/login/forgot-password")}>
+            password?
+          </a>
+        </p>
+        <p>
+          New account?{" "}
+          <a href="#" onClick={() => navigate("/login/register")}>
+            Register here
+          </a>
+        </p>
+        <p>
+          Sign in as a{" "}
+          <a href="#" onClick={() => navigate("/login/demo")}>
+            demo user
+          </a>
+        </p>
       </div>
       {showToast && (
         <Toast
@@ -181,7 +191,9 @@ const Login: React.FC = () => {
           <Toast.Header>
             <strong className="me-auto">Error</strong>
           </Toast.Header>
-          <Toast.Body className="text-white">Login failed</Toast.Body>
+          <Toast.Body className="text-white">
+            Invalid username or password.
+          </Toast.Body>
         </Toast>
       )}
     </FormComponent>
@@ -284,14 +296,34 @@ const DemoUser: React.FC = () => {
   const [showToast, setShowToast] = useState(false);
 
   const demoUsers = [
-    { role: "admin", username: "demo_admin", password: "demo123" },
     {
-      role: "pm",
+      role: "Admin",
+      username: "demo_admin",
+      password: "demo123",
+      icon: FaUserShield,
+      variant: "danger",
+    },
+    {
+      role: "Project Manager",
       username: "demo_pm",
       password: "demo123",
+      icon: FaUserCog,
+      variant: "warning",
     },
-    { role: "developer", username: "demo_dev", password: "demo123" },
-    { role: "submitter", username: "demo_sub", password: "demo123" },
+    {
+      role: "Developer",
+      username: "demo_dev",
+      password: "demo123",
+      icon: FaCode,
+      variant: "info",
+    },
+    {
+      role: "Submitter",
+      username: "demo_sub",
+      password: "demo123",
+      icon: FaUserEdit,
+      variant: "success",
+    },
   ];
 
   const handleDemoLogin = async (user: {
@@ -303,57 +335,71 @@ const DemoUser: React.FC = () => {
         `${import.meta.env.VITE_URL}/auth/login`,
         { username: user.username, password: user.password },
         {
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           withCredentials: true,
         }
       );
       setUser(response.data);
       navigate("/dashboard");
     } catch (error) {
-      console.error("Login error:", error);
+      console.error("Demo Login error:", error);
       setShowToast(true);
     }
   };
 
   return (
-    <Container>
+    <Container className="login-page-container">
       <Row className="vh-100 d-flex justify-content-center align-items-center">
-        <Col xs={12} md={8} lg={6}>
-          <div className="d-flex flex-column p-4 justify-content-center align-items-center border rounded shadow-sm">
+        <Col xs={12} md={10} lg={8} xl={6}>
+          <div className="demo-user-card">
+            <Image
+              src={TaskMasterIcon}
+              alt="TaskMaster Logo"
+              className="login-icon"
+            />
             <h1 className="mb-4">Demo User Login</h1>
-            {demoUsers.map((user) => (
-              <Button
-                key={user.role}
-                variant="primary"
-                className="mb-2"
-                onClick={() => handleDemoLogin(user)}
-              >
-                Login as {user.role.replace("_", " ")}
-              </Button>
-            ))}
-            <Button variant="secondary" onClick={() => navigate("/login")}>
-              Back to login
+            <p className="text-muted mb-4">Select a role to log in as:</p>
+            <Row className="g-3 demo-button-grid">
+              {demoUsers.map((user) => (
+                <Col xs={6} md={6} key={user.role}>
+                  <Button
+                    variant={`outline-${user.variant}`}
+                    className="w-100 demo-button"
+                    onClick={() => handleDemoLogin(user)}
+                  >
+                    <user.icon size={30} />
+                    <span>{user.role}</span>
+                  </Button>
+                </Col>
+              ))}
+            </Row>
+            <Button
+              variant="secondary"
+              onClick={() => navigate("/login")}
+              className="back-button"
+            >
+              Back to Login
             </Button>
           </div>
+          {showToast && (
+            <Toast
+              onClose={() => setShowToast(false)}
+              show={showToast}
+              delay={3000}
+              autohide
+              bg="danger"
+              className="position-fixed top-0 start-50 translate-middle-x mt-3"
+            >
+              <Toast.Header>
+                <strong className="me-auto">Error</strong>
+              </Toast.Header>
+              <Toast.Body className="text-white">
+                Demo login failed. Ensure backend & DB are running and seeded.
+              </Toast.Body>
+            </Toast>
+          )}
         </Col>
       </Row>
-      {showToast && (
-        <Toast
-          onClose={() => setShowToast(false)}
-          show={showToast}
-          delay={3000}
-          autohide
-          bg="danger"
-          className="position-fixed top-0 start-50 translate-middle-x mt-3"
-        >
-          <Toast.Header>
-            <strong className="me-auto">Error</strong>
-          </Toast.Header>
-          <Toast.Body className="text-white">Demo login failed</Toast.Body>
-        </Toast>
-      )}
     </Container>
   );
 };
@@ -361,13 +407,18 @@ const DemoUser: React.FC = () => {
 // Main LoginPage component using React Router
 const LoginPage: React.FC = () => {
   return (
-    <Routes>
-      <Route path="/" element={<Login />} />
-      <Route path="/register" element={<RegisterWithOrganization />} />
-      <Route path="/demo" element={<DemoUser />} />
-      <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path="/reset-password/:token" element={<ResetPassword />} />
-    </Routes>
+    <div
+      className="auth-background-wrapper"
+      style={{ backgroundImage: `url(${loginBackground})` }}
+    >
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/register" element={<RegisterWithOrganization />} />
+        <Route path="/demo" element={<DemoUser />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
+      </Routes>
+    </div>
   );
 };
 

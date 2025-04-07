@@ -10,12 +10,14 @@ import {
   Col,
   Container,
   Form,
+  Image,
   Row,
   Spinner,
   Toast,
 } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
+import TaskMasterIcon from "../../assets/taskmaster-logo.svg"; // Import icon
 import "../../styles/login/RegisterWithOrganization.scss"; // Contains fade animations
 
 interface BasicInfo {
@@ -68,9 +70,6 @@ const RegisterWithOrganization: React.FC = () => {
     type: string;
     content: string;
   } | null>(null);
-
-  // State for error toast
-  const [showErrorToast, setShowErrorToast] = useState(false);
 
   // Function to check username availability using Axios
   const checkUsernameAvailability = async (
@@ -147,41 +146,43 @@ const RegisterWithOrganization: React.FC = () => {
   const isStep1Valid =
     basicInfo.username.trim() !== "" &&
     basicInfo.email.trim() !== "" &&
-    basicInfo.password.trim() !== "" &&
-    basicInfo.confirmPassword.trim() !== "" &&
     emailRegex.test(basicInfo.email) &&
+    basicInfo.password.trim() !== "" &&
     basicInfo.password === basicInfo.confirmPassword &&
     usernameAvailable === true &&
     emailAvailable === true;
 
   // Update handleBasicInfoNext validation
   const handleBasicInfoNext = () => {
-    if (
-      !basicInfo.username ||
-      !basicInfo.email ||
-      !basicInfo.password ||
-      !basicInfo.confirmPassword
-    ) {
-      setBasicInfoError("All fields are required.");
-      return;
-    }
-    if (!emailRegex.test(basicInfo.email)) {
-      setBasicInfoError("Please enter a valid email address.");
-      return;
-    }
-    if (basicInfo.password !== basicInfo.confirmPassword) {
-      setBasicInfoError("Passwords do not match.");
-      return;
-    }
-    if (usernameAvailable === false) {
-      setBasicInfoError("Username is already taken.");
-      return;
-    }
-    if (emailAvailable === false) {
-      setBasicInfoError("Email is already registered.");
-      return;
-    }
+    // Reset error
     setBasicInfoError("");
+    let errors = [];
+    if (!basicInfo.username) errors.push("Username is required.");
+    if (!basicInfo.email) errors.push("Email is required.");
+    else if (!emailRegex.test(basicInfo.email))
+      errors.push("Please enter a valid email address.");
+    if (!basicInfo.password) errors.push("Password is required.");
+    if (!basicInfo.confirmPassword)
+      errors.push("Confirm Password is required.");
+    else if (basicInfo.password !== basicInfo.confirmPassword)
+      errors.push("Passwords do not match.");
+
+    // Check availability status only if other fields are valid
+    if (errors.length === 0) {
+      if (usernameAvailable === false) errors.push("Username is already taken.");
+      if (emailAvailable === false) errors.push("Email is already registered.");
+      if (usernameAvailable === null || emailAvailable === null)
+        errors.push(
+          "Please wait for username and email availability check."
+        );
+    }
+
+    if (errors.length > 0) {
+      setBasicInfoError(errors.join(" "));
+      return;
+    }
+
+    // If all checks pass
     setStep(2);
   };
 
@@ -224,6 +225,7 @@ const RegisterWithOrganization: React.FC = () => {
 
   // --- Final Submission Handler using Axios ---
   const handleSubmit = async () => {
+    setMessage(null); // Clear previous messages before submitting
     try {
       const registrationData: any = {
         username: basicInfo.username,
@@ -259,20 +261,22 @@ const RegisterWithOrganization: React.FC = () => {
         setMessage({ type: "success", content: response.data.message });
         setStep(8);
       } else {
-        navigate("/login");
+        // On successful registration without needing approval, redirect to login
+        // Optionally: pass a success message via navigate state
+        navigate("/login", { state: { message: "Registration successful! Please log in." } });
       }
     } catch (error) {
       // Handle error display
+      let errorMessage = "Registration failed. Please try again.";
       if (axios.isAxiosError(error) && error.response) {
-        setMessage({
-          type: "error",
-          content: error.response.data.error || "Registration failed",
-        });
-      } else {
-        setMessage({ type: "error", content: "Registration failed" });
+        errorMessage = error.response.data.error || errorMessage;
       }
-      setShowErrorToast(true);
-      setStep(2); // Return to organization selection
+      setMessage({
+        type: "error",
+        content: errorMessage,
+      });
+      // Instead of setting showErrorToast, the message state handles the toast display
+      setStep(2); // Return to organization selection or an appropriate step
     }
   };
 
@@ -293,6 +297,10 @@ const RegisterWithOrganization: React.FC = () => {
       return response.data.valid;
     } catch (error) {
       console.error("Error validating organization code:", error);
+      setMessage({
+          type: "error",
+          content: "Failed to validate organization code. Please try again."
+      });
       return false;
     }
   };
@@ -305,7 +313,7 @@ const RegisterWithOrganization: React.FC = () => {
           <div className="step-content">
             <h3>Basic Information</h3>
             {basicInfoError && <Alert variant="danger">{basicInfoError}</Alert>}
-            <Form.Group controlId="username" className="mb-3">
+            <Form.Group controlId="username" className="mb-2">
               <Form.Label>Username</Form.Label>
               <Form.Control
                 type="text"
@@ -313,21 +321,19 @@ const RegisterWithOrganization: React.FC = () => {
                 value={basicInfo.username}
                 onChange={handleBasicChange}
                 required
+                isInvalid={usernameAvailable === false}
+                isValid={usernameAvailable === true}
               />
-              {basicInfo.username.trim() !== "" &&
-                usernameAvailable === false && (
-                  <Form.Text className="text-danger">
-                    Username is already taken.
-                  </Form.Text>
-                )}
-              {basicInfo.username.trim() !== "" &&
-                usernameAvailable === true && (
-                  <Form.Text className="text-success">
-                    Username is available.
-                  </Form.Text>
-                )}
+              <Form.Control.Feedback type="invalid">
+                 Username is already taken.
+              </Form.Control.Feedback>
+              <Form.Control.Feedback type="valid">
+                 Username is available.
+              </Form.Control.Feedback>
+              {usernameAvailable === null && basicInfo.username.trim() !== '' && <Form.Text>Checking...</Form.Text>}
+              {usernameAvailable === null && basicInfo.username.trim() === '' && <Form.Text>&nbsp;</Form.Text>}
             </Form.Group>
-            <Form.Group controlId="email" className="mb-3">
+            <Form.Group controlId="email" className="mb-2">
               <Form.Label>Email</Form.Label>
               <Form.Control
                 type="email"
@@ -335,17 +341,17 @@ const RegisterWithOrganization: React.FC = () => {
                 value={basicInfo.email}
                 onChange={handleBasicChange}
                 required
+                isInvalid={emailAvailable === false || (basicInfo.email.trim() !== '' && !emailRegex.test(basicInfo.email))}
+                isValid={emailAvailable === true && emailRegex.test(basicInfo.email)}
               />
-              {basicInfo.email.trim() !== "" && emailAvailable === false && (
-                <Form.Text className="text-danger">
-                  Email is already registered.
-                </Form.Text>
-              )}
-              {basicInfo.email.trim() !== "" && emailAvailable === true && (
-                <Form.Text className="text-success">
-                  Email is available.
-                </Form.Text>
-              )}
+              <Form.Control.Feedback type="invalid">
+                {emailAvailable === false ? "Email is already registered." : "Please enter a valid email address."}
+              </Form.Control.Feedback>
+              <Form.Control.Feedback type="valid">
+                 Email is available.
+              </Form.Control.Feedback>
+              {emailAvailable === null && basicInfo.email.trim() !== '' && emailRegex.test(basicInfo.email) && <Form.Text>Checking...</Form.Text>}
+              {emailAvailable === null && (basicInfo.email.trim() === '' || !emailRegex.test(basicInfo.email)) && <Form.Text>&nbsp;</Form.Text>}
             </Form.Group>
             <Form.Group controlId="password" className="mb-3">
               <Form.Label>Password</Form.Label>
@@ -365,7 +371,11 @@ const RegisterWithOrganization: React.FC = () => {
                 value={basicInfo.confirmPassword}
                 onChange={handleBasicChange}
                 required
+                isInvalid={basicInfo.password !== basicInfo.confirmPassword && basicInfo.confirmPassword !== ''}
               />
+               <Form.Control.Feedback type="invalid">
+                 Passwords do not match.
+               </Form.Control.Feedback>
             </Form.Group>
             <div className="d-flex justify-content-between">
               <Button variant="secondary" onClick={() => navigate("/login")}>
@@ -381,7 +391,7 @@ const RegisterWithOrganization: React.FC = () => {
         return (
           <div className="step-content">
             <h3>Organization Membership</h3>
-            <p>Are you already a member of an organization?</p>
+            <p>Do you want to join an existing organization or create a new one?</p>
             <div className="d-flex flex-column gap-2">
               <Button
                 variant="primary"
@@ -390,7 +400,7 @@ const RegisterWithOrganization: React.FC = () => {
                   setStep(3);
                 }}
               >
-                Yes, I want to join
+                Join Organization
               </Button>
               <Button
                 variant="secondary"
@@ -399,10 +409,10 @@ const RegisterWithOrganization: React.FC = () => {
                   setStep(3);
                 }}
               >
-                No, I want to create one
+                Create New Organization
               </Button>
             </div>
-            <Button variant="link" onClick={() => setStep(1)}>
+            <Button variant="link" onClick={() => setStep(1)} className="mt-3">
               Back
             </Button>
           </div>
@@ -433,7 +443,7 @@ const RegisterWithOrganization: React.FC = () => {
                   Search and Request to Join
                 </Button>
               </div>
-              <Button variant="link" onClick={() => setStep(2)}>
+              <Button variant="link" onClick={() => setStep(2)} className="mt-3">
                 Back
               </Button>
             </div>
@@ -452,12 +462,15 @@ const RegisterWithOrganization: React.FC = () => {
                   onChange={(e) => setOrganizationName(e.target.value)}
                   required
                 />
+                {!organizationName && <Form.Text className="text-muted">Organization name is required.</Form.Text>}
               </Form.Group>
               <div className="d-flex justify-content-between">
                 <Button variant="link" onClick={() => setStep(2)}>
                   Back
                 </Button>
-                <Button onClick={() => setStep(7)}>Next</Button>
+                <Button onClick={() => setStep(7)} disabled={!organizationName.trim()}>
+                   Create & Register
+                </Button>
               </div>
             </div>
           );
@@ -475,8 +488,12 @@ const RegisterWithOrganization: React.FC = () => {
                 name="org_code"
                 value={orgJoinInfo.org_code}
                 onChange={handleOrgJoinChange}
+                placeholder="Enter the code provided by your organization"
                 required
               />
+              {message?.type === "error" && message.content.includes("Invalid organization code") && (
+                 <Form.Text className="text-danger">{message.content}</Form.Text>
+              )}
             </Form.Group>
             <div className="d-flex justify-content-between">
               <Button variant="link" onClick={() => setStep(3)}>
@@ -484,19 +501,20 @@ const RegisterWithOrganization: React.FC = () => {
               </Button>
               <Button
                 onClick={async () => {
+                  setMessage(null);
                   const isValid = await validateOrgCode(orgJoinInfo.org_code);
                   if (isValid) {
                     setStep(7);
-                  } else {
+                  } else if (!message) {
                     setMessage({
                       type: "error",
-                      content:
-                        "Invalid organization code. Please check and try again.",
+                      content: "Invalid organization code. Please check and try again.",
                     });
                   }
                 }}
+                disabled={!orgJoinInfo.org_code.trim()}
               >
-                Submit Registration
+                Join & Register
               </Button>
             </div>
           </div>
@@ -507,7 +525,7 @@ const RegisterWithOrganization: React.FC = () => {
           <div className="step-content">
             <h3>Search Organizations</h3>
             <Form.Group controlId="searchOrganizations" className="mb-3">
-              <Form.Label>Search Organizations</Form.Label>
+              <Form.Label>Search by Organization Name</Form.Label>
               <Form.Control
                 type="text"
                 placeholder="Start typing to search..."
@@ -516,103 +534,87 @@ const RegisterWithOrganization: React.FC = () => {
               />
             </Form.Group>
 
-            {loadingSearch ? (
-              <Spinner animation="border" />
-            ) : searchResults.length > 0 ? (
-              <div className="organization-list">
+            {loadingSearch && <div className="text-center"><Spinner animation="border" size="sm"/></div>}
+
+            {!loadingSearch && searchTerm.trim() !== "" && searchResults.length === 0 && (
+              <Alert variant="info" className="mt-3">No organizations found matching "{searchTerm}".</Alert>
+            )}
+
+            {searchResults.length > 0 && (
+              <div className="organization-list mt-3">
                 {searchResults.map((org) => (
                   <div
                     key={org.id}
-                    className={`organization-card p-3 mb-2 ${
-                      selectedOrg?.id === org.id
-                        ? "border-primary bg-light"
-                        : "border-light"
+                    className={`organization-card p-2 mb-2 d-flex justify-content-between align-items-center ${
+                      selectedOrg?.id === org.id ? "selected" : ""
                     }`}
-                    style={{
-                      cursor: "pointer",
-                      border: "2px solid",
-                      borderRadius: "8px",
-                    }}
                     onClick={() => handleOrgSelection(org)}
                   >
-                    <div className="d-flex justify-content-between align-items-center">
-                      <div>
-                        <h5>{org.name}</h5>
-                        <small className="text-muted">
-                          Members: {org.member_count}
-                        </small>
-                      </div>
-                      {selectedOrg?.id === org.id && (
-                        <Badge bg="success">Selected</Badge>
-                      )}
+                    <div>
+                      <h5 className="mb-1">{org.name}</h5>
+                      <small className="text-muted">
+                        Members: {org.member_count}
+                      </small>
                     </div>
+                    {selectedOrg?.id === org.id && (
+                      <Badge pill bg="success">Selected</Badge>
+                    )}
                   </div>
                 ))}
               </div>
-            ) : (
-              searchTerm.trim() !== "" && <div>No organizations found</div>
             )}
 
             <div className="d-flex justify-content-between mt-4">
               <Button variant="secondary" onClick={() => setStep(3)}>
                 Back
               </Button>
-              <div>
-                <Button
-                  variant="primary"
-                  onClick={() => {
-                    if (selectedOrg) {
-                      setStep(7); // Proceed to submission
-                    }
-                  }}
-                  disabled={!selectedOrg}
-                >
-                  Request to Join Selected Organization
-                </Button>
-              </div>
+              <Button
+                variant="primary"
+                onClick={() => { if (selectedOrg) setStep(7); }}
+                disabled={!selectedOrg}
+              >
+                Request to Join Selected
+              </Button>
             </div>
           </div>
         );
       case 6:
-        // Confirm organization creation step.
         return (
           <div className="step-content">
             <h3>Confirm Organization Creation</h3>
             <p>
-              Your organization will be created and you will be registered as
-              its admin.
+              You are about to create the organization "{organizationName}" and register as its first member.
             </p>
             <div className="d-flex justify-content-between">
               <Button variant="link" onClick={() => setStep(3)}>
                 Back
               </Button>
-              <Button onClick={() => setStep(7)}>Submit Registration</Button>
+              <Button onClick={() => setStep(7)}>Confirm & Register</Button>
             </div>
           </div>
         );
       case 7:
-        // Final submission step – now we simply show a spinner.
         return (
           <div className="step-content text-center">
             <h3>Submitting Registration...</h3>
-            <Spinner animation="border" />
+            <Spinner animation="border" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </Spinner>
           </div>
         );
       case 8:
-        // After a join request from the search flow.
         return (
           <div className="step-content">
             <h3>Request Submitted</h3>
-            <p>
-              Your request to join {selectedOrg?.name} has been submitted.
-              Please await approval from the organization admin/PM.
-            </p>
-            <div className="d-flex justify-content-between">
+            <Alert variant="success">
+              {message?.content ||
+               `Your request to join ${selectedOrg?.name || 'the organization'} has been submitted. Please await approval from an administrator.`
+              }
+            </Alert>
+            <p>You will be notified once your request is reviewed.</p>
+            <div className="d-flex justify-content-center mt-4">
               <Button onClick={() => navigate("/login")}>
                 Return to Login
-              </Button>
-              <Button variant="link" onClick={() => setStep(5)}>
-                Back
               </Button>
             </div>
           </div>
@@ -623,29 +625,53 @@ const RegisterWithOrganization: React.FC = () => {
   };
 
   return (
-    <Container className="mt-5">
-      {message && (
-        <Toast
-          onClose={() => setMessage(null)}
-          show={!!message}
-          delay={5000}
-          autohide
-          bg={message.type === "error" ? "danger" : "success"}
-          className="position-fixed top-0 start-50 translate-middle-x mt-3"
-        >
-          <Toast.Header>
-            <strong className="me-auto">
-              {message.type === "error" ? "Error" : "Success"}
-            </strong>
-          </Toast.Header>
-          <Toast.Body className="text-white">{message.content}</Toast.Body>
-        </Toast>
-      )}
-      <TransitionGroup>
-        <CSSTransition key={step} classNames="fade" timeout={500}>
-          <div>{getStepContent()}</div>
-        </CSSTransition>
-      </TransitionGroup>
+    <Container fluid className="p-0 register-page-background">
+      <Row className="vh-100 d-flex justify-content-center align-items-center m-0">
+         <Col xs={11} sm={10} md={8} lg={6} xl={5}>
+            <div className="login-card p-4 p-md-5">
+
+              <div className="text-center mb-4">
+                 <Image src={TaskMasterIcon} alt="TaskMaster Logo" className="login-icon mb-3" style={{ height: '60px' }} />
+                 <h1>Register Account</h1>
+              </div>
+
+              {message && (
+                <Toast
+                  onClose={() => setMessage(null)}
+                  show={!!message}
+                  delay={6000}
+                  autohide
+                  bg={message.type === "error" ? "danger" : "success"}
+                  className="position-fixed top-0 start-50 translate-middle-x mt-3"
+                  style={{ zIndex: 1056 }}
+                >
+                  <Toast.Header closeButton={true}>
+                    <strong className="me-auto">
+                      {message.type === "error" ? "Error" : "Success"}
+                    </strong>
+                  </Toast.Header>
+                  <Toast.Body className={message.type === 'error' ? 'text-white' : 'text-dark'}>
+                    {message.content}
+                  </Toast.Body>
+                </Toast>
+              )}
+
+              <TransitionGroup component={null}>
+                <CSSTransition
+                  key={step}
+                  timeout={300}
+                  classNames="fade"
+                  unmountOnExit
+                >
+                   <div>
+                      {getStepContent()}
+                   </div>
+                </CSSTransition>
+              </TransitionGroup>
+
+            </div>
+        </Col>
+      </Row>
     </Container>
   );
 };

@@ -1,0 +1,101 @@
+@import "../../color-theme.scss"; // Import theme variables if needed
+
+.auth-background-wrapper {
+  min-height: 100vh; // Ensure it covers full viewport height
+  width: 100%;
+  display: flex; // Needed to make nested centering work correctly
+  align-items: center; // Vertically center content (the card)
+  justify-content: center; // Horizontally center content (the card)
+  background-size: cover; // Scale image to cover the container
+  background-position: center center; // Center the image
+  background-repeat: no-repeat; // Don't tile the image
+  background-attachment: fixed; // Keep background fixed during scroll (optional parallax effect)
+}
+
+.login-card {
+  background-color: #ffffff; // Ensure white background
+  padding: 2rem 1.5rem; // Increase padding
+  border: 1px solid $gray-300; // Subtle border
+  border-radius: 0.5rem; // Rounded corners
+  box-shadow: 0 0.5rem 1rem rgba($dark, 0.1); // Softer shadow
+  max-width: 500px; // Max width for the card
+  margin: auto; // Center the card horizontally
+  text-align: center; // Center align text within the card
+  background-color: $secondary;
+
+  .login-icon {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 1rem;
+  }
+
+  h1 {
+    color: $dark;
+    margin-bottom: 1.5rem;
+  }
+
+  .form-label {
+    font-weight: 500;
+    color: $gray-700;
+  }
+
+  .btn-primary {
+    min-width: 120px; // Give primary button a minimum width
+  }
+
+  .form-links {
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+
+    p {
+      margin-bottom: 0.5rem; // Add space between links
+    }
+
+    a {
+      color: $primary;
+      text-decoration: none; // Remove underline
+
+      &:hover {
+        text-decoration: underline; // Add underline on hover
+        color: darken($primary, 10%);
+      }
+    }
+  }
+}
+
+// Demo User Specific Styles
+.demo-user-card {
+  @extend .login-card; // Inherit base card styles
+
+  .demo-button-grid {
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+
+    .demo-button {
+      display: flex;
+      flex-direction: column; // Stack icon and text vertically
+      align-items: center;
+      justify-content: center;
+      padding: 1rem 0.5rem;
+      min-height: 100px; // Ensure consistent height
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: transform 0.2s ease-in-out;
+      background-color: $dark;
+      &:hover,
+      &:focus {
+        // Apply to focus state as well for accessibility
+        transform: translateY(-3px); // Keep the lift effect
+        background-color: $light; // Force white background
+        color: $dark; // Force dark text color for contrast
+        border-color: $dark; // Make border dark on hover for visibility
+      }
+      svg {
+        margin-bottom: 0.5rem; // Space between icon and text
+      }
+    }
+  }
+  .back-button {
+    margin-top: 1rem;
+  }
+}

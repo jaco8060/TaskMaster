@@ -151,7 +151,7 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ children }) => {
                 <div className="d-inline-flex bg-primary rounded py-2 px-3 justify-content-center gap-4">
                   <Button
                     variant="link"
-                    className="no-caret mb-0 p-0 text-light"
+                    className="mb-0 p-0 text-light"
                     style={{
                       textDecoration: "none",
                       boxShadow: "none",
@@ -181,7 +181,7 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ children }) => {
                   <Dropdown.Toggle
                     variant="link"
                     id="dropdown-notifications"
-                    className="no-caret p-2"
+                    className="p-2"
                     style={{
                       textDecoration: "none",
                       boxShadow: "none",
@@ -208,7 +208,7 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ children }) => {
                   <Dropdown.Toggle
                     variant="link"
                     id="dropdown-Account"
-                    className="no-caret p-2"
+                    className="p-2"
                     style={{
                       textDecoration: "none",
                       boxShadow: "none",

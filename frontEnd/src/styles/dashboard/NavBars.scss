@@ -100,11 +100,6 @@
   }
 }
 
-/* Hide the default caret on Dropdown.Toggle elements with the "no-caret" class */
-.no-caret::after {
-  display: none;
-}
-
 .nav-search {
   margin-left: auto;
 
@@ -193,4 +188,8 @@
   .bi-search {
     color: #6c757d;
   }
+}
+/* Hide the default caret on Dropdown.Toggle elements with the "no-caret" class */
+button.dropdown-toggle::after {
+  display: none;
 }
